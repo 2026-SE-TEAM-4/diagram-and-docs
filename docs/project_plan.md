@@ -36,7 +36,7 @@
 | 캐시 / Pub-Sub | Redis 7 + `redis.asyncio` | 7.x |
 | 빌드/패키지 | uv (또는 Poetry) | uv 0.5+ |
 | 컨테이너 | Docker Compose | — |
-| CI | GitHub Actions | — |
+| CI/CD 파이프라인 (빌드·배포) | GitHub Actions | — |
 | 테스트 | pytest + pytest-asyncio + Testcontainers-python | — |
 
 > 메시지 큐(RabbitMQ/aio-pika)는 **도입하지 않는다**. 본 시스템의 "알림"은 외부 채널 전송이 아니라 앱 내부 `notifications` 테이블에 적재되는 인-앱 알림이고, 동일 트랜잭션 안에서 `INSERT`로 처리하면 일관성·재시도·DLQ가 모두 자연스럽게 해결된다. 실시간 푸시는 WebSocket/SSE, 인스턴스 간 팬아웃은 Redis Pub/Sub로 대체한다 ([5.3절](#53-알림-uc03-a--uc03-d--db-기반-인-앱-알림) 참고).
@@ -245,10 +245,11 @@ uv add fastapi uvicorn sqlalchemy alembic pydantic asyncpg redis apscheduler pan
 uv add --dev pytest pytest-asyncio testcontainers httpx ruff mypy
 ```
 
-### 7.3 CI (GitHub Actions)
+### 7.3 CI/CD 파이프라인 (GitHub Actions — 빌드·배포)
 
-- PR: `uv run pytest` (Testcontainers-python으로 실 PostgreSQL·Redis 기동)
-- 추가: `ruff check`, `mypy app/`
+- **CI (PR / push)**: `uv run pytest` (Testcontainers-python으로 실 PostgreSQL·Redis 기동) + `ruff check` + `mypy app/`.
+- **빌드**: 프론트엔드(`vite build`)·백엔드(Docker 이미지 `backend`, `scheduler`)를 워크플로우에서 동시 빌드.
+- **배포**: main 머지 시 GHCR로 이미지 푸시, 단일 노드 데모 서버에 `docker compose pull && up -d`.
 
 ---
 
@@ -281,6 +282,5 @@ uv add --dev pytest pytest-asyncio testcontainers httpx ruff mypy
 
 ## 10. 참고 자료
 
-- 명세서: [`docs/소프트웨어공학_01_4조_유스케이스_명세서.md`](./docs/소프트웨어공학_01_4조_유스케이스_명세서.md)
+- 명세서: [`소프트웨어공학_01_4조_유스케이스_명세서.md`](./소프트웨어공학_01_4조_유스케이스_명세서.md)
 - 기술 스택 상세(채택/제외 근거): [`tech_stacks.md`](./tech_stacks.md)
-- 다이어그램: [`diagram/`](./diagram/)

@@ -6,7 +6,7 @@
 | 팀 | 4조 |
 | 학기 | 2026년 1학기 |
 | 작성일 | 2026-05-20 |
-| 관련 문서 | [`project_plan.md`](./project_plan.md), [`docs/소프트웨어공학_01_4조_유스케이스_명세서.md`](./docs/소프트웨어공학_01_4조_유스케이스_명세서.md) |
+| 관련 문서 | [`project_plan.md`](./project_plan.md), [`소프트웨어공학_01_4조_유스케이스_명세서.md`](./소프트웨어공학_01_4조_유스케이스_명세서.md) |
 
 이 문서는 `project_plan.md`에 요약된 기술 스택의 **선정 이유**와 **제외된 후보**를 자세히 기록한다. "왜 이걸 썼는가" / "왜 안 썼는가"가 향후 코드 리뷰·발표 Q&A·후속 학기 인수인계에서 같은 질문이 반복되지 않도록 하기 위함이다.
 
@@ -188,9 +188,18 @@
 - **역할**: 정적 타입 검사.
 - **선정 이유**: Pydantic이 런타임 검증을 책임지지만, 코드 흐름의 타입 안정성은 mypy가 보완. 트레이드오프 표(2.2)에서 약속한 보완 수단.
 
+---
+
+### 1.9 CI/CD 파이프라인 (빌드·배포)
+
 #### GitHub Actions
-- **역할**: PR/머지 시 자동 테스트·린트·타입체크.
+- **역할**: PR/머지 시 자동 테스트·린트·타입체크 + main 머지 시 빌드·배포까지 한 파이프라인으로 처리.
 - **선정 이유**: 저장소가 GitHub이라 통합 비용 0. 학교 계정으로 무료 분 단위 충분.
+- **파이프라인 구성**:
+  - **CI 단계 (PR / push)**: `uv run pytest` (Testcontainers-python) + `ruff check` + `mypy app/` + 프론트 `tsc --noEmit` & `vitest`.
+  - **빌드 단계**: 프론트엔드 `vite build` 결과물과 백엔드 Docker 이미지(`backend`, `scheduler`)를 워크플로우에서 동시 빌드해 GHCR(GitHub Container Registry)로 푸시.
+  - **배포 단계**: main 머지 시 단일 노드 데모 서버에서 `docker compose pull && docker compose up -d`로 무중단 갱신.
+- **대안 비교**: GitLab CI / Jenkins는 별도 호스팅이 필요해 학기 범위에서 운영 부담이 크다. 외부 CI(CircleCI, Travis)는 OSS 무료 한도 변동성이 있어 GitHub 내장 액션 쪽이 안정적.
 
 ---
 
