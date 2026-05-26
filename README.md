@@ -45,7 +45,7 @@
 | Test | ![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white) ![Testcontainers](https://img.shields.io/badge/Testcontainers-1A7DBC?style=for-the-badge) ![ruff](https://img.shields.io/badge/ruff-D7FF64?style=for-the-badge&logo=ruff&logoColor=black) ![mypy](https://img.shields.io/badge/mypy-1F5082?style=for-the-badge) |
 | ETC | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) ![drawio](https://img.shields.io/badge/drawio-F08705?style=for-the-badge&logo=diagramsdotnet&logoColor=white) |
 
-각 스택의 선정 이유와 제외된 후보(RabbitMQ, Kafka, GraphQL 등)는 [`docs/tech_stacks.md`](./docs/tech_stacks.md) 참조.
+각 스택의 선정 이유와 제외된 후보(RabbitMQ, Kafka, GraphQL 등)는 [`tech-stacks.html`](./tech-stacks.html) 참조.
 
 ---
 
@@ -85,18 +85,18 @@
 ```
 diagram-and-docs/
 ├── README.md                      # 본 파일
+├── index.html                     # 설계 문서 색인 (메인 진입점)
+├── use-case-spec.html             # UC 20개 풀 명세
+├── project-plan.html              # 프로젝트 계획서 (모듈 구성, 일정, 결정)
+├── tech-stacks.html               # 기술 스택 채택·제외 근거
 ├── docs/
-│   ├── project_plan.md            # 프로젝트 계획서 (모듈 구성, 일정, 결정)
-│   ├── tech_stacks.md             # 기술 스택 채택·제외 근거
 │   ├── notion-page-design.md      # 노션 워크스페이스 설계 스펙
-│   ├── notion-page-impl-plan.md   # 노션 구현 플랜
-│   └── 소프트웨어공학_01_4조_유스케이스_명세서.md  # UC 20개 풀 명세
-├── assets/
-│   ├── architecture-diagram.png   # 시스템 아키텍처 다이어그램
-│   ├── runtime-diagram.png        # 노트북 로컬 런타임 다이어그램
-│   ├── app.js
-│   └── style.css
-└── *.html                         # 명세서 · 일정 HTML 뷰
+│   └── notion-page-impl-plan.md   # 노션 구현 플랜
+└── assets/
+    ├── architecture-diagram.png   # 시스템 아키텍처 다이어그램
+    ├── runtime-diagram.png        # 노트북 로컬 런타임 다이어그램
+    ├── app.js
+    └── style.css
 ```
 
 관련 레포:
@@ -109,9 +109,10 @@ diagram-and-docs/
 
 | 문서 | 내용 |
 |------|------|
-| [`docs/project_plan.md`](./docs/project_plan.md) | 모듈 분리·UC ↔ 컴포넌트 매핑·핵심 설계 결정·일정 |
-| [`docs/tech_stacks.md`](./docs/tech_stacks.md) | 채택 스택 선정 이유 + 제외 후보 검토 |
-| [`docs/소프트웨어공학_01_4조_유스케이스_명세서.md`](./docs/소프트웨어공학_01_4조_유스케이스_명세서.md) | UC 20개 풀 명세 + 부록(가용성 설계, AIOps 연계) |
+| [`index.html`](./index.html) | 설계 문서 색인 (메인 진입점) |
+| [`use-case-spec.html`](./use-case-spec.html) | UC 20개 풀 명세 + 부록(가용성 설계, AIOps 연계) |
+| [`project-plan.html`](./project-plan.html) | 모듈 분리·UC ↔ 컴포넌트 매핑·핵심 설계 결정·일정 |
+| [`tech-stacks.html`](./tech-stacks.html) | 채택 스택 선정 이유 + 제외 후보 검토 |
 | [`docs/notion-page-design.md`](./docs/notion-page-design.md) | 노션 워크스페이스 정보 구조·DB 스키마 |
 | [`docs/notion-page-impl-plan.md`](./docs/notion-page-impl-plan.md) | 노션 구현 플랜 (MCP 도구 사용 순서) |
 
