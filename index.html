@@ -50,7 +50,7 @@
 
     <div class="hub-section-title">
       <h2>문서</h2>
-      <span class="hub-count">03</span>
+      <span class="hub-count">04</span>
     </div>
 
     <nav class="hub-grid" aria-label="문서 목록">
@@ -77,6 +77,15 @@
         <div class="hub-card-body">
           <h3>기술 스택 상세</h3>
           <p>채택된 스택의 선정 이유와, 제외(RabbitMQ·Kafka·GraphQL 등) 결정의 근거. 향후 도입 체크리스트 포함.</p>
+        </div>
+        <span class="hub-card-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="hub-card" href="serverpool-spec.html">
+        <div class="hub-card-no">04 / POOL</div>
+        <div class="hub-card-body">
+          <h3>서버 풀 명세서</h3>
+          <p>백엔드가 1분 주기로 PULL해 가는 모니터링 대상 서버 풀(server-pool)의 기능·API 명세. `/health`·`/metrics` 계약과 cpu/mem/gpu/net 메트릭, 백엔드 ServerMetric 추적성.</p>
         </div>
         <span class="hub-card-arrow" aria-hidden="true">→</span>
       </a>
