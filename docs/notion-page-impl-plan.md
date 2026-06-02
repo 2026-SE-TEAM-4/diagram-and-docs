@@ -155,7 +155,7 @@ UNIQUE_ID로 자동 회차 부여 (M-1, M-2, ...).
 ## 1. 유스케이스 다이어그램
 
 <callout icon="🧩" color="gray_bg">
-4 actors · 20 UCs · 6 그룹 (조회 / 알림 / 예약·할당 / Quota·승인 / 서버관리 / 자동화 / 보안·운영)
+4 actors · 21 UCs · 6 그룹 (조회 / 알림 / 예약·할당 / Quota·승인 / 서버관리 / 자동화 / 보안·운영)
 </callout>
 
 *(이미지 자리 — drawio export PNG 임베드)*
@@ -267,7 +267,7 @@ FastAPI 레이어 (api / core / infra / scheduler) · 데이터 흐름 화살표
 **SOFTWARE ENGINEERING 01 · TEAM 4 · 2026 SPRING**
 연구실·팀 단위 GPU/서버 공유 시 중복·유휴를 막는 예약·할당·모니터링 플랫폼.
 
-`📅 Week N/14` · `👥 3명` · `🧩 20 UCs` · `⚙️ FastAPI + React` · `🗓 다음 회의: 목 19:00`
+`📅 Week N/14` · `👥 3명` · `🧩 21 UCs` · `⚙️ FastAPI + React` · `🗓 다음 회의: 목 19:00`
 </callout>
 
 ---
@@ -306,7 +306,7 @@ FastAPI 레이어 (api / core / infra / scheduler) · 데이터 흐름 화살표
 <columns>
 <column>
 <mention-page url="<시스템설계_URL>">유스케이스</mention-page>
-20 UCs · 4 actors
+21 UCs · 4 actors
 </column>
 <column>
 <mention-page url="<시스템설계_URL>">배치</mention-page>
