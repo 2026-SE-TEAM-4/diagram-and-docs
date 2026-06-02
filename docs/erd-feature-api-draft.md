@@ -1,6 +1,6 @@
 # ERD · 기능 명세 · API 명세 — 통합 초안
 
-> 작성 2026-05-29 · 검토용 초안. 승인 후 노션(데이터 모델 페이지 + 기능/API 명세 DB)에 일괄 반영한다.
+> 작성 2026-05-29 · 최신화 2026-06-01(구현 반영) · 승인 후 노션(데이터 모델 페이지 + 기능/API 명세 DB)에 일괄 반영한다.
 > 도출 근거: `use-case-spec.html`(UC01~UC21, 부록 A·B), `시스템 설계` 페이지(배치·아키텍처).
 
 ## 0. 설계 결정 요약 (합의됨)
@@ -48,6 +48,7 @@ erDiagram
         string email UK
         enum role "STU|MGR|ADM"
         bigint teamId FK
+        string hashedPassword "nullable, JWT 인증 컬럼(후속 구현)"
         datetime lockedUntil "UC20 일시 잠금, nullable"
         datetime createdAt
     }
@@ -85,8 +86,8 @@ erDiagram
     ApprovalRequest {
         bigint id PK
         bigint requesterId FK
-        bigint approverId FK "팀 MGR"
-        bigint serverId FK "대상 서버, nullable"
+        bigint approverId FK "팀 MGR, nullable"
+        bigint serverId FK "대상 서버"
         datetime requestedStart
         datetime requestedEnd
         string reason
