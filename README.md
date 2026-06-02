@@ -80,18 +80,22 @@
 
 ## 저장소 구성
 
-본 레포는 설계 산출물·명세서·다이어그램 전용입니다. 실제 구현은 별도 레포(`backend`, `frontend`)에서 진행됩니다.
+본 레포는 설계 산출물·명세서·다이어그램 전용입니다. 실제 구현은 별도 레포(`backend`, `frontend`, `server-pool`)에서 진행됩니다.
 
 ```
 diagram-and-docs/
 ├── README.md                      # 본 파일
 ├── index.html                     # 설계 문서 색인 (메인 진입점)
-├── use-case-spec.html             # UC 20개 풀 명세
+├── use-case-spec.html             # UC 21개 풀 명세
 ├── project-plan.html              # 프로젝트 계획서 (모듈 구성, 일정, 결정)
 ├── tech-stacks.html               # 기술 스택 채택·제외 근거
+├── serverpool-spec.html           # 서버 풀(server-pool) 기능·API 명세
 ├── docs/
-│   ├── notion-page-design.md      # 노션 워크스페이스 설계 스펙
-│   └── notion-page-impl-plan.md   # 노션 구현 플랜
+│   ├── erd-feature-api-draft.md       # ERD·기능(30)·API(22) 통합 초안
+│   ├── dynamic-models-nfr-draft.md    # 상태도·시퀀스·NFR·ADR 초안
+│   ├── test-plan-draft.md             # 테스트 계획 초안
+│   ├── notion-page-design.md          # 노션 워크스페이스 설계 스펙
+│   └── notion-page-impl-plan.md       # 노션 구현 플랜
 └── assets/
     ├── architecture-diagram.png   # 시스템 아키텍처 다이어그램
     ├── runtime-diagram.png        # 노트북 로컬 런타임 다이어그램
@@ -102,6 +106,7 @@ diagram-and-docs/
 관련 레포:
 - `backend` — FastAPI 서버 + APScheduler (Python)
 - `frontend` — React SPA (TypeScript)
+- `server-pool` — 모니터링 대상 서버 풀 시뮬레이터 (경량 에이전트 · /health·/metrics)
 
 ---
 
@@ -110,9 +115,13 @@ diagram-and-docs/
 | 문서 | 내용 |
 |------|------|
 | [`index.html`](./index.html) | 설계 문서 색인 (메인 진입점) |
-| [`use-case-spec.html`](./use-case-spec.html) | UC 20개 풀 명세 + 부록(가용성 설계, AIOps 연계) |
+| [`use-case-spec.html`](./use-case-spec.html) | UC 21개 풀 명세 + 부록(가용성 설계, AIOps 연계) |
 | [`project-plan.html`](./project-plan.html) | 모듈 분리·UC ↔ 컴포넌트 매핑·핵심 설계 결정·일정 |
 | [`tech-stacks.html`](./tech-stacks.html) | 채택 스택 선정 이유 + 제외 후보 검토 |
+| [`serverpool-spec.html`](./serverpool-spec.html) | 서버 풀(server-pool) 기능·API 명세 (/health·/metrics 계약) |
+| [`docs/erd-feature-api-draft.md`](./docs/erd-feature-api-draft.md) | ERD·기능(30)·API(22) 통합 초안 + 추적 매핑 |
+| [`docs/dynamic-models-nfr-draft.md`](./docs/dynamic-models-nfr-draft.md) | 상태도·시퀀스·NFR·ADR 초안 |
+| [`docs/test-plan-draft.md`](./docs/test-plan-draft.md) | 테스트 계획 초안 (레벨·동시성·성능·보안) |
 | [`docs/notion-page-design.md`](./docs/notion-page-design.md) | 노션 워크스페이스 정보 구조·DB 스키마 |
 | [`docs/notion-page-impl-plan.md`](./docs/notion-page-impl-plan.md) | 노션 구현 플랜 (MCP 도구 사용 순서) |
 

@@ -7,7 +7,7 @@
 | 학기 | 2026년 1학기 |
 | 작성일 | 2026-05-26 |
 | 대상 노션 페이지 | https://www.notion.so/340e84777239804f823ddb242d0351f1 |
-| 관련 문서 | [`project_plan.md`](./project_plan.md), [`tech_stacks.md`](./tech_stacks.md), [`소프트웨어공학_01_4조_유스케이스_명세서.md`](./소프트웨어공학_01_4조_유스케이스_명세서.md) |
+| 관련 문서 | [`project-plan.html`](../project-plan.html), [`tech-stacks.html`](../tech-stacks.html), [`use-case-spec.html`](../use-case-spec.html) |
 
 ---
 
@@ -49,7 +49,7 @@
 - 상단 작은 라벨: `SOFTWARE ENGINEERING 01 · TEAM 4 · 2026 SPRING`
 - 제목: `🖥️ 서버 예약 / 할당 관리 시스템`
 - 1줄 소개: "연구실·팀 단위 GPU/서버 공유 시 중복·유휴를 막는 예약·할당·모니터링 플랫폼"
-- Stats 배지 5개: `📅 Week N/14` · `👥 3명` · `🧩 20 UCs` · `⚙️ FastAPI + React` · `🗓 다음 회의: ${요일} ${시간}`
+- Stats 배지 5개: `📅 Week N/14` · `👥 3명` · `🧩 21 UCs` · `⚙️ FastAPI + React` · `🗓 다음 회의: ${요일} ${시간}`
   - `Week N/14`, `다음 회의 일시`는 매주 회의 직후 수동 갱신
 
 쇼케이스 30%의 가장 큰 슬롯. 교수·조교가 첫 1초에 "뭐 만드는 팀"인지 파악할 수 있게.
@@ -77,7 +77,7 @@
 
 - 3컬럼 그리드, 각 카드: 썸네일 이미지 + 제목 + 메타 부제
 - 카드별 부제:
-  - 유스케이스 — `20 UCs · 4 actors`
+  - 유스케이스 — `21 UCs · 4 actors`
   - 배치 — `Docker Compose · 단일 노드`
   - 컴포넌트 아키텍처 — `FastAPI · PostgreSQL · Redis`
 - 카드 클릭 → `📐 시스템 설계` 서브 페이지
@@ -88,9 +88,9 @@
 
 | 카드 | 출처 |
 |------|------|
-| 📄 프로젝트 계획서 | GitHub blob URL → `diagram-and-docs/docs/project_plan.md` |
-| 🧱 기술 스택 명세 | GitHub blob URL → `diagram-and-docs/docs/tech_stacks.md` |
-| 📘 유스케이스 명세서 | GitHub blob URL → `diagram-and-docs/docs/소프트웨어공학_01_4조_유스케이스_명세서.md` |
+| 📄 프로젝트 계획서 | GitHub → `diagram-and-docs/project-plan.html` |
+| 🧱 기술 스택 명세 | GitHub → `diagram-and-docs/tech-stacks.html` |
+| 📘 유스케이스 명세서 | GitHub → `diagram-and-docs/use-case-spec.html` |
 | 🔌 API 명세 DB | 노션 (UC 단위) |
 | ⚙️ 기능 명세 DB | 노션 (UC 단위) |
 | 📊 발표 자료 | 노션 (학기 말) |
@@ -142,7 +142,7 @@
 
 3 다이어그램 풀뷰. 각 다이어그램은 PNG export 임베드 + drawio 원본 GitHub 링크 + 짧은 설명 + 변경 이력.
 
-1. **유스케이스 다이어그램** — 4 actors × 20 UCs
+1. **유스케이스 다이어그램** — 4 actors × 21 UCs
 2. **배치 다이어그램** — Docker Compose 컨테이너 토폴로지 (API · Scheduler · PostgreSQL · Redis · Frontend)
 3. **컴포넌트 아키텍처** — FastAPI 레이어 (api / core / infra / scheduler) 및 데이터 흐름
 
@@ -256,7 +256,7 @@
 
 | 산출물 종류 | 위치 | 이유 |
 |------------|------|------|
-| 프로젝트 계획서, 기술 스택, UC 명세서 | GitHub `diagram-and-docs/docs/` | 버전 관리·코드 리뷰 가능 |
+| 프로젝트 계획서, 기술 스택, UC 명세서 | GitHub `diagram-and-docs/` (HTML) | 버전 관리·코드 리뷰 가능 |
 | drawio 원본 다이어그램 | GitHub `diagram-and-docs/` | 편집·diff 가능 |
 | PNG export 다이어그램 | 노션 (시스템 설계 페이지) | 열람 빠름 |
 | API 명세, 기능 명세 | 노션 DB | UC와 relation, view 활용 |
