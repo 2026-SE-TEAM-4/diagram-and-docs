@@ -90,6 +90,10 @@ diagram-and-docs/
 ├── project-plan.html              # 프로젝트 계획서 (모듈 구성, 일정, 결정)
 ├── tech-stacks.html               # 기술 스택 채택·제외 근거
 ├── serverpool-spec.html           # 서버 풀(server-pool) 기능·API 명세
+├── frontend-prototype-kkm/        # 프론트엔드 시안(KKM)
+│   ├── index.html                 # 역할별 화면 시안 (스타일 A · 라이트)
+│   ├── frontend-ia.drawio         # 프론트엔드 정보구조(IA) 다이어그램
+│   └── README.md                  # 시안 설명
 ├── docs/
 │   ├── erd-feature-api-draft.md       # ERD·기능(30)·API(22) 통합 초안
 │   ├── dynamic-models-nfr-draft.md    # 상태도·시퀀스·NFR·ADR 초안
@@ -119,6 +123,8 @@ diagram-and-docs/
 | [`project-plan.html`](./project-plan.html) | 모듈 분리·UC ↔ 컴포넌트 매핑·핵심 설계 결정·일정 |
 | [`tech-stacks.html`](./tech-stacks.html) | 채택 스택 선정 이유 + 제외 후보 검토 |
 | [`serverpool-spec.html`](./serverpool-spec.html) | 서버 풀(server-pool) 기능·API 명세 (/health·/metrics 계약) |
+| [`frontend-prototype-kkm/`](./frontend-prototype-kkm/index.html) | 프론트엔드 시안(KKM) — 역할별(STU·MGR·ADM) 화면, AIOps 운영·서버 상태(90일 가동 이력) 시각화 |
+| [`frontend-prototype-kkm/frontend-ia.drawio`](./frontend-prototype-kkm/frontend-ia.drawio) | 프론트엔드 정보구조(IA) — 화면→컴포넌트→API(F·UC)→서버풀 데이터 흐름 |
 | [`docs/erd-feature-api-draft.md`](./docs/erd-feature-api-draft.md) | ERD·기능(30)·API(22) 통합 초안 + 추적 매핑 |
 | [`docs/dynamic-models-nfr-draft.md`](./docs/dynamic-models-nfr-draft.md) | 상태도·시퀀스·NFR·ADR 초안 |
 | [`docs/test-plan-draft.md`](./docs/test-plan-draft.md) | 테스트 계획 초안 (레벨·동시성·성능·보안) |
