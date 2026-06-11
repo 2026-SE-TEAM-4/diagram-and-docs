@@ -1,8 +1,9 @@
 /* =========================================================
    설계 문서 뷰어
-   - assets/manifest.js 의 DOCS_MANIFEST 가 문서 목록의 단일 원본
+   - assets/manifest.js 의 DOCS_MANIFEST 가 단일 원본 (tabs > categories > items)
+   - 상단 탭: 설계 문서 / 평가 체크리스트 / 보고서 목차 추천
    - 해시 라우팅: #/docs/02-requirements/use-cases.md
-   - md 원문을 fetch → marked 렌더 → mermaid 블록 렌더
+   - md 원문을 fetch → marked 렌더(DOMPurify 살균) → mermaid 블록 렌더
    - 상대 링크/이미지는 md 파일 위치 기준으로 재작성
    ========================================================= */
 
@@ -10,29 +11,56 @@
   "use strict";
 
   var manifest = window.DOCS_MANIFEST;
+  var tabs = manifest.tabs;
   var contentEl = document.getElementById("content");
   var navEl = document.getElementById("nav");
   var crumbEl = document.getElementById("crumb");
+  var tabsEl = document.getElementById("tabs");
 
-  /** 카테고리 평탄화 — pager(이전/다음)용 순서 목록 */
-  var flatDocs = manifest.categories.reduce(function (acc, cat) {
-    return acc.concat(
-      cat.items.map(function (item) {
-        return { cat: cat, title: item.title, path: item.path };
-      })
-    );
-  }, []);
+  /** 탭별로 문서를 평탄화 — pager(이전/다음)는 같은 탭 안에서만 움직인다. */
+  tabs.forEach(function (tab) {
+    tab.flat = tab.categories.reduce(function (acc, cat) {
+      return acc.concat(
+        cat.items.map(function (item) {
+          return { cat: cat, title: item.title, path: item.path };
+        })
+      );
+    }, []);
+  });
 
   function findDoc(path) {
-    for (var i = 0; i < flatDocs.length; i++) {
-      if (flatDocs[i].path === path) return { doc: flatDocs[i], index: i };
+    for (var t = 0; t < tabs.length; t++) {
+      for (var i = 0; i < tabs[t].flat.length; i++) {
+        if (tabs[t].flat[i].path === path) {
+          return { doc: tabs[t].flat[i], index: i, tab: tabs[t] };
+        }
+      }
     }
     return null;
   }
 
+  /* ---------- 상단 탭 ---------- */
+  function tabHref(tab) {
+    // 첫 탭(설계 문서)은 색인 홈, 나머지는 첫 문서로 직행
+    return tab === tabs[0] ? "#/" : "#/" + tab.flat[0].path;
+  }
+
+  function buildTabs(activeTab) {
+    tabsEl.innerHTML = tabs
+      .map(function (tab) {
+        return (
+          '<a data-tab="' + tab.id + '" href="' + tabHref(tab) + '"' +
+          (tab === activeTab ? ' class="active"' : "") + ">" +
+          tab.title +
+          "</a>"
+        );
+      })
+      .join("");
+  }
+
   /* ---------- 사이드바 ---------- */
-  function buildNav() {
-    var html = manifest.categories
+  function buildNav(tab) {
+    navEl.innerHTML = tab.categories
       .map(function (cat) {
         var links = cat.items
           .map(function (item) {
@@ -53,7 +81,6 @@
         );
       })
       .join("");
-    navEl.innerHTML = html;
   }
 
   function markActive(path) {
@@ -62,9 +89,10 @@
     });
   }
 
-  /* ---------- 홈 (문서 색인) ---------- */
+  /* ---------- 홈 (설계 문서 색인) ---------- */
   function renderHome() {
-    var cats = manifest.categories
+    var tab = tabs[0];
+    var cats = tab.categories
       .map(function (cat) {
         var cards = cat.items
           .map(function (item) {
@@ -93,6 +121,8 @@
       "</div>" +
       cats;
     crumbEl.innerHTML = "<b>INDEX</b>";
+    buildTabs(tab);
+    buildNav(tab);
     markActive(null);
     restartRise();
   }
@@ -111,7 +141,7 @@
         if (/^https?:/.test(href)) a.setAttribute("target", "_blank");
         return;
       }
-      // 상대 경로를 레포 루트 기준으로 정규화
+      // 상대 경로를 index.html 기준으로 정규화
       var parts = (mdDir + href).split("/");
       var stack = [];
       parts.forEach(function (p) {
@@ -153,9 +183,10 @@
     contentEl.style.animation = "";
   }
 
-  function renderPager(index) {
-    var prev = flatDocs[index - 1];
-    var next = flatDocs[index + 1];
+  function renderPager(found) {
+    var prev = found.tab.flat[found.index - 1];
+    var next = found.tab.flat[found.index + 1];
+    if (!prev && !next) return "";
     var html = '<nav class="pager">';
     if (prev) {
       html +=
@@ -187,6 +218,8 @@
     contentEl.innerHTML = "";
     contentEl.appendChild(box);
     crumbEl.innerHTML = '<a href="#/">INDEX</a> / <b>404</b>';
+    buildTabs(tabs[0]);
+    buildNav(tabs[0]);
     markActive(null);
   }
 
@@ -209,14 +242,17 @@
 
         contentEl.innerHTML = "";
         contentEl.appendChild(article);
-        if (found) contentEl.insertAdjacentHTML("beforeend", renderPager(found.index));
+        contentEl.insertAdjacentHTML("beforeend", renderPager(found));
 
         renderMermaidBlocks(article);
         crumbEl.innerHTML =
           '<a href="#/">INDEX</a> / ' +
+          found.tab.title + " / " +
           found.doc.cat.no + " " + found.doc.cat.title +
           " / <b></b>";
         crumbEl.querySelector("b").textContent = found.doc.title;
+        buildTabs(found.tab);
+        buildNav(found.tab);
         markActive(path);
         restartRise();
         window.scrollTo(0, 0);
@@ -258,7 +294,6 @@
   if (window.mermaid) {
     window.mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "strict" });
   }
-  buildNav();
   window.addEventListener("hashchange", route);
   route();
 })();
