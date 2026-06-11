@@ -1,0 +1,103 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="arch" name="Architecture">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" page="1" pageWidth="1169" pageHeight="826">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== CI/CD 파이프라인 (좌상단) ===== -->
+        <mxCell id="cicd" value="CI / CD 파이프라인" style="rounded=1;verticalAlign=top;fontStyle=1;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="500" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="gh" value="GitHub&#10;소스 저장소" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="cicd">
+          <mxGeometry x="20" y="45" width="120" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="gha" value="GitHub Actions&#10;CI · 테스트 · 빌드" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="cicd">
+          <mxGeometry x="190" y="45" width="130" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="docker" value="Docker&#10;이미지 빌드" style="rounded=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="cicd">
+          <mxGeometry x="370" y="45" width="110" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gh-gha" value="push" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;" edge="1" parent="cicd" source="gh" target="gha">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gha-docker" value="빌드 트리거" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;" edge="1" parent="cicd" source="gha" target="docker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Client ===== -->
+        <mxCell id="client" value="Client&#10;학생 · 관리자" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="330" width="40" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Frontend ===== -->
+        <mxCell id="fe" value="Frontend" style="rounded=1;verticalAlign=top;fontStyle=1;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="130" y="290" width="240" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="react" value="React SPA&#10;Vite Dev Server :5173&#10;TypeScript · TailwindCSS&#10;Recharts (UC18·19·21 시각화)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;" vertex="1" parent="fe">
+          <mxGeometry x="20" y="40" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Backend Server 컨테이너 그룹 ===== -->
+        <mxCell id="be" value="Backend Server (Docker Compose)" style="rounded=1;verticalAlign=top;fontStyle=1;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="450" y="210" width="400" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="fastapi" value="FastAPI :8000&#10;REST · WebSocket API&#10;예약 · 승인 · 서버 · 인증" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="be">
+          <mxGeometry x="30" y="40" width="340" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="sched" value="APScheduler (별도 컨테이너)&#10;메트릭 수집 UC14 · 유휴 회수 UC15&#10;만료 반납 UC16 · 이상 탐지 UC18 · 헬스 점수 UC19" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="be">
+          <mxGeometry x="30" y="170" width="340" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="pg" value="PostgreSQL 16&#10;:5432&#10;메인 데이터 저장소&#10;사용자 · 예약 · 서버&#10;메트릭 · 감사 로그" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="be">
+          <mxGeometry x="30" y="320" width="160" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="redis" value="Redis 7&#10;:6379&#10;캐시 · 분산 락&#10;Pub/Sub&#10;Rate limit 카운터" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;size=12;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="be">
+          <mxGeometry x="210" y="320" width="160" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Backend 내부 간선 -->
+        <mxCell id="e-api-pg" value="SQL (asyncpg)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="be" source="fastapi" target="pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-redis" value="캐시 · Pub/Sub" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="be" source="fastapi" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-sched-pg" value="메트릭 저장" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="be" source="sched" target="pg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-sched-redis" value="분산 락" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="be" source="sched" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 외부 서버 풀 ===== -->
+        <mxCell id="pool" value="공유 서버 풀 (외부 모니터링 대상)" style="rounded=1;verticalAlign=top;fontStyle=1;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="920" y="260" width="220" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="srv1" value="서버 1 에이전트 :9101&#10;/health · /metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="pool">
+          <mxGeometry x="20" y="40" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="srv2" value="서버 2 에이전트 :9102&#10;/health · /metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="pool">
+          <mxGeometry x="20" y="135" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="srv3" value="서버 N 에이전트 :9103&#10;/health · /metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;" vertex="1" parent="pool">
+          <mxGeometry x="20" y="230" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 그룹 간 간선 ===== -->
+        <mxCell id="e-client-fe" value="웹 브라우저" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;" edge="1" parent="1" source="client" target="fe">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-fe-api" value="HTTPS REST · WebSocket&#10;JWT Bearer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;startArrow=classic;startFill=1;" edge="1" parent="1" source="react" target="fastapi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-sched-pool" value="HTTP PULL · 1분 주기&#10;/health · /metrics 수집" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sched" target="pool">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-docker-be" value="docker compose up -d&#10;이미지 배포" style="edgeStyle=orthogonalEdgeStyle;rounded=1;fontSize=10;dashed=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="docker" target="be">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

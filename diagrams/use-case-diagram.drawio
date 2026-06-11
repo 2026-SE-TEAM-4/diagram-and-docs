@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="유스케이스" id="usecase-se4">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1300" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="boundary" value="서버 예약 / 할당 관리 시스템" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=14;fontStyle=1;fillColor=none;strokeColor=#333333;" vertex="1" parent="1"><mxGeometry x="320" y="20" width="700" height="740" as="geometry"/></mxCell>
+        <mxCell id="guest" value="미인증 사용자" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="40" y="60" width="40" height="80" as="geometry"/></mxCell>
+        <mxCell id="STU" value="학생 (STU)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="40" y="300" width="40" height="80" as="geometry"/></mxCell>
+        <mxCell id="MGR" value="팀 관리자 (MGR)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="40" y="560" width="40" height="80" as="geometry"/></mxCell>
+        <mxCell id="ADM" value="서버 관리자 (ADM)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1150" y="160" width="40" height="80" as="geometry"/></mxCell>
+        <mxCell id="SYS" value="모니터링 시스템 (SYS)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1150" y="540" width="40" height="80" as="geometry"/></mxCell>
+        <mxCell id="UC22" value="UC22
+회원가입" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="70" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC04" value="UC04
+서버 예약 요청" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="148" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC05" value="UC05
+즉시 서버 요청" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="226" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC06" value="UC06
+예약 취소" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="304" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC07" value="UC07
+서버 반납" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="382" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC03-a" value="UC03-a
+예약 승인/거절 알림 수신" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="460" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC03-d" value="UC03-d
+예약 충돌 알림 수신" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="538" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC01" value="UC01
+서버 현황 조회" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="616" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC02" value="UC02
+예약 현황 조회" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="694" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC23" value="UC23
+로그인" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="70" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC09" value="UC09
+초과 요청 승인/거절" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="148" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC10" value="UC10
+팀원별 Quota 설정" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="226" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC11" value="UC11
+서버 등록" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="304" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC12" value="UC12
+서버 삭제" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="382" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC13" value="UC13
+서버 점검 스케줄 등록" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="460" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC21" value="UC21
+시스템 운영 대시보드" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="538" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC14" value="UC14
+실시간 사용률 수집" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="70" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC15" value="UC15
+유휴 서버 감지·자동 회수" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="148" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC16" value="UC16
+예약 만료 자동 반납" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="226" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC17" value="UC17
+승인 타임아웃 자동 거절" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="304" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC18" value="UC18
+서버 이상 징후 탐지" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="382" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC19" value="UC19
+서버 건강 점수 산출" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="460" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="UC20" value="UC20
+비정상 접근 감지·잠금" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="538" width="150" height="52" as="geometry"/></mxCell>
+        <mxCell id="e1" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="guest" target="UC22"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC01"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC02"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC03-a"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC03-d"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC04"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC05"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC06"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC07"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC23"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="MGR" target="UC01"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="MGR" target="UC02"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e13" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="MGR" target="UC09"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="MGR" target="UC10"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="MGR" target="UC23"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e16" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC01"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e17" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC02"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e18" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC11"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e19" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC12"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e20" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC13"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e21" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC21"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e22" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="ADM" target="UC23"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e23" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC14"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e24" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC15"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e25" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC16"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e26" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC17"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e27" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC18"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e28" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC19"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e29" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="SYS" target="UC20"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

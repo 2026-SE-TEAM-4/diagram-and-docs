@@ -1,0 +1,388 @@
+<mxfile host="app.diagrams.net" modified="2026-06-11T00:00:00.000Z" agent="claude" version="24.0.0" type="device">
+  <diagram id="erd" name="ERD">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== Column 1 (x=40) ===== -->
+        <!-- Team -->
+        <mxCell id="team" value="Team" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="320" height="136" as="geometry" />
+        </mxCell>
+        <mxCell id="team1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="team">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="team2" value="name: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="team">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="team3" value="code: string (타팀 표시용)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="team">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="team4" value="totalQuotaLimit: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="team">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="team5" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="team">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Quota -->
+        <mxCell id="quota" value="Quota" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="320" height="158" as="geometry" />
+        </mxCell>
+        <mxCell id="quota1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="quota">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="quota2" value="userId: bigint FK (1:1)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="quota">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="quota3" value="teamId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="quota">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="quota4" value="limit: int (개인 한도, 일수)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="quota">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="quota5" value="used: int (현재 점유량)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="quota">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="quota6" value="version: int (낙관적 잠금)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="quota">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Notification -->
+        <mxCell id="notif" value="Notification" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="320" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="notif1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="notif2" value="userId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="notif3" value="type: enum (APPROVAL_RESULT|CONFLICT|...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="notif4" value="message: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="notif5" value="payload: json" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="notif6" value="readAt: datetime (nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="notif7" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="notif">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- AuditLog -->
+        <mxCell id="audit" value="AuditLog" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="700" width="320" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="audit1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="audit2" value="actorId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="audit3" value="action: enum (VIEW|DELETE_SERVER|...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="audit4" value="targetType: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="audit5" value="targetId: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="audit6" value="detail: json" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="audit7" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="audit">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 2 (x=440) ===== -->
+        <!-- User -->
+        <mxCell id="user" value="User" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="320" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="user1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="user2" value="name: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="user3" value="email: string UK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="user4" value="role: enum (STU|MGR|ADM)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="user5" value="teamId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="user6" value="lockedUntil: datetime (UC20 잠금, nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="user7" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Reservation -->
+        <mxCell id="resv" value="Reservation" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="320" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="resv1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="resv2" value="userId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="resv3" value="serverId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="resv4" value="startTime: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="resv5" value="endTime: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="resv6" value="status: enum (RESERVED|IN_USE|CANCELED|...)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="resv7" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="resv">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- QueueEntry -->
+        <mxCell id="queue" value="QueueEntry" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="440" y="560" width="320" height="158" as="geometry" />
+        </mxCell>
+        <mxCell id="queue1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="queue">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="queue2" value="serverId: bigint FK (nullable, 사양 기반 대기)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="queue">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="queue3" value="userId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="queue">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="queue4" value="requestedSpec: json" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="queue">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="queue5" value="position: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="queue">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="queue6" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="queue">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- SchedulerLog -->
+        <mxCell id="sched" value="SchedulerLog" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="440" y="780" width="320" height="136" as="geometry" />
+        </mxCell>
+        <mxCell id="sched1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="sched">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="sched2" value="ucId: string (UC14~UC20)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="sched">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="sched3" value="executedAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="sched">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="sched4" value="success: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="sched">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="sched5" value="processedCount: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="sched">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 3 (x=840) ===== -->
+        <!-- Server -->
+        <mxCell id="server" value="Server" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="840" y="40" width="320" height="202" as="geometry" />
+        </mxCell>
+        <mxCell id="server1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server2" value="name: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server3" value="ip: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server4" value="cpuCores: int / ramGb: int / gpuModel: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server5" value="status: enum (AVAILABLE|RESERVED|IN_USE|MAINTENANCE)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server6" value="version: int (낙관적 잠금)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server7" value="healthScore: int (UC19, nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="server8" value="deletedAt: datetime (soft delete, nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="server">
+          <mxGeometry y="180" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ApprovalRequest -->
+        <mxCell id="appr" value="ApprovalRequest" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="840" y="320" width="320" height="202" as="geometry" />
+        </mxCell>
+        <mxCell id="appr1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr2" value="requesterId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr3" value="approverId: bigint FK (팀 MGR, nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr4" value="serverId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr5" value="requestedStart / requestedEnd: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr6" value="status: enum (PENDING|APPROVED|REJECTED|AUTO_REJECTED)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr7" value="decidedAt: datetime (nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="appr8" value="decidedBy: string (userId 또는 SYSTEM)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="appr">
+          <mxGeometry y="180" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- MaintenanceSchedule -->
+        <mxCell id="maint" value="MaintenanceSchedule" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="840" y="600" width="320" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="maint1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="maint2" value="serverId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="maint3" value="startAt / endAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="maint4" value="reason: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="maint5" value="recurringRule: string (반복 점검, nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="maint6" value="createdBy: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="maint7" value="createdAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="maint">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Column 4 (x=1240) ===== -->
+        <!-- ServerMetric -->
+        <mxCell id="metric" value="ServerMetric" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="40" width="320" height="202" as="geometry" />
+        </mxCell>
+        <mxCell id="metric1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric2" value="serverId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric3" value="cpuUsage: float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric4" value="memUsage: float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric5" value="netUsage: float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric6" value="gpuUsage: float (nullable)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric7" value="status: enum (OK|MISSING|NA)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="158" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="metric8" value="collectedAt: datetime (시계열 인덱스)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="metric">
+          <mxGeometry y="180" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- AnomalyRecord -->
+        <mxCell id="anom" value="AnomalyRecord" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="320" width="320" height="158" as="geometry" />
+        </mxCell>
+        <mxCell id="anom1" value="id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="anom">
+          <mxGeometry y="26" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="anom2" value="serverId: bigint FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="anom">
+          <mxGeometry y="48" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="anom3" value="currentValue: float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="anom">
+          <mxGeometry y="70" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="anom4" value="mean: float (7일 이동평균 μ)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="anom">
+          <mxGeometry y="92" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="anom5" value="stddev: float (표준편차 σ)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="anom">
+          <mxGeometry y="114" width="320" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="anom6" value="detectedAt: datetime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;portConstraint=eastwest;" vertex="1" parent="anom">
+          <mxGeometry y="136" width="320" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Relationships ===== -->
+        <mxCell id="e_team_user" value="소속 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="team" target="user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_team_quota" value="팀 한도 배분 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="team" target="quota">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_quota" value="개인 한도 1:1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERone;endFill=0;fontSize=11;" edge="1" parent="1" source="user" target="quota">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_resv" value="예약 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="user" target="resv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_server_resv" value="대상 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="server" target="resv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_appr_req" value="요청(requester) 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" edge="1" parent="1" source="user" target="appr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_appr_dec" value="결재(approver) 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="user" target="appr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_server_appr" value="대상 서버 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="server" target="appr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_notif" value="수신 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="user" target="notif">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_server_metric" value="시계열 수집 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="server" target="metric">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_server_anom" value="이상 이력 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="server" target="anom">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_server_maint" value="점검 일정 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="server" target="maint">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_server_queue" value="대기열 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="server" target="queue">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_queue" value="대기 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;" edge="1" parent="1" source="user" target="queue">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_user_audit" value="행위자 1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=11;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" edge="1" parent="1" source="user" target="audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

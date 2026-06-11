@@ -1,0 +1,572 @@
+<mxfile host="app.diagrams.net" modified="2026-06-11T00:00:00.000Z" agent="claude" version="24.0.0">
+  <diagram id="class" name="Class Diagram">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== Layer backgrounds ===== -->
+        <mxCell id="bg_api" value="API Layer (app/api)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bbbbbb;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1140" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_core" value="Core (app/core)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bbbbbb;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="40" width="340" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_svc" value="Services Layer (app/services)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bbbbbb;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="1140" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_jobs" value="Jobs (app/jobs, APScheduler)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bbbbbb;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="530" width="340" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_models" value="Models Layer (app/models, SQLAlchemy ORM)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#bbbbbb;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=14;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="820" width="1520" height="380" as="geometry" />
+        </mxCell>
+
+        <!-- ===== API Layer routers ===== -->
+        <mxCell id="api_auth" value="api.auth (Router /auth)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="90" width="340" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="api_auth_r1" value="+ register(body: RegisterRequest, db): User" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_auth">
+          <mxGeometry y="30" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="api_auth_r2" value="+ login(body: LoginRequest, db): TokenResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_auth">
+          <mxGeometry y="52" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="api_auth_r3" value="+ me(user: User): MeResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_auth">
+          <mxGeometry y="74" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_res" value="api.reservations (Router /reservations)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="90" width="340" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="api_res_r1" value="+ get_reservations(current_user, db): list[ReservationResponse]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_res">
+          <mxGeometry y="30" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="api_res_r2" value="+ create_reservation(body: ReservationCreate, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_res">
+          <mxGeometry y="52" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="api_res_r3" value="+ create_instant_reservation(body, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_res">
+          <mxGeometry y="74" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_appr" value="api.approval_requests (Router /approval-requests)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="830" y="90" width="340" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="api_appr_r1" value="+ get_approval_requests(current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_appr">
+          <mxGeometry y="30" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="api_appr_r2" value="+ decide_approval_request(approval_id, req: DecisionRequest, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_appr">
+          <mxGeometry y="52" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_teams" value="api.teams (Router /teams)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="230" width="340" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="api_teams_r1" value="+ get_team_quotas(team_id, current_user, db): list[QuotaResponse]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_teams">
+          <mxGeometry y="30" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_noti" value="api.notifications (Router /notifications)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="230" width="340" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="api_noti_r1" value="+ get_notifications(current_user, db): list[NotificationResponse]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_noti">
+          <mxGeometry y="30" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_ws" value="api.ws (Router /ws, WebSocket)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="830" y="230" width="340" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="api_ws_r1" value="+ ws_notifications(websocket: WebSocket, token: str)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_ws">
+          <mxGeometry y="30" width="340" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="api_ws_r2" value="- _serialize(notification: Notification): str" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="api_ws">
+          <mxGeometry y="52" width="340" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Core ===== -->
+        <mxCell id="core_deps" value="core.deps" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="90" width="300" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="core_deps_r1" value="+ get_db(): AsyncSession" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_deps">
+          <mxGeometry y="30" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_deps_r2" value="+ get_current_user(credentials, db): User" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_deps">
+          <mxGeometry y="52" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_deps_r3" value="+ require_role(*roles: str)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_deps">
+          <mxGeometry y="74" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="core_sec" value="core.security" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="206" width="300" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="core_sec_r1" value="+ hash_password(plain: str): str" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_sec">
+          <mxGeometry y="30" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_sec_r2" value="+ verify_password(plain, hashed): bool" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_sec">
+          <mxGeometry y="52" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_sec_r3" value="+ create_access_token(user_id, role): str (JWT HS256)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_sec">
+          <mxGeometry y="74" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_sec_r4" value="+ decode_access_token(token): dict" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_sec">
+          <mxGeometry y="96" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="core_redis" value="core.redis" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="344" width="300" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="core_redis_r1" value="+ get_redis(): Redis" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_redis">
+          <mxGeometry y="30" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_redis_r2" value="+ increment_login_fail(email): int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_redis">
+          <mxGeometry y="52" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_redis_r3" value="+ reset_login_fail(email)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_redis">
+          <mxGeometry y="74" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="core_redis_r4" value="+ publish_notification(user_id, data)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="core_redis">
+          <mxGeometry y="96" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Services Layer ===== -->
+        <mxCell id="svc_auth" value="auth_service" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="450" width="214" height="162" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_auth_r1" value="&#171;exception&#187; EmailAlreadyExists" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;fontStyle=2;" vertex="1" parent="svc_auth">
+          <mxGeometry y="30" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_auth_r2" value="&#171;exception&#187; TeamNotFound" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;fontStyle=2;" vertex="1" parent="svc_auth">
+          <mxGeometry y="52" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_auth_r3" value="&#171;exception&#187; InvalidCredentials" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;fontStyle=2;" vertex="1" parent="svc_auth">
+          <mxGeometry y="74" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_auth_r4" value="&#171;exception&#187; AccountLocked(locked_until)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;fontStyle=2;" vertex="1" parent="svc_auth">
+          <mxGeometry y="96" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_auth_r5" value="+ register_user(db, data): User" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_auth">
+          <mxGeometry y="118" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_auth_r6" value="+ authenticate(db, email, password): User" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_auth">
+          <mxGeometry y="140" width="214" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_res" value="reservation_service" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="276" y="450" width="214" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_res_r1" value="+ create_reservation(current_user, req, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_res">
+          <mxGeometry y="30" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_res_r2" value="+ create_instant_reservation(current_user, req, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_res">
+          <mxGeometry y="52" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_res_r3" value="+ cancel_reservation(reservation_id, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_res">
+          <mxGeometry y="74" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_res_r4" value="+ return_reservation(reservation_id, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_res">
+          <mxGeometry y="96" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_res_r5" value="+ list_reservations(current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_res">
+          <mxGeometry y="118" width="214" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_appr" value="approval_service" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="502" y="450" width="214" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_appr_r1" value="+ list_approval_requests(current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_appr">
+          <mxGeometry y="30" width="214" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_appr_r2" value="+ decide_approval_request(approval_id, req, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_appr">
+          <mxGeometry y="52" width="214" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_quota" value="quota_service" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="728" y="450" width="214" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_quota_r1" value="+ list_team_quotas(team_id, current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_quota">
+          <mxGeometry y="30" width="214" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_noti" value="notification_service" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="954" y="450" width="214" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_noti_r1" value="+ list_notifications(current_user, db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="svc_noti">
+          <mxGeometry y="30" width="214" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Jobs ===== -->
+        <mxCell id="job_res" value="jobs.reservation_jobs" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="575" width="300" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="job_res_r1" value="+ process_reservation_transitions()" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="job_res">
+          <mxGeometry y="30" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="job_res_r2" value="- _start_in_use(db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="job_res">
+          <mxGeometry y="52" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="job_res_r3" value="- _expire_reservations(db)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="job_res">
+          <mxGeometry y="74" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="job_appr" value="jobs.approval_jobs" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="695" width="300" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="job_appr_r1" value="+ auto_reject_timed_out_requests()" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="job_appr">
+          <mxGeometry y="30" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Models Layer ===== -->
+        <mxCell id="m_user" value="User" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="870" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_user_r1" value="+ id: int (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_user">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_user_r2" value="+ email: str (unique)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_user">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_user_r3" value="+ role: str (STU/MGR/ADM)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_user">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_user_r4" value="+ team_id: int (FK team.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_user">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_team" value="Team" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="870" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_team_r1" value="+ id: int (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_team">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_team_r2" value="+ name: str" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_team">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_team_r3" value="+ code: str (unique)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_team">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_team_r4" value="+ total_quota_limit: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_team">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_quota" value="Quota" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="870" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_quota_r1" value="+ user_id: int (FK user.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_quota">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_quota_r2" value="+ limit: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_quota">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_quota_r3" value="+ used: int" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_quota">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_quota_r4" value="+ version: int (optimistic lock)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_quota">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_server" value="Server" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="870" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_server_r1" value="+ id: int (PK)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_server">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_server_r2" value="+ status: str (ServerStatus)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_server">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_server_r3" value="+ version: int (optimistic lock)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_server">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_server_r4" value="+ health_score: int | None" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_server">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_resv" value="Reservation" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1040" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_resv_r1" value="+ user_id: int (FK user.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_resv">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_resv_r2" value="+ server_id: int (FK server.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_resv">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_resv_r3" value="+ start_time / end_time: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_resv">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_resv_r4" value="+ status: str (ReservationStatus)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_resv">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_appr" value="ApprovalRequest" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="1040" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_appr_r1" value="+ requester_id: int (FK user.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_appr">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_appr_r2" value="+ approver_id: int | None (FK user.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_appr">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_appr_r3" value="+ server_id: int (FK server.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_appr">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_appr_r4" value="+ status: str (ApprovalStatus)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_appr">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_noti" value="Notification" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1040" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_noti_r1" value="+ user_id: int (FK user.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_noti">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_noti_r2" value="+ type: str" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_noti">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_noti_r3" value="+ message: str" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_noti">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_noti_r4" value="+ read_at: datetime | None" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_noti">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_metric" value="ServerMetric" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="1040" width="330" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="m_metric_r1" value="+ server_id: int (FK server.id)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_metric">
+          <mxGeometry y="30" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_metric_r2" value="+ cpu_usage / mem_usage / net_usage: float" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_metric">
+          <mxGeometry y="52" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_metric_r3" value="+ gpu_usage: float | None" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_metric">
+          <mxGeometry y="74" width="330" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="m_metric_r4" value="+ collected_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=10;" vertex="1" parent="m_metric">
+          <mxGeometry y="96" width="330" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Edges: router -> service ===== -->
+        <mxCell id="e1" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_auth" target="svc_auth">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="55" y="167" />
+              <mxPoint x="55" y="425" />
+              <mxPoint x="114" y="425" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0;exitY=0.7;exitDx=0;exitDy=0;entryX=0.6;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_res" target="svc_res">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="157" />
+              <mxPoint x="430" y="425" />
+              <mxPoint x="404" y="425" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_appr" target="svc_appr">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="134" />
+              <mxPoint x="810" y="420" />
+              <mxPoint x="609" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_noti" target="svc_noti">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="430" />
+              <mxPoint x="1061" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_teams" target="svc_quota">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="437" />
+              <mxPoint x="835" y="437" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Edges: router -> core.deps ===== -->
+        <mxCell id="e6" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.12;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_auth" target="core_deps">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="58" />
+              <mxPoint x="1190" y="58" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.6;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_res" target="core_deps">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="654" y="68" />
+              <mxPoint x="1198" y="68" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_appr" target="core_deps">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.6;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_teams" target="core_deps">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="210" />
+              <mxPoint x="1206" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_noti" target="core_deps">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="220" />
+              <mxPoint x="1212" y="220" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Edges: ws -> core / model ===== -->
+        <mxCell id="e11" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_ws" target="core_sec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_ws" target="core_redis">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1212" y="282" />
+              <mxPoint x="1212" y="403" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="api_ws" target="m_noti">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="949" y="785" />
+              <mxPoint x="815" y="785" />
+              <mxPoint x="815" y="1022" />
+              <mxPoint x="1005" y="1022" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Edges: deps / services -> core ===== -->
+        <mxCell id="e14" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="core_deps" target="core_sec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.6;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_auth" target="core_sec">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="178" y="385" />
+              <mxPoint x="1198" y="385" />
+              <mxPoint x="1198" y="236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.85;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_auth" target="core_redis">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="232" y="392" />
+              <mxPoint x="1206" y="392" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Edges: service -> model ===== -->
+        <mxCell id="e17" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.2;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_auth" target="m_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_auth" target="m_team">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="741" />
+              <mxPoint x="559" y="741" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_res" target="m_resv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="800" />
+              <mxPoint x="435" y="800" />
+              <mxPoint x="435" y="1014" />
+              <mxPoint x="245" y="1014" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_res" target="m_quota">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="404" y="760" />
+              <mxPoint x="939" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_res" target="m_server">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="469" y="795" />
+              <mxPoint x="1302" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_appr" target="m_appr">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="609" y="770" />
+              <mxPoint x="830" y="770" />
+              <mxPoint x="830" y="1014" />
+              <mxPoint x="691" y="1014" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e23" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.85;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_appr" target="m_resv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="545" y="745" />
+              <mxPoint x="420" y="745" />
+              <mxPoint x="420" y="1020" />
+              <mxPoint x="361" y="1020" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e24" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.05;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_quota" target="m_quota">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.79;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_noti" target="m_noti">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1061" y="750" />
+              <mxPoint x="1195" y="750" />
+              <mxPoint x="1195" y="1014" />
+              <mxPoint x="1100" y="1014" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===== Edges: jobs -> model ===== -->
+        <mxCell id="e26" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="job_res" target="m_server">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e27" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="job_res" target="m_resv">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="623" />
+              <mxPoint x="60" y="1099" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e28" value="uses" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endFill=0;strokeColor=#888888;fontSize=9;fontColor=#888888;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.85;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="job_appr" target="m_appr">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="805" y="721" />
+              <mxPoint x="805" y="1018" />
+              <mxPoint x="741" y="1018" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

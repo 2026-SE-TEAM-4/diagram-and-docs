@@ -1,0 +1,164 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="server-state-diagram" name="Server State">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sv-start" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-available" value="AVAILABLE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-reserved" value="RESERVED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="560" y="40" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-inuse" value="IN_USE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="560" y="280" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-maint" value="MAINTENANCE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="280" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-end-outer" value="" style="ellipse;html=1;fillColor=none;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="60" y="460" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-end-inner" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="67" y="467" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-note" value="모든 전이 시 version += 1 (낙관적 잠금)" style="shape=note;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;size=14;" vertex="1" parent="1">
+          <mxGeometry x="760" y="60" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e1" value="서버 등록(UC11)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-start" target="sv-available">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e2" value="예약(UC04)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-available" target="sv-reserved">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e3" value="예약 취소(UC06)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-reserved" target="sv-available">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e4" value="사용 시작(예약 기간 진입)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-reserved" target="sv-inuse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e5" value="즉시 할당(UC05)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-available" target="sv-inuse">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sv-e6" value="반납(UC07)/만료(UC16)/회수(UC15)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.85;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-inuse" target="sv-available">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sv-e7" value="점검 시작(UC13)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-available" target="sv-maint">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e8" value="점검 종료(UC13)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-maint" target="sv-available">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e9" value="강제 점검 후 강제 반납(UC13-E2)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-inuse" target="sv-maint">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sv-e10" value="soft delete(UC12)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-available" target="sv-end-outer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="75" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sv-e11" value="soft delete(UC12)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="sv-maint" target="sv-end-outer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="110" y="305" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="reservation-state-diagram" name="Reservation State">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="540" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="rv-start" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="60" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-reserved" value="RESERVED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="160" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-inuse" value="IN_USE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="460" y="50" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-canceled" value="CANCELED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="160" y="230" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-returned" value="RETURNED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="380" y="230" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-expired" value="EXPIRED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="570" y="230" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-reclaimed" value="RECLAIMED" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="760" y="230" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-end-outer" value="" style="ellipse;html=1;fillColor=none;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="520" y="400" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-end-inner" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="527" y="407" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e1" value="예약 생성(UC04)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-start" target="rv-reserved">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e2" value="즉시 할당(UC05)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-start" target="rv-inuse">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="45" y="15" />
+              <mxPoint x="535" y="15" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rv-e3" value="사용 시작" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-reserved" target="rv-inuse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e4" value="취소(UC06)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-reserved" target="rv-canceled">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e5" value="직접 반납(UC07)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-inuse" target="rv-returned">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e6" value="만료 자동 반납(UC16)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-inuse" target="rv-expired">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e7" value="유휴 자동 회수(UC15)" style="html=1;endArrow=block;labelBackgroundColor=#ffffff;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="rv-inuse" target="rv-reclaimed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e8" value="" style="html=1;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="rv-canceled" target="rv-end-outer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="235" y="415" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rv-e9" value="" style="html=1;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="rv-returned" target="rv-end-outer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e10" value="" style="html=1;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="rv-expired" target="rv-end-outer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rv-e11" value="" style="html=1;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="rv-reclaimed" target="rv-end-outer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="835" y="415" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
