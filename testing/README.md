@@ -29,6 +29,9 @@ uv run testkit stress                 # 과부하
 uv run testkit spike                  # 스파이크 + 자동 DB 정합성 검사 ★
 uv run testkit endurance --duration 6h
 
+uv run testkit scenario               # 보안·성능·안정성 시나리오 점검 (단일 요청 단언)
+uv run testkit scenario --category security   # 카테고리만 (security|performance|stability|all)
+
 uv run testkit breakpoint login       # 중단점 (login|reserve|read|serverpool)
 uv run testkit fault s1               # 장애 주입 (s1~s5|all)
 uv run testkit verify                 # DB 정합성 검사만 단독 실행
@@ -40,6 +43,24 @@ uv run testkit chart --list           # 시각화 가능한 실행 목록
 
 부하 4종(load/stress/spike/endurance)은 실행 중 단계 진행 바와 실시간 지표
 (RPS·p95·요청·실패·사용자 + 추세 스파크라인)를 보여 줍니다.
+
+### 부하 강도 (--intensity / -i, 1~4)
+
+load·stress·spike·endurance·breakpoint은 `--intensity N` 으로 부하 강도를 조절합니다.
+레벨이 곧 배율(레벨 N = ×N)이며 사용자 수·spawn_rate에 적용됩니다(단계 시간은 불변).
+레벨 1이 기본값이자 기존 동작입니다.
+
+```bash
+uv run testkit load -i 3              # load 단계별 사용자 ×3 (10/50/100/200 → 30/150/300/600)
+uv run testkit spike -i 4            # 스파이크 피크 ×4 (200 → 800명)
+uv run testkit breakpoint login -i 2 # 중단점 램프 피크 ×2 (500 → 1000 VU)
+```
+
+### 시나리오 점검 (testkit scenario)
+
+권한 없는 접근·잘못된 입력·경쟁 조건 등 약 20여 종을 단일 요청으로 단언 검증합니다.
+보안(인증/권한)·성능(응답시간)·안정성(5xx 금지/경쟁) 3개 카테고리로 묶여 있고,
+critical 시나리오가 모두 통과하면 종합 PASS(종료 코드 0)입니다.
 
 ## 결과
 

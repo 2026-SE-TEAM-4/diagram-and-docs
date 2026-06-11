@@ -73,6 +73,7 @@ def _run_locust(
     no_preflight: bool,
     users_override: Optional[int],
     duration_sec: Optional[int],
+    intensity: int = 1,
 ) -> int:
     """locust를 subprocess로 실행하고 종료 코드를 반환한다."""
     locustfile = config.ENGINES_DIR / "locust" / "locustfile.py"
@@ -81,6 +82,8 @@ def _run_locust(
     env = os.environ.copy()
     env["SHAPE"] = shape
     env["SERVER_IDS"] = ",".join(str(sid) for sid in server_ids)
+    # 자식 locust 프로세스(shapes.py)가 강도 배율을 적용하도록 전달한다.
+    env["INTENSITY"] = str(intensity)
 
     if users_override is not None:
         env["USERS_OVERRIDE"] = str(users_override)
@@ -103,7 +106,8 @@ def _run_locust(
     # 문제 발생 시 locust.log로 원인을 추적할 수 있게 한다.
     log_path = run_dir / "locust.log"
     history = run_dir / "locust_stats_history.csv"
-    line = stages_data.timeline(shape, duration_sec)
+    # 대시보드 목표 사용자수가 강도 배율이 적용된 값을 보여주도록 intensity를 넘긴다.
+    line = stages_data.timeline(shape, duration_sec, intensity)
 
     with log_path.open("w", encoding="utf-8") as log_f:
         proc = subprocess.Popen(
@@ -270,6 +274,16 @@ def _evaluate_endurance(stats: dict[str, str]) -> list[tuple[str, bool, str]]:
 
 # --- 공통 실행 흐름 ---
 
+def _validate_intensity(intensity: int) -> None:
+    """강도 레벨이 1~4 범위인지 검증한다. 벗어나면 종료 코드 2로 실패한다."""
+    if intensity < stages_data.MIN_INTENSITY or intensity > stages_data.MAX_INTENSITY:
+        ui.fail_exit(
+            f"강도(--intensity)는 {stages_data.MIN_INTENSITY}~{stages_data.MAX_INTENSITY} "
+            f"사이여야 합니다. (입력: {intensity})",
+            code=2,
+        )
+
+
 def _run_test(
     shape: str,
     plan_rows: dict[str, str],
@@ -278,6 +292,7 @@ def _run_test(
     users_override: Optional[int],
     duration_sec: Optional[int],
     verify_db: bool = False,
+    intensity: int = 1,
 ) -> None:
     run_dir = results.make_run_dir(shape)
 
@@ -304,7 +319,9 @@ def _run_test(
     ui.console.print(f"  결과 디렉터리: {run_dir.relative_to(config.TESTING_DIR.parent)}")
     ui.console.print(f"  locust 실행 중 (SHAPE={shape})...")
 
-    ret = _run_locust(shape, server_ids, run_dir, no_preflight, users_override, duration_sec)
+    ret = _run_locust(
+        shape, server_ids, run_dir, no_preflight, users_override, duration_sec, intensity
+    )
     if ret != 0:
         ui.console.print(f"  [yellow]locust 종료 코드: {ret}[/yellow]")
 
@@ -361,6 +378,17 @@ def _run_test(
 
 # --- 커맨드 등록 ---
 
+_INTENSITY_HELP = "부하 강도 1~4 (레벨이 곧 배율: 1=×1 ... 4=×4). 사용자 수만 늘리고 지속 시간은 그대로."
+
+
+def _intensity_row(shape: str, intensity: int, duration_sec: Optional[int] = None) -> str:
+    """플랜 표에 넣을 '강도 N (×N) · 최대 ...명' 문자열을 만든다."""
+    line = stages_data.timeline(shape, duration_sec, intensity)
+    peak = max((users for _end, users in line), default=0)
+    fac = stages_data.factor(intensity)
+    return f"강도 {intensity} (×{fac}) · 최대 {peak}명"
+
+
 def register(app: typer.Typer) -> None:
     """부하 테스트 4종 커맨드를 app에 등록한다."""
 
@@ -368,14 +396,17 @@ def register(app: typer.Typer) -> None:
     def load(
         no_preflight: bool = typer.Option(False, "--no-preflight", help="사전 점검을 건너뜁니다."),
         users: Optional[int] = typer.Option(None, "--users", help="최대 사용자 수 오버라이드."),
+        intensity: int = typer.Option(1, "--intensity", "-i", help=_INTENSITY_HELP),
     ) -> None:
         """[2.1] 점진적 부하 증가 테스트 (0→200명, 1200초)."""
+        _validate_intensity(intensity)
         _run_test(
             shape="load",
             plan_rows={
                 "테스트 계획": "2.1 점진적 부하 증가",
                 "시나리오": "일반 탐색 사용자 (예약 조회 5 / 쿼터 조회 2 / 예약 생성 1)",
                 "부하 모양": "0→10→50→100→200명 (단계별 300s, spawn_rate=20)",
+                "강도": _intensity_row("load", intensity),
                 "측정": "p95 응답시간, 실패율, RPS",
                 "합격 기준": "p95 < 300ms, 실패율 < 1%",
             },
@@ -383,20 +414,24 @@ def register(app: typer.Typer) -> None:
             no_preflight=no_preflight,
             users_override=users,
             duration_sec=None,
+            intensity=intensity,
         )
 
     @app.command()
     def stress(
         no_preflight: bool = typer.Option(False, "--no-preflight", help="사전 점검을 건너뜁니다."),
         users: Optional[int] = typer.Option(None, "--users", help="최대 사용자 수 오버라이드."),
+        intensity: int = typer.Option(1, "--intensity", "-i", help=_INTENSITY_HELP),
     ) -> None:
         """[2.2] 스트레스 테스트 (50→300→50명, 720초) — 급증 후 복귀 성능 확인."""
+        _validate_intensity(intensity)
         _run_test(
             shape="stress",
             plan_rows={
                 "테스트 계획": "2.2 스트레스 (급증 + 복귀)",
                 "시나리오": "탐색 사용자 + 로그인 사용자 (bcrypt 병목 측정, 1:1 가중)",
                 "부하 모양": "50명(120s) → 300명(420s) → 50명(720s), spawn_rate=20",
+                "강도": _intensity_row("stress", intensity),
                 "측정": "프로세스 생존 여부, 복귀 구간 실패율",
                 "합격 기준": "프로세스 생존 + 실패율 < 5%",
             },
@@ -404,19 +439,23 @@ def register(app: typer.Typer) -> None:
             no_preflight=no_preflight,
             users_override=users,
             duration_sec=None,
+            intensity=intensity,
         )
 
     @app.command()
     def spike(
         no_preflight: bool = typer.Option(False, "--no-preflight", help="사전 점검을 건너뜁니다."),
+        intensity: int = typer.Option(1, "--intensity", "-i", help=_INTENSITY_HELP),
     ) -> None:
         """[2.3] 스파이크 테스트 (5→200→5명, 300초) — 즉시 예약 쟁탈전."""
+        _validate_intensity(intensity)
         _run_test(
             shape="spike",
             plan_rows={
                 "테스트 계획": "2.3 스파이크 (즉시 예약 쟁탈전)",
                 "시나리오": "즉시 예약 사용자 (POST /reservations/instant 반복, 대기 없음)",
                 "부하 모양": "5명(60s) → 200명(75s, spawn_rate=200) → 5명(300s)",
+                "강도": _intensity_row("spike", intensity),
                 "측정": "5xx 발생 여부 + DB 정합성(초과배정·쿼터·카운터)",
                 "합격 기준": "5xx 크래시 없음 + DB 정합성 3종 모두 통과",
             },
@@ -425,20 +464,25 @@ def register(app: typer.Typer) -> None:
             users_override=None,
             duration_sec=None,
             verify_db=True,
+            intensity=intensity,
         )
 
     @app.command()
     def endurance(
         no_preflight: bool = typer.Option(False, "--no-preflight", help="사전 점검을 건너뜁니다."),
         duration: int = typer.Option(21600, "--duration", help="테스트 지속 시간(초). 기본 6시간."),
+        intensity: int = typer.Option(1, "--intensity", "-i", help=_INTENSITY_HELP),
     ) -> None:
         """[2.4] 지속 테스트 — 20명으로 장시간 안정성 확인 (기본 6시간)."""
+        _validate_intensity(intensity)
+        users = stages_data.scale_user(stages_data.ENDURANCE_USER_COUNT, intensity)
         _run_test(
             shape="endurance",
             plan_rows={
                 "테스트 계획": "2.4 지속 (장기 안정성)",
-                "시나리오": "일반 탐색 사용자 20명 고정",
-                "부하 모양": f"20명 유지 ({duration}초 = {duration // 3600}시간 {(duration % 3600) // 60}분)",
+                "시나리오": f"일반 탐색 사용자 {users}명 고정",
+                "부하 모양": f"{users}명 유지 ({duration}초 = {duration // 3600}시간 {(duration % 3600) // 60}분)",
+                "강도": _intensity_row("endurance", intensity, duration),
                 "측정": "실패율 추이, 메모리 누수 징후 (간접 관찰)",
                 "합격 기준": "실패율 < 2% (간소화 판정)",
             },
@@ -446,4 +490,5 @@ def register(app: typer.Typer) -> None:
             no_preflight=no_preflight,
             users_override=None,
             duration_sec=duration,
+            intensity=intensity,
         )

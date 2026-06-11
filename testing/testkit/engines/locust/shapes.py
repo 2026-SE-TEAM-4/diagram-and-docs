@@ -14,6 +14,14 @@ from locust import LoadTestShape
 from testkit.engines.locust import stages_data
 
 
+def _intensity() -> int:
+    """INTENSITY 환경변수를 읽어 강도 레벨을 반환한다. 미설정/오류면 1(기존 동작)."""
+    try:
+        return int(os.environ.get("INTENSITY", "1"))
+    except ValueError:
+        return 1
+
+
 class LoadShape(LoadTestShape):
     """점진적 부하 증가 시나리오.
 
@@ -30,10 +38,14 @@ class LoadShape(LoadTestShape):
     def tick(self) -> tuple[int, float] | None:
         elapsed = self.get_current_user_count()  # 시간 기준으로 판단
         run_time = self.get_run_time()
+        intensity = _intensity()
 
         for end_sec, user_count in self.stages:
             if run_time < end_sec:
-                return user_count, self.spawn_rate
+                return (
+                    stages_data.scale_user(user_count, intensity),
+                    stages_data.scale_rate(self.spawn_rate, intensity),
+                )
 
         return None
 
@@ -52,10 +64,14 @@ class StressShape(LoadTestShape):
 
     def tick(self) -> tuple[int, float] | None:
         run_time = self.get_run_time()
+        intensity = _intensity()
 
         for end_sec, user_count in self.stages:
             if run_time < end_sec:
-                return user_count, self.spawn_rate
+                return (
+                    stages_data.scale_user(user_count, intensity),
+                    stages_data.scale_rate(self.spawn_rate, intensity),
+                )
 
         return None
 
@@ -73,10 +89,14 @@ class SpikeShape(LoadTestShape):
 
     def tick(self) -> tuple[int, float] | None:
         run_time = self.get_run_time()
+        intensity = _intensity()
 
         for end_sec, user_count, spawn_rate in self.stages:
             if run_time < end_sec:
-                return user_count, spawn_rate
+                return (
+                    stages_data.scale_user(user_count, intensity),
+                    stages_data.scale_rate(spawn_rate, intensity),
+                )
 
         return None
 
@@ -95,8 +115,12 @@ class EnduranceShape(LoadTestShape):
             os.environ.get("DURATION_SEC", str(stages_data.ENDURANCE_DEFAULT_SEC))
         )
         run_time = self.get_run_time()
+        intensity = _intensity()
 
         if run_time < duration_sec:
-            return self.user_count, self.spawn_rate
+            return (
+                stages_data.scale_user(self.user_count, intensity),
+                stages_data.scale_rate(self.spawn_rate, intensity),
+            )
 
         return None

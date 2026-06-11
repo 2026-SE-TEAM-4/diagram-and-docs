@@ -5,6 +5,7 @@
 // 환경변수:
 //   TARGET_PATH = login | reserve | read  (어떤 흐름에 부하를 줄지)
 //   BASE_URL    = 백엔드 주소 (예: http://localhost:8000)
+//   PEAK_VU     = 최대 동시 사용자 수 (강도 배율이 적용된 값, 기본 500)
 //
 // 결과는 k6 json 출력(raw.json)으로 남기고, 파이썬 쪽에서 10초 버킷으로 분석한다.
 
@@ -20,13 +21,15 @@ const conflict409 = new Counter('conflict_409');
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8000';
 const TARGET_PATH = __ENV.TARGET_PATH || 'login';
+// 강도 배율이 적용된 최대 동시 사용자 수. 파이썬 쪽에서 PEAK_VU로 넘긴다(기본 500).
+const PEAK_VU = parseInt(__ENV.PEAK_VU, 10) || 500;
 
 export const options = {
   scenarios: {
     breakpoint: {
       executor: 'ramping-vus',
       startVUs: 0,
-      stages: [{ duration: '10m', target: 500 }],
+      stages: [{ duration: '10m', target: PEAK_VU }],
     },
   },
 };

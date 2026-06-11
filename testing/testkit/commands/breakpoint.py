@@ -27,33 +27,62 @@ RAMP_SEC = 600            # 램프 시간 (10분)
 HEY_CONCURRENCY = [10, 20, 30, 40, 50, 75, 100, 150, 200]
 HEY_DURATION = "30s"
 
+# 부하 강도(intensity): 레벨이 곧 배율이다(레벨 N → ×N). 1은 기존 동작과 동일하다.
+MIN_INTENSITY = 1
+MAX_INTENSITY = 4
+
 K6_PATHS = {"login", "reserve", "read"}
 VALID_PATHS = K6_PATHS | {"serverpool"}
 
 
+def _factor(intensity: int) -> int:
+    """강도 레벨을 배율로 변환한다(범위 밖이면 클램프). 레벨 N → ×N."""
+    return max(MIN_INTENSITY, min(MAX_INTENSITY, intensity))
+
+
+def _validate_intensity(intensity: int) -> None:
+    """강도 레벨이 1~4 범위인지 검증한다. 벗어나면 종료 코드 2로 실패한다."""
+    if intensity < MIN_INTENSITY or intensity > MAX_INTENSITY:
+        ui.fail_exit(
+            f"강도(--intensity)는 {MIN_INTENSITY}~{MAX_INTENSITY} 사이여야 합니다. "
+            f"(입력: {intensity})",
+            code=2,
+        )
+
+
 def register(app: typer.Typer) -> None:
     @app.command(name="breakpoint")
-    def breakpoint_cmd(path: str) -> None:
+    def breakpoint_cmd(
+        path: str,
+        intensity: int = typer.Option(
+            1, "--intensity", "-i",
+            help="부하 강도 1~4 (레벨이 곧 배율: 1=×1 ... 4=×4). 최대 동시 사용자/동시성을 배율만큼 늘린다.",
+        ),
+    ) -> None:
         """임계점 테스트. path: login|reserve|read|serverpool"""
         if path not in VALID_PATHS:
             ui.fail_exit(f"path는 {sorted(VALID_PATHS)} 중 하나여야 합니다. (입력: {path})", code=2)
+        _validate_intensity(intensity)
 
         if path in K6_PATHS:
-            _run_k6_breakpoint(path)
+            _run_k6_breakpoint(path, intensity)
         else:
-            _run_hey_breakpoint()
+            _run_hey_breakpoint(intensity)
 
 
 # ---------------------------------------------------------------------------
 # k6 경로 (login/reserve/read)
 # ---------------------------------------------------------------------------
 
-def _run_k6_breakpoint(path: str) -> None:
+def _run_k6_breakpoint(path: str, intensity: int = 1) -> None:
     preflight.run(agents=True, need_k6=True)
+
+    peak_vu = RAMP_PEAK_VU * _factor(intensity)
 
     ui.phase(2, 4, "테스트 계획")
     ui.plan({
-        "무엇을": f"{path} 흐름에 동시 사용자를 0->{RAMP_PEAK_VU}명까지 {RAMP_SEC // 60}분간 선형 증가",
+        "무엇을": f"{path} 흐름에 동시 사용자를 0->{peak_vu}명까지 {RAMP_SEC // 60}분간 선형 증가",
+        "강도": f"강도 {intensity} (×{_factor(intensity)}) · 최대 {peak_vu}명",
         "어떤 요청으로": "k6 ramping-vus 시나리오 (시드 계정 loadtest001~050)",
         "무엇을 측정": "10초 버킷별 p95 응답시간 / 오류율",
         "산출물": f"임계 동시 사용자 수 (p95>{P95_LIMIT_MS:.0f}ms 또는 오류율>{ERR_RATE_LIMIT:.0%} 연속 {SUSTAIN_BUCKETS}버킷)",
@@ -67,7 +96,12 @@ def _run_k6_breakpoint(path: str) -> None:
     ui.console.print(f"  k6 run (출력 -> {raw_path.name})")
     proc = subprocess.run(
         ["k6", "run", "--out", f"json={raw_path}", str(script)],
-        env={"TARGET_PATH": path, "BASE_URL": config.BACKEND_HOST, "PATH": _env_path()},
+        env={
+            "TARGET_PATH": path,
+            "BASE_URL": config.BACKEND_HOST,
+            "PEAK_VU": str(peak_vu),
+            "PATH": _env_path(),
+        },
         capture_output=True, text=True,
     )
     if proc.returncode != 0 or not raw_path.exists():
@@ -75,18 +109,19 @@ def _run_k6_breakpoint(path: str) -> None:
         ui.fail_exit("k6 실행에 실패했습니다. 위 로그를 확인하세요.", code=2)
 
     ui.phase(4, 4, "결과")
-    buckets = _parse_k6_buckets(raw_path)
+    buckets = _parse_k6_buckets(raw_path, peak_vu)
     _write_breakpoint_csv(run_dir, buckets)
     breakpoint_vu = _find_breakpoint(buckets)
-    _report_k6(path, buckets, breakpoint_vu, run_dir)
+    _report_k6(path, buckets, breakpoint_vu, run_dir, peak_vu)
 
 
-def _parse_k6_buckets(raw_path: Path) -> list[dict]:
+def _parse_k6_buckets(raw_path: Path, peak_vu: int = RAMP_PEAK_VU) -> list[dict]:
     """k6 json 라인을 10초 버킷으로 묶어 버킷별 p95/오류율을 계산한다.
 
     k6 json 각 라인: {"type":"Point","metric":"http_req_duration"|"http_req_failed",
                       "data":{"time": ISO, "value": float, ...}}
-    VU는 라인에 직접 없으므로 경과 시간으로 선형 추정한다 (0->500, 600s).
+    VU는 라인에 직접 없으므로 경과 시간으로 선형 추정한다 (0->peak_vu, 600s).
+    peak_vu는 강도 배율이 적용된 최대 동시 사용자 수다(기본 500).
     """
     durations: dict[int, list[float]] = {}
     fails: dict[int, list[float]] = {}
@@ -124,7 +159,7 @@ def _parse_k6_buckets(raw_path: Path) -> list[dict]:
         dur = durations.get(idx, [])
         fail = fails.get(idx, [])
         elapsed = idx * BUCKET_SEC
-        vu = min(RAMP_PEAK_VU, round(RAMP_PEAK_VU * elapsed / RAMP_SEC))
+        vu = min(peak_vu, round(peak_vu * elapsed / RAMP_SEC))
         buckets.append({
             "bucket": idx,
             "time_s": elapsed,
@@ -158,7 +193,7 @@ def _write_breakpoint_csv(run_dir: Path, buckets: list[dict]) -> None:
 
 
 def _report_k6(path: str, buckets: list[dict], breakpoint_vu: int | None,
-               run_dir: Path) -> None:
+               run_dir: Path, peak_vu: int = RAMP_PEAK_VU) -> None:
     peak = max((b["p95"] for b in buckets), default=0.0)
     worst_err = max((b["errrate"] for b in buckets), default=0.0)
     ui.metrics_table(f"{path} 중단점 요약", [
@@ -170,7 +205,7 @@ def _report_k6(path: str, buckets: list[dict], breakpoint_vu: int | None,
     if breakpoint_vu is not None:
         ui.console.print(f"\n  [bold yellow]임계점: 동시 {breakpoint_vu}명[/bold yellow]")
     else:
-        ui.console.print("\n  [bold green]임계점: 동시 500명까지 한계 미도달[/bold green]")
+        ui.console.print(f"\n  [bold green]임계점: 동시 {peak_vu}명까지 한계 미도달[/bold green]")
 
     results.save(run_dir, {
         "command": f"breakpoint-{path}",
@@ -187,12 +222,17 @@ def _report_k6(path: str, buckets: list[dict], breakpoint_vu: int | None,
 # hey 경로 (serverpool: 에이전트 /metrics)
 # ---------------------------------------------------------------------------
 
-def _run_hey_breakpoint() -> None:
+def _run_hey_breakpoint(intensity: int = 1) -> None:
     preflight.run(agents=True, need_k6=False)
+
+    # 각 동시성 단계에 강도 배율을 적용한다(최소 1). 레벨 1이면 기존 값과 동일.
+    fac = _factor(intensity)
+    concurrency_steps = [max(1, c * fac) for c in HEY_CONCURRENCY]
 
     ui.phase(2, 4, "테스트 계획")
     ui.plan({
-        "무엇을": f"에이전트 /metrics 에 동시성을 {HEY_CONCURRENCY[0]}->{HEY_CONCURRENCY[-1]}까지 단계 증가",
+        "무엇을": f"에이전트 /metrics 에 동시성을 {concurrency_steps[0]}->{concurrency_steps[-1]}까지 단계 증가",
+        "강도": f"강도 {intensity} (×{fac}) · 최대 {concurrency_steps[-1]} 동시성",
         "어떤 요청으로": f"hey -z {HEY_DURATION} -c <동시성> (agent-1:9101)",
         "무엇을 측정": "단계별 p95 응답시간 / 오류 건수",
         "산출물": f"임계 동시 요청 수 (p95>{P95_LIMIT_MS:.0f}ms 또는 오류 발생 시점)",
@@ -204,7 +244,7 @@ def _run_hey_breakpoint() -> None:
     ui.phase(3, 4, "실행")
     stages: list[dict] = []
     raw_blocks: list[str] = []
-    for conc in HEY_CONCURRENCY:
+    for conc in concurrency_steps:
         ui.console.print(f"  hey -z {HEY_DURATION} -c {conc} {target}")
         proc = subprocess.run(
             ["hey", "-z", HEY_DURATION, "-c", str(conc), target],
@@ -219,7 +259,7 @@ def _run_hey_breakpoint() -> None:
     (run_dir / "hey-raw.txt").write_text("\n\n".join(raw_blocks), encoding="utf-8")
 
     ui.phase(4, 4, "결과")
-    _report_hey(stages, target, run_dir)
+    _report_hey(stages, target, run_dir, concurrency_steps[-1])
 
 
 def _parse_hey(concurrency: int, text: str) -> dict:
@@ -257,7 +297,8 @@ def _parse_hey(concurrency: int, text: str) -> dict:
     return {"concurrency": concurrency, "p95_ms": p95_ms, "errors": errors}
 
 
-def _report_hey(stages: list[dict], target: str, run_dir: Path) -> None:
+def _report_hey(stages: list[dict], target: str, run_dir: Path,
+                max_concurrency: int = HEY_CONCURRENCY[-1]) -> None:
     rows = [
         (f"-c {st['concurrency']}", f"p95 {st['p95_ms']:.0f}ms / 오류 {st['errors']}건")
         for st in stages
@@ -273,7 +314,7 @@ def _report_hey(stages: list[dict], target: str, run_dir: Path) -> None:
         ui.console.print(f"\n  [bold yellow]임계점: 동시 {breakpoint_c}명[/bold yellow]")
     else:
         ui.console.print(
-            f"\n  [bold green]임계점: 동시 {HEY_CONCURRENCY[-1]}명까지 한계 미도달[/bold green]"
+            f"\n  [bold green]임계점: 동시 {max_concurrency}명까지 한계 미도달[/bold green]"
         )
 
     results.save(run_dir, {
