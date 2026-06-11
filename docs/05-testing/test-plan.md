@@ -1,7 +1,7 @@
 # 테스트 계획서
 
 SE Team 4 · 서버 예약·배정 시스템 — 교재 9장의 테스트 분류를 우리 시스템에 매핑.
-실행 환경: 로컬(docker compose). 상세 근거는 `test-plan.md`, 도구 설계는 `diagram-and-docs/test-tool/` 참조.
+실행 환경: 로컬(docker compose). 도구 구현·설계는 `test-tool` 레포 참조.
 
 ## 목차
 
@@ -238,7 +238,7 @@ SE Team 4 · 서버 예약·배정 시스템 — 교재 9장의 테스트 분류
 
 ### 도구별 설계 문서
 
-| 목적 | 도구 | 설계 문서 (diagram-and-docs/test-tool/) |
+| 목적 | 도구 | 설계 문서 (test-tool 레포 docs/) |
 |------|------|-------------------------------------------|
 | 부하·과부하·스파이크·내구력 | Locust | `01-load-suite-locust.md` |
 | 중단점 탐색 | k6 · hey | `02-breakpoint-k6.md` |

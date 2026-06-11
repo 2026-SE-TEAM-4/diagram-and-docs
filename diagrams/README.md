@@ -11,6 +11,6 @@
 | `sequence-reservation.drawio` | 예약 생성(UC04) 시퀀스 — 낙관적 잠금 성공/충돌 분기 포함 | [동적 모델](../docs/04-design/dynamic-models.md) |
 | `use-case-diagram.drawio` | 유스케이스 다이어그램 — 액터 5 · UC 23 | [유스케이스 명세서](../docs/02-requirements/use-cases.md) |
 
-프론트엔드 정보구조(IA) 다이어그램은 시안과 함께 [`frontend-prototype-kkm/frontend-ia.drawio`](../frontend-prototype-kkm/frontend-ia.drawio)에 있다.
+프론트엔드 정보구조(IA) 다이어그램은 시안과 함께 별도 레포 `frontend-design`(`frontend-ia.drawio`)에 있다.
 
 내보낸 이미지(PNG)는 `assets/`에 두고 문서에서 상대 경로로 참조한다. 현재 `assets/architecture-diagram.png`, `assets/runtime-diagram.png`가 이 방식으로 쓰인다.

@@ -47,13 +47,6 @@ window.DOCS_MANIFEST = {
       title: "테스트",
       items: [
         { title: "테스트 계획서", path: "docs/05-testing/test-plan.md" },
-        { title: "테스트 툴 — 개요", path: "docs/05-testing/test-tool/README.md" },
-        { title: "testkit CLI 공통 설계", path: "docs/05-testing/test-tool/00-testkit-cli.md" },
-        { title: "부하 스위트 (Locust)", path: "docs/05-testing/test-tool/01-load-suite-locust.md" },
-        { title: "중단점 테스트 (k6)", path: "docs/05-testing/test-tool/02-breakpoint-k6.md" },
-        { title: "장애 주입", path: "docs/05-testing/test-tool/03-fault-injector.md" },
-        { title: "블랙박스 pytest", path: "docs/05-testing/test-tool/04-blackbox-pytest.md" },
-        { title: "정적 분석 · CI", path: "docs/05-testing/test-tool/05-static-analysis-ci.md" },
       ],
     },
     {
