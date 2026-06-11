@@ -9,6 +9,7 @@ from testkit import preflight, seed, ui
 from testkit.commands import breakpoint as breakpoint_cmd
 from testkit.commands import fault as fault_cmd
 from testkit.commands import loadtest as loadtest_cmd
+from testkit.commands import report as report_cmd
 
 app = typer.Typer(
     help="SE Team 4 테스트 CLI — 사전 점검 + 부하/중단점/장애 테스트 + 다듬어진 결과",
@@ -43,6 +44,7 @@ def verify() -> None:
 loadtest_cmd.register(app)
 breakpoint_cmd.register(app)
 fault_cmd.register(app)
+report_cmd.register(app)
 
 
 def main() -> None:

@@ -11,6 +11,8 @@ import os
 
 from locust import LoadTestShape
 
+from testkit.engines.locust import stages_data
+
 
 class LoadShape(LoadTestShape):
     """점진적 부하 증가 시나리오.
@@ -22,13 +24,8 @@ class LoadShape(LoadTestShape):
       900~1200s → 200명
     """
 
-    stages = [
-        (300, 10),
-        (600, 50),
-        (900, 100),
-        (1200, 200),
-    ]
-    spawn_rate = 20
+    stages = stages_data.LOAD_STAGES
+    spawn_rate = stages_data.LOAD_SPAWN_RATE
 
     def tick(self) -> tuple[int, float] | None:
         elapsed = self.get_current_user_count()  # 시간 기준으로 판단
@@ -50,12 +47,8 @@ class StressShape(LoadTestShape):
       420~720s →  50명 (복귀 — 성능 회복 측정)
     """
 
-    stages = [
-        (120, 50),
-        (420, 300),
-        (720, 50),
-    ]
-    spawn_rate = 20
+    stages = stages_data.STRESS_STAGES
+    spawn_rate = stages_data.STRESS_SPAWN_RATE
 
     def tick(self) -> tuple[int, float] | None:
         run_time = self.get_run_time()
@@ -76,11 +69,7 @@ class SpikeShape(LoadTestShape):
       75~300s  →   5명 (복귀)
     """
 
-    stages = [
-        (60, 5, 20),
-        (75, 200, 200),
-        (300, 5, 200),
-    ]
+    stages = stages_data.SPIKE_STAGES
 
     def tick(self) -> tuple[int, float] | None:
         run_time = self.get_run_time()
@@ -98,11 +87,13 @@ class EnduranceShape(LoadTestShape):
     기본 지속 시간은 6시간(21600초), 사용자 수는 20명으로 고정한다.
     """
 
-    user_count = 20
-    spawn_rate = 5
+    user_count = stages_data.ENDURANCE_USER_COUNT
+    spawn_rate = stages_data.ENDURANCE_SPAWN_RATE
 
     def tick(self) -> tuple[int, float] | None:
-        duration_sec = int(os.environ.get("DURATION_SEC", "21600"))
+        duration_sec = int(
+            os.environ.get("DURATION_SEC", str(stages_data.ENDURANCE_DEFAULT_SEC))
+        )
         run_time = self.get_run_time()
 
         if run_time < duration_sec:

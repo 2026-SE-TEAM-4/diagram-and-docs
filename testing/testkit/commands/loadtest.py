@@ -11,6 +11,7 @@ import csv
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -19,7 +20,10 @@ import typer
 
 import asyncio
 
-from testkit import config, preflight, results, ui, verify
+from datetime import datetime
+
+from testkit import config, preflight, report_html, results, ui, verify
+from testkit.engines.locust import stages_data
 
 
 def _get_server_ids() -> list[int]:
@@ -94,12 +98,111 @@ def _run_locust(
         "--only-summary",
     ]
 
-    proc = subprocess.run(
-        cmd,
-        env=env,
-        cwd=str(config.TESTING_DIR),
-    )
+    # locust 자체 로그(stdout/stderr)는 파일로 보낸다.
+    # 화면에는 우리가 직접 그리는 진행 바만 남겨 깔끔하게 유지하고,
+    # 문제 발생 시 locust.log로 원인을 추적할 수 있게 한다.
+    log_path = run_dir / "locust.log"
+    history = run_dir / "locust_stats_history.csv"
+    line = stages_data.timeline(shape, duration_sec)
+
+    with log_path.open("w", encoding="utf-8") as log_f:
+        proc = subprocess.Popen(
+            cmd,
+            env=env,
+            cwd=str(config.TESTING_DIR),
+            stdout=log_f,
+            stderr=subprocess.STDOUT,
+        )
+        _render_dashboard(proc, shape, line, history)
+
     return proc.returncode
+
+
+def _stage_index(elapsed: float, line: list[tuple[int, int]]) -> tuple[int, int]:
+    """경과 시간이 속한 단계 번호(1-기반)와 그 단계의 목표 사용자수를 반환한다.
+
+    shape.tick()의 'run_time < end_sec' 판정과 동일한 경계를 사용한다.
+    """
+    for idx, (end_sec, users) in enumerate(line, start=1):
+        if elapsed < end_sec:
+            return idx, users
+    if line:
+        return len(line), line[-1][1]
+    return 1, 0
+
+
+def _read_live_metrics(history: Path) -> Optional[dict]:
+    """history CSV 끝에서 최신 Aggregated 행을 읽어 라이브 지표를 반환한다.
+
+    파일이 아직 없거나 Aggregated 행이 없으면 None. 파일이 커져도 끝부분만 읽는다.
+    """
+    if not history.exists():
+        return None
+    try:
+        with history.open("rb") as f:
+            f.seek(0, os.SEEK_END)
+            size = f.tell()
+            f.seek(max(0, size - 8192))
+            chunk = f.read()
+    except OSError:
+        return None
+
+    lines = chunk.decode("utf-8", "ignore").splitlines()
+    for raw in reversed(lines):
+        try:
+            row = next(csv.reader([raw]))
+        except StopIteration:
+            continue
+        # 헤더: Timestamp,User Count,Type,Name,Requests/s,...,95%(11),...,Total Request Count(17),Total Failure Count(18)
+        if len(row) >= 19 and row[2] == "" and row[3] == "Aggregated":
+            return {
+                "users": _parse_int(row[1]),
+                "rps": _parse_float(row[4]),
+                "p95": _parse_float(row[11]),
+                "total": _parse_int(row[17]),
+                "fail": _parse_int(row[18]),
+            }
+    return None
+
+
+_SHAPE_TITLES = {
+    "load": "LOAD 부하 테스트",
+    "stress": "STRESS 스트레스 테스트",
+    "spike": "SPIKE 스파이크 테스트",
+    "endurance": "ENDURANCE 지속 테스트",
+}
+
+
+def _render_dashboard(
+    proc: "subprocess.Popen",
+    shape: str,
+    line: list[tuple[int, int]],
+    history: Path,
+) -> None:
+    """locust 프로세스가 끝날 때까지 실시간 대시보드를 갱신한다.
+
+    경과 시간은 부모 프로세스의 단조 시계로 잰다(타임라인의 마지막 종료초가 총 길이).
+    타임라인을 모르면(빈 목록) 스피너 없이 경과 기준으로만 동작한다.
+    """
+    total_sec = line[-1][0] if line else None
+    num_stages = len(line)
+    title = _SHAPE_TITLES.get(shape, shape.upper())
+
+    start = time.monotonic()
+    elapsed = 0.0
+    with ui.LiveDashboard(title, total_sec, num_stages) as dash:
+        while proc.poll() is None:
+            elapsed = time.monotonic() - start
+            if total_sec:
+                elapsed = min(elapsed, total_sec)
+            stage, target_users = _stage_index(elapsed, line)
+            dash.update(elapsed, stage, target_users, _read_live_metrics(history))
+            time.sleep(0.5)
+
+        # 종료 직후 최종 수치로 한 번 더 그린다(마지막 CSV 플러시 반영).
+        final_stage = num_stages if num_stages else 0
+        final_users = line[-1][1] if line else 0
+        dash.update(total_sec or elapsed, final_stage, final_users, _read_live_metrics(history))
 
 
 def _parse_float(value: str, default: float = 0.0) -> float:
@@ -237,6 +340,20 @@ def _run_test(
         "passed": passed,
     }
     results.save(run_dir, summary)
+
+    # 인터랙티브 HTML 리포트 생성(시계열 차트). 데이터가 없으면 조용히 건너뛴다.
+    report = report_html.build_report(
+        run_dir,
+        title=_SHAPE_TITLES.get(shape, shape.upper()),
+        host=config.BACKEND_HOST,
+        passed=passed,
+        generated=datetime.now().strftime("%Y-%m-%d %H:%M"),
+    )
+    if report is not None:
+        ui.console.print(
+            f"  인터랙티브 리포트: [bold]{report.relative_to(config.TESTING_DIR.parent)}[/bold]"
+            "  [dim](브라우저로 열기)[/dim]"
+        )
 
     if not passed:
         raise typer.Exit(1)

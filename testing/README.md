@@ -32,7 +32,14 @@ uv run testkit endurance --duration 6h
 uv run testkit breakpoint login       # 중단점 (login|reserve|read|serverpool)
 uv run testkit fault s1               # 장애 주입 (s1~s5|all)
 uv run testkit verify                 # DB 정합성 검사만 단독 실행
+
+uv run testkit chart                  # 최신 실행을 인터랙티브 HTML로 (--open 으로 브라우저 열기)
+uv run testkit chart --compare 3      # 최근 3개 실행 겹쳐 비교
+uv run testkit chart --list           # 시각화 가능한 실행 목록
 ```
+
+부하 4종(load/stress/spike/endurance)은 실행 중 단계 진행 바와 실시간 지표
+(RPS·p95·요청·실패·사용자 + 추세 스파크라인)를 보여 줍니다.
 
 ## 결과
 
@@ -40,6 +47,8 @@ uv run testkit verify                 # DB 정합성 검사만 단독 실행
 
 - `summary.json` — 계획·지표·판정 (추이 비교용)
 - `report.txt` — 화면 출력 그대로
+- `report.html` — 인터랙티브 시계열 리포트 (부하 4종, 브라우저로 열기)
+- `locust.log` — locust 원본 로그 (디버깅용)
 - 엔진 원본 — Locust CSV, k6 JSON, 장애 구간 백엔드 로그 등
 
 종료 코드: 종합 PASS=0, FAIL=1, 사전 점검 실패=2 (CI에서도 사용 가능).
