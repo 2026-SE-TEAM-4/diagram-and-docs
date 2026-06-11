@@ -63,6 +63,19 @@ window.DOCS_MANIFEST = {
       ],
     },
     {
+      id: "screens",
+      title: "화면 설계",
+      categories: [
+        {
+          no: "UI",
+          title: "프론트엔드",
+          items: [
+            { title: "화면 설계 (역할별 시안)", path: "docs/06-screens/screen-design.md" },
+          ],
+        },
+      ],
+    },
+    {
       id: "checklist",
       title: "평가 체크리스트",
       categories: [

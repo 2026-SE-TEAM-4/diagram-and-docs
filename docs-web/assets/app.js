@@ -160,6 +160,76 @@
     });
   }
 
+  /* ---------- 표 장식 (뱃지·칩) ----------
+     md 원문은 그대로 두고, 렌더된 표의 td 텍스트에서 알려진 토큰만
+     뱃지/칩 span으로 감싼다. 문서와 시각 표현의 단일 원본 분리. */
+  var CELL_BADGES = {
+    "높음": "pri-high", "필수": "pri-high", "매우 높음": "pri-high",
+    "중간": "pri-mid", "보통": "pri-mid", "권장": "pri-mid",
+    "낮음": "pri-low", "선택": "pri-low",
+    "확보": "st-ok", "확보 (강점)": "st-ok", "보완 필요": "st-warn",
+    "재앙적": "pri-high", "심각함": "pri-mid", "감내할 수 있음": "pri-low",
+  };
+  var TOKEN_BADGES = {
+    STU: "role-stu", MGR: "role-mgr", ADM: "role-adm", SYS: "role-sys",
+    GET: "http-get", POST: "http-post", PATCH: "http-patch", PUT: "http-patch", DELETE: "http-del", WS: "http-ws",
+    AVAILABLE: "st-ok", RESERVED: "st-info", IN_USE: "st-warn", MAINTENANCE: "st-mute",
+    RETURNED: "st-ok", EXPIRED: "st-bad", RECLAIMED: "st-purple", CANCELED: "st-mute",
+    PENDING: "st-warn", APPROVED: "st-ok", REJECTED: "st-bad", AUTO_REJECTED: "st-bad",
+    MISSING: "st-bad", NA: "st-mute",
+  };
+  var TOKEN_RE = /\b(AUTO_REJECTED|AVAILABLE|RESERVED|IN_USE|MAINTENANCE|RETURNED|EXPIRED|RECLAIMED|CANCELED|PENDING|APPROVED|REJECTED|MISSING|NA|STU|MGR|ADM|SYS|GET|POST|PATCH|PUT|DELETE|WS)\b|\b(UC\d{2}(?:-[A-Z]\d+)?|F\d{2}|NFR-[A-Z]+\d+|ADR-\d+|E-\d{2}|API-\d{2})\b/g;
+
+  function makeBadge(cls, text) {
+    var s = document.createElement("span");
+    s.className = "badge " + cls;
+    s.textContent = text;
+    return s;
+  }
+
+  function decorateTextNode(node) {
+    var text = node.nodeValue;
+    TOKEN_RE.lastIndex = 0;
+    if (!TOKEN_RE.test(text)) return;
+    TOKEN_RE.lastIndex = 0;
+    var frag = document.createDocumentFragment();
+    var last = 0, m;
+    while ((m = TOKEN_RE.exec(text)) !== null) {
+      if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      if (m[1]) frag.appendChild(makeBadge(TOKEN_BADGES[m[1]], m[1]));
+      else frag.appendChild(makeBadge("chip", m[2]));
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  }
+
+  function decorateTables(root) {
+    root.querySelectorAll("table td").forEach(function (td) {
+      var exact = CELL_BADGES[td.textContent.trim()];
+      if (exact) {
+        var label = td.textContent.trim();
+        td.textContent = "";
+        td.appendChild(makeBadge(exact, label));
+        return;
+      }
+      // a·code 내부는 건너뛰고 순수 텍스트 노드만 토큰 치환
+      var walker = document.createTreeWalker(td, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          var p = n.parentNode;
+          while (p && p !== td) {
+            if (p.tagName === "A" || p.tagName === "CODE") return NodeFilter.FILTER_REJECT;
+            p = p.parentNode;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        },
+      });
+      var nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(decorateTextNode);
+    });
+  }
+
   function renderMermaidBlocks(root) {
     var blocks = root.querySelectorAll("pre code.language-mermaid");
     if (!blocks.length || !window.mermaid) return;
@@ -239,6 +309,7 @@
         if (window.DOMPurify) html = window.DOMPurify.sanitize(html);
         article.innerHTML = html;
         rewriteRelativeUrls(article, mdDir);
+        decorateTables(article);
 
         contentEl.innerHTML = "";
         contentEl.appendChild(article);

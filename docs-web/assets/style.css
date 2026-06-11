@@ -312,7 +312,47 @@ body {
   padding: 8px 12px;
   vertical-align: top;
 }
-.md tr:hover td { background: rgba(36, 71, 194, 0.03); }
+.md tbody tr:nth-child(even) td { background: #f6f4ee; }
+.md tr:hover td { background: rgba(36, 71, 194, 0.05); }
+.md td:first-child { font-weight: 600; }
+
+/* ── 표 안 뱃지·칩 ────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 3px 8px 2px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+/* 역할 */
+.badge.role-stu { background: #e8effc; color: #1d4ed8; border-color: #c3d5f7; }
+.badge.role-mgr { background: #e6f4ea; color: #15803d; border-color: #bfe3cb; }
+.badge.role-adm { background: #fdeee2; color: #c2570b; border-color: #f5d4b5; }
+.badge.role-sys { background: #f1eafb; color: #7c3aed; border-color: #ddcdf5; }
+/* 우선순위·평가 상태 */
+.badge.pri-high { background: #fdecea; color: #c0392b; border-color: #f4c7c0; }
+.badge.pri-mid  { background: #fdf4dd; color: #9a6700; border-color: #efdcA8; }
+.badge.pri-low  { background: #f0efea; color: #6b675c; border-color: #dcd8cc; }
+/* 도메인 상태 */
+.badge.st-ok     { background: #e6f4ea; color: #15803d; border-color: #bfe3cb; }
+.badge.st-info   { background: #e8effc; color: #1d4ed8; border-color: #c3d5f7; }
+.badge.st-warn   { background: #fdf4dd; color: #9a6700; border-color: #efdca8; }
+.badge.st-bad    { background: #fdecea; color: #c0392b; border-color: #f4c7c0; }
+.badge.st-mute   { background: #f0efea; color: #6b675c; border-color: #dcd8cc; }
+.badge.st-purple { background: #f1eafb; color: #7c3aed; border-color: #ddcdf5; }
+/* HTTP 메서드 */
+.badge.http-get   { background: #e8effc; color: #1d4ed8; border-color: #c3d5f7; }
+.badge.http-post  { background: #e6f4ea; color: #15803d; border-color: #bfe3cb; }
+.badge.http-patch { background: #fdf4dd; color: #9a6700; border-color: #efdca8; }
+.badge.http-del   { background: #fdecea; color: #c0392b; border-color: #f4c7c0; }
+.badge.http-ws    { background: #f1eafb; color: #7c3aed; border-color: #ddcdf5; }
+/* ID 칩 (UC·F·NFR·ADR·API·E) */
+.badge.chip { background: var(--paper-raise); color: var(--ink-soft); border-color: var(--hairline-strong); }
 
 .md .mermaid {
   background: var(--paper-raise);
@@ -366,6 +406,116 @@ body {
   font-size: 14.5px;
 }
 .err code { font-family: var(--mono); font-size: 12.5px; }
+
+/* ── 화면 설계 미니 시안 (운영 콘솔 스타일) ───────────── */
+.scr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+  margin: 18px 0 28px;
+}
+.scr { margin: 0; }
+.scr-frame {
+  display: flex;
+  height: 190px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(29, 28, 25, 0.05);
+}
+.scr-cap {
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.scr-cap b { display: block; font-size: 13.5px; color: var(--ink); margin-bottom: 2px; }
+.scr-cap .badge { margin-right: 3px; }
+
+/* 좌측 다크 사이드바 */
+.scr-side {
+  width: 36px;
+  flex: none;
+  background: #1f2430;
+  padding: 8px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.scr-side span {
+  height: 5px;
+  border-radius: 3px;
+  background: #454c5e;
+}
+.scr-side span.on { background: #5b8def; }
+.scr-side span:first-child { height: 8px; background: #5b8def; margin-bottom: 4px; }
+
+/* 본문 영역 */
+.scr-body { flex: 1; min-width: 0; padding: 8px 9px; display: flex; flex-direction: column; gap: 7px; }
+.m-top { height: 9px; border-radius: 4px; background: #eceae3; position: relative; }
+.m-top::after { content: ""; position: absolute; right: 0; top: 0; width: 22%; height: 100%; border-radius: 4px; background: #dcd8cc; }
+
+.m-cols { display: flex; gap: 7px; flex: 1; min-height: 0; }
+.m-cols > * { min-height: 0; }
+.m-main { flex: 1.7; display: flex; flex-direction: column; gap: 7px; }
+.m-aside { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+
+/* KPI 스탯 카드 줄 */
+.m-stats { display: flex; gap: 6px; }
+.m-stats span {
+  flex: 1; height: 26px; border-radius: 5px;
+  background: #f4f2ec; border: 1px solid #e5e2d9; position: relative;
+}
+.m-stats span::after {
+  content: ""; position: absolute; left: 5px; top: 5px;
+  width: 55%; height: 6px; border-radius: 3px; background: #c9d6f5;
+}
+.m-stats span.g::after { background: #bfe3cb; }
+.m-stats span.a::after { background: #efdca8; }
+.m-stats span.r::after { background: #f4c7c0; }
+
+/* 표 줄 (상태 점 포함) */
+.m-table { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.m-table i {
+  flex: 1; min-height: 8px; border-radius: 4px;
+  background: #f4f2ec; border: 1px solid #eceae3; position: relative;
+}
+.m-table i::before {
+  content: ""; position: absolute; left: 5px; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; border-radius: 50%; background: #b9b5a9;
+}
+.m-table i.ok::before { background: #2eaf64; }
+.m-table i.warn::before { background: #e2a93b; }
+.m-table i.bad::before { background: #d9534f; }
+.m-table i.info::before { background: #4a78e0; }
+
+/* 차트 카드 (막대) */
+.m-chart {
+  flex: 1; display: flex; align-items: flex-end; gap: 3px;
+  padding: 6px; border: 1px solid #e5e2d9; border-radius: 6px; background: #fbfaf7;
+}
+.m-chart span { flex: 1; border-radius: 2px 2px 0 0; background: #c9d6f5; }
+.m-chart span.hi { background: #5b8def; }
+.m-chart span.warn { background: #efdca8; }
+
+/* 폼 */
+.m-form { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.m-form i { height: 14px; border-radius: 5px; background: #f4f2ec; border: 1px solid #e5e2d9; }
+.m-form i.btn { background: #2447c2; border-color: #2447c2; width: 42%; align-self: flex-end; }
+
+/* 캘린더 */
+.m-cal { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.m-cal i { border-radius: 3px; background: #f4f2ec; border: 1px solid #eceae3; min-height: 10px; }
+.m-cal i.sel { background: #c9d6f5; border-color: #9eb4ee; }
+.m-cal i.busy { background: #f4c7c0; border-color: #ecb0a6; }
+
+/* 알림/패널 줄 */
+.m-list { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.m-list i { flex: 1; min-height: 9px; border-radius: 4px; background: #fbfaf7; border: 1px solid #e5e2d9; border-left: 3px solid #c9d6f5; }
+.m-list i.warn { border-left-color: #e2a93b; }
+.m-list i.bad { border-left-color: #d9534f; }
+.m-list i.ok { border-left-color: #2eaf64; }
 
 /* ── 반응형 ───────────────────────────────────────────── */
 @media (max-width: 900px) {
