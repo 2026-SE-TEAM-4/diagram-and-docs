@@ -1,0 +1,101 @@
+<mxfile host="app.diagrams.net" agent="SE4-team" version="24.0.0">
+  <diagram id="frontend-ia" name="Frontend IA">
+    <mxGraphModel dx="1000" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1320" pageHeight="780" math="0" shadow="0" background="#ffffff">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="ServerHub 프론트엔드 — 정보구조(IA)" style="text;html=1;align=left;fontSize=18;fontStyle=1;fontColor=#212529;" vertex="1" parent="1">
+          <mxGeometry x="40" y="18" width="1240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" value="React 18 · TypeScript · Vite · shadcn/ui · TanStack Query · Recharts&#10;화면(라우트) → 주요 컴포넌트 → 바인딩 API(기능 F · UC) → 서버풀/스케줄러 데이터 흐름" style="text;html=1;align=left;fontSize=11;fontColor=#6c757d;spacingTop=2;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="48" width="1240" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="shell" value="App Shell — 역할 스위처(TopBar) · 역할별 사이드바 · TanStack Query 서버상태 캐시 · WebSocket 실시간 알림 · 역할 가드(STU / MGR / ADM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="96" width="1240" height="48" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane_c" value="공통 (전 역할)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#dee2e6;fontColor=#495057;fontSize=11;fontStyle=1;verticalAlign=top;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="168" width="285" height="430" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_s" value="STU · 학생 / 연구원" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#dee2e6;fontColor=#495057;fontSize=11;fontStyle=1;verticalAlign=top;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="345" y="168" width="285" height="430" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_m" value="MGR · 팀 관리자 (+ STU 기능)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#dee2e6;fontColor=#495057;fontSize=11;fontStyle=1;verticalAlign=top;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="650" y="168" width="285" height="430" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_a" value="ADM · 서버 관리자" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8f9fa;strokeColor=#dee2e6;fontColor=#495057;fontSize=11;fontStyle=1;verticalAlign=top;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="955" y="168" width="325" height="430" as="geometry" />
+        </mxCell>
+
+        <mxCell id="c_srv" value="&lt;b&gt;서버 현황&lt;/b&gt;&lt;br&gt;GET /servers · F01·F02 / UC01&lt;br&gt;Server · ServerMetric" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="206" width="255" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="c_notif" value="&lt;b&gt;알림&lt;/b&gt;&lt;br&gt;GET /notifications · WS /ws/notifications&lt;br&gt;F17·F18·F19 / UC03-a · Notification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="282" width="255" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s_res" value="&lt;b&gt;예약 신청&lt;/b&gt;&lt;br&gt;POST /reservations(/instant)&lt;br&gt;GET /servers/alternatives&lt;br&gt;F04·F05·F08 / UC04·05·03-d · 낙관적 잠금" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="360" y="206" width="255" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="s_my" value="&lt;b&gt;내 예약&lt;/b&gt;&lt;br&gt;GET /reservations · POST …/cancel·/return&lt;br&gt;F03·F06·F07 / UC02·06·07 · Reservation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="360" y="296" width="255" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="m_app" value="&lt;b&gt;승인함&lt;/b&gt;&lt;br&gt;GET /approval-requests · POST …/decision&lt;br&gt;F10·F11 / UC09 · ApprovalRequest" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="665" y="206" width="255" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="m_quo" value="&lt;b&gt;Quota 관리&lt;/b&gt;&lt;br&gt;GET /teams/{id}/quotas · PATCH /quotas/{id}&lt;br&gt;F12·F13 / UC10 · Quota(version)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="665" y="288" width="255" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="a_ops" value="&lt;b&gt;운영 대시보드 (AIOps)&lt;/b&gt;&lt;br&gt;GET /ops/dashboard · F21 / UC21&lt;br&gt;SchedulerLog · ServerMetric" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="970" y="206" width="295" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="a_inc" value="&lt;b&gt;인시던트 · AIOps&lt;/b&gt;&lt;br&gt;GET /ops/incidents · /forecast · /{id}/summary&lt;br&gt;F33·F31·F34 / UC24·22·25&lt;br&gt;Incident · Forecast · IncidentSummary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="970" y="280" width="295" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="a_av" value="&lt;b&gt;서버 상태 · 가용성&lt;/b&gt;&lt;br&gt;GET /ops/availability · GET /servers/{id}/health-trend&lt;br&gt;F22·F32 / UC21·23 · MTBF·MTTR·riskScore" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="970" y="366" width="295" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="a_srvmgr" value="&lt;b&gt;서버 관리&lt;/b&gt;&lt;br&gt;POST·DELETE /servers · POST …/maintenances&lt;br&gt;F14·F15·F16 / UC11·12·13 · MaintenanceSchedule" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="970" y="442" width="295" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="a_sec" value="&lt;b&gt;계정 보안&lt;/b&gt;&lt;br&gt;POST /admin/users/{id}/unlock · 미들웨어 Rate limit&lt;br&gt;F29·F20 / UC20 · AuditLog · User.lockedUntil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="970" y="518" width="295" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db" value="&lt;b&gt;PostgreSQL 16 · Redis 7&lt;/b&gt;&lt;br&gt;메인 저장소 · 캐시 / 분산 락 / Pub-Sub" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f3f5;strokeColor=#ced4da;fontColor=#212529;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="636" width="285" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="be" value="&lt;b&gt;Backend — FastAPI&lt;/b&gt;&lt;br&gt;REST + WebSocket API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="345" y="636" width="285" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sch" value="&lt;b&gt;Scheduler — APScheduler&lt;/b&gt;&lt;br&gt;UC14~UC25 잡 · 1분 ~ 1시간 주기" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3cd;strokeColor=#ffe69c;fontColor=#664d03;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="636" width="285" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pool" value="&lt;b&gt;Server Pool (외부)&lt;/b&gt;&lt;br&gt;/health · /metrics (cpu·mem·gpu·net)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d1e7dd;strokeColor=#a3cfbb;fontColor=#0f5132;align=center;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="995" y="636" width="285" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" value="1분 PULL /metrics → ServerMetric" style="endArrow=block;html=1;fontSize=9;strokeColor=#6c757d;fontColor=#495057;rounded=1;" edge="1" parent="1" source="pool" target="sch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="결과 저장 (SchedulerLog · Forecast · Incident)" style="endArrow=block;html=1;fontSize=9;strokeColor=#6c757d;fontColor=#495057;rounded=1;" edge="1" parent="1" source="sch" target="be">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="SQLAlchemy ORM" style="endArrow=block;html=1;fontSize=9;strokeColor=#6c757d;fontColor=#495057;rounded=1;" edge="1" parent="1" source="be" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="REST · WebSocket (TanStack Query 캐시)" style="endArrow=block;html=1;fontSize=9;strokeColor=#0d6efd;fontColor=#084298;rounded=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="be" target="shell">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="AIOps 결과 조회 GET /ops/*" style="endArrow=block;html=1;fontSize=9;dashed=1;strokeColor=#0d6efd;fontColor=#084298;rounded=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sch" target="lane_a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

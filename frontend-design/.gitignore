@@ -1,0 +1,6 @@
+# 프로젝트 로컬 규칙
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.env
+.DS_Store

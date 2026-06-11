@@ -2,7 +2,7 @@
 .claude/
 CLAUDE.md
 CLAUDE.local.md
-docs/superpowers/
+docs-web/docs/superpowers/
 
 # 환경 변수
 .env
@@ -13,3 +13,9 @@ docs/superpowers/
 .vscode/
 
 agile.xlsx
+
+# test-tool (testkit CLI) 산출물
+test-tool/results/
+__pycache__/
+.venv/
+.pytest_cache/

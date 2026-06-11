@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ServerHub — 역할별 시안 (스타일 A · 심플)</title>
+<style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+:root{
+  --bg:#fff; --soft:#f8f9fa; --soft2:#f1f3f5; --text:#212529; --text2:#343a40; --mut:#6c757d;
+  --bd:#dee2e6; --bd2:#e9ecef; --acc:#0d6efd; --accs:#e7f1ff; --acct:#084298;
+  --ok:#198754; --oks:#d1e7dd; --use:#0d6efd; --uses:#e7f1ff; --rsv:#b07d05; --rsvs:#fff3cd;
+  --mnt:#6c757d; --mnts:#eceef0; --dng:#dc3545; --dngs:#f8d7da;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  background:var(--soft);color:var(--text);font-size:14px;line-height:1.5;font-feature-settings:"tnum";-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.tnum{font-variant-numeric:tabular-nums}
+/* 용어 툴팁 affordance: 점선 밑줄 + 네이티브 title */
+.tip{border-bottom:1px dotted var(--mut);cursor:help}
+
+/* Topbar */
+.top{height:52px;background:var(--bg);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:14px;padding:0 18px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.brand .mk{width:22px;height:22px;border-radius:6px;background:var(--text);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+.top .sp{flex:1}
+.seg{display:flex;border:1px solid var(--bd);border-radius:7px;overflow:hidden;background:var(--soft)}
+.seg button{appearance:none;border:0;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--mut);padding:6px 11px;cursor:pointer;border-right:1px solid var(--bd2)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--bg);color:var(--text);box-shadow:inset 0 -2px 0 var(--acc)}
+.who{display:flex;align-items:center;gap:8px;padding-left:4px}
+.who .av{width:28px;height:28px;border-radius:50%;background:var(--accs);color:var(--acct);display:grid;place-items:center;font-weight:700;font-size:12px}
+.who .nm{font-size:13px;font-weight:600;line-height:1.1}
+.who .rl{font-size:11px;color:var(--mut)}
+
+/* Shell */
+.shell{display:flex;min-height:calc(100vh - 52px)}
+.side{width:212px;flex:0 0 auto;background:var(--bg);border-right:1px solid var(--bd);padding:14px 12px;position:sticky;top:52px;height:calc(100vh - 52px);overflow:auto}
+.navgrp{margin-bottom:4px}
+.navgrp .gl{font:600 10px/1 var(--mono);letter-spacing:.06em;color:var(--mut);text-transform:uppercase;padding:12px 10px 6px}
+.nav{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;color:var(--text2);font-size:13.5px;font-weight:500;cursor:pointer;margin-bottom:1px}
+.nav:hover{background:var(--soft)}
+.nav.on{background:var(--accs);color:var(--acct);font-weight:600}
+.nav .ic{width:15px;text-align:center;color:var(--mut);font-size:13px}
+.nav.on .ic{color:var(--acc)}
+.nav .ct{margin-left:auto;font:600 11px/1 var(--mono);color:var(--mut);background:var(--soft);border:1px solid var(--bd2);border-radius:10px;padding:2px 6px}
+.nav.on .ct{background:#fff}
+.side .foot{margin-top:14px;padding:10px;border:1px solid var(--bd2);border-radius:8px;background:var(--soft);font-size:11px;color:var(--mut);line-height:1.6}
+.side .foot b{color:var(--text2);font-weight:600}
+
+/* Main */
+.main{flex:1;min-width:0;padding:20px 26px 60px}
+.tracebar{margin:0 0 18px;padding:8px 12px;border:1px dashed var(--bd);border-radius:8px;background:var(--soft);font:500 11px/1.5 var(--mono);color:var(--mut);display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.tracebar .k{flex:0 0 auto;color:var(--text2);font-weight:700;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;background:var(--bg);border:1px solid var(--bd2);border-radius:5px;padding:3px 6px}
+.tracebar b{color:var(--acct);font-weight:600}
+#trace{flex:1}
+.phead{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px}
+.phead h1{font-size:21px;font-weight:700;line-height:1.2}
+.phead p{font-size:13px;color:var(--mut);margin-top:5px;max-width:600px}
+.phead .actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{appearance:none;font-family:inherit;font-size:13px;font-weight:600;border-radius:7px;padding:8px 13px;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--text2);display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--soft)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn.pri:hover{background:#0b5ed7}
+.btn.sm{padding:5px 9px;font-size:12px}
+.btn.dng{color:var(--dng);border-color:var(--dngs)}.btn.dng:hover{background:var(--dngs)}
+
+/* Summary strip — 한눈 현황 */
+.sumstrip{display:flex;gap:0;border:1px solid var(--bd);border-radius:10px;background:var(--bg);overflow:hidden;margin-bottom:16px}
+.sumstrip .s{flex:1;padding:13px 16px;border-right:1px solid var(--bd2)}
+.sumstrip .s:last-child{border-right:0}
+.sumstrip .s .l{font-size:11.5px;color:var(--mut);font-weight:500}
+.sumstrip .s .n{font-size:22px;font-weight:700;margin-top:3px;line-height:1;font-variant-numeric:tabular-nums}
+.sumstrip .s .n small{font-size:13px;color:var(--mut);font-weight:600}
+
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.fpill{font-size:12.5px;font-weight:500;border:1px solid var(--bd);border-radius:7px;padding:6px 11px;color:var(--text2);background:var(--bg);cursor:pointer}
+.fpill.on{background:var(--text);color:#fff;border-color:var(--text)}
+.fpill .n{opacity:.6;margin-left:5px;font-variant-numeric:tabular-nums}
+.search{flex:1;min-width:150px;max-width:280px;position:relative}
+.search input{width:100%;border:1px solid var(--bd);border-radius:7px;padding:7px 11px 7px 30px;font-family:inherit;font-size:13px;background:var(--bg)}
+.search::before{content:"⌕";position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--mut)}
+.right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.sortsel{border:1px solid var(--bd);border-radius:7px;padding:7px 11px;font-size:12.5px;color:var(--text2);background:var(--bg);font-weight:500}
+
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl thead th{text-align:left;font-size:11.5px;font-weight:600;color:var(--mut);background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--bd);white-space:nowrap}
+.tbl thead th .tip{border-bottom-color:var(--bd)}
+.tbl tbody td{padding:12px 14px;border-bottom:1px solid var(--bd2);vertical-align:middle;white-space:nowrap}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl tbody tr:hover{background:var(--soft)}
+.tbl .srv{font-weight:600}
+.tbl .sub{color:var(--mut);font-size:12px}
+.tbl .r{text-align:right}
+.tbl .grp{font:600 11px/1 var(--mono);color:var(--mut)}
+
+.bdg{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.b-ok{background:var(--oks);color:#0f5132}.b-ok .dot{background:var(--ok)}
+.b-use{background:var(--uses);color:var(--acct)}.b-use .dot{background:var(--use)}
+.b-rsv{background:var(--rsvs);color:#7a5600}.b-rsv .dot{background:var(--rsv)}
+.b-mnt{background:var(--mnts);color:#495057}.b-mnt .dot{background:var(--mnt)}
+.b-warn{background:var(--dngs);color:#842029}.b-warn .dot{background:var(--dng)}
+.tag{font:600 11px/1 var(--mono);color:var(--mut);border:1px solid var(--bd2);border-radius:5px;padding:3px 6px}
+
+.hp{font-weight:700;font-variant-numeric:tabular-nums}
+.hp.good{color:var(--ok)}.hp.mid{color:var(--rsv)}.hp.bad{color:var(--dng)}
+.use{display:inline-flex;align-items:center;gap:8px}
+.use .track{width:74px;height:7px;border-radius:4px;background:var(--soft2);overflow:hidden}
+.use .fill{height:100%;border-radius:4px}
+.use .v{font-size:12px;color:var(--text2);width:34px;font-variant-numeric:tabular-nums;font-weight:600}
+
+/* layout helpers */
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.grid2b{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cardpad{padding:16px}
+.cap{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--bd2)}
+.cap h3{font-size:14px;font-weight:600}
+.cap .mt{font-size:11.5px;color:var(--mut)}
+.feed{display:flex;flex-direction:column}
+.fi{display:flex;gap:11px;align-items:baseline;padding:11px 16px;border-bottom:1px solid var(--bd2);font-size:13px}
+.fi:last-child{border-bottom:0}
+.fi .t{font:500 11px/1.4 var(--mono);color:var(--mut);flex:0 0 40px}
+.donut{width:96px;height:96px;border-radius:50%;flex:0 0 auto;
+  background:conic-gradient(var(--ok) 0 75%,var(--rsv) 75% 88%,var(--dng) 88% 100%)}
+.donut-wrap{display:flex;align-items:center;gap:18px;padding:18px 16px}
+.lg{display:flex;flex-direction:column;gap:7px;font-size:13px;flex:1}
+.lg div{display:flex;align-items:center;gap:8px}
+.lg .sw{width:10px;height:10px;border-radius:3px}
+
+/* form */
+.form{display:grid;grid-template-columns:120px 1fr;gap:13px 16px;align-items:center}
+.form label{font-size:13px;font-weight:600;color:var(--text2)}
+.inp{border:1px solid var(--bd);border-radius:7px;padding:9px 11px;font-family:inherit;font-size:13px;background:var(--bg);width:100%}
+.hint{font-size:12px;color:var(--mut)}
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:9px;font-size:13px;align-items:flex-start}
+.alert.warn{background:var(--rsvs);border:1px solid #ffe69c;color:#664d03}
+.alert.err{background:var(--dngs);border:1px solid #f1aeb5;color:#842029}
+.alert .ai{font-size:15px;line-height:1.2}
+.quota-bar{height:9px;border-radius:5px;background:var(--soft2);overflow:hidden;margin-top:6px}
+.quota-bar i{display:block;height:100%;background:var(--acc)}
+
+/* AIOps pipeline — 단순화 */
+.pipe{display:flex;align-items:stretch;overflow-x:auto;padding:9px 2px 2px;margin-bottom:18px}
+.stage{flex:1;min-width:120px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);padding:12px;position:relative;display:flex;flex-direction:column;gap:4px}
+.stage + .stage{margin-left:24px}
+.stage + .stage::before{content:"→";position:absolute;left:-19px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:14px}
+.stage .sl{font:600 10px/1.2 var(--mono);color:var(--mut)}
+.stage h4{font-size:14px;font-weight:700}
+.stage .n{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.stage .ent{font:500 10.5px/1.3 var(--mono);color:var(--mut)}
+.stage.prop{border-color:#9ec5fe;background:linear-gradient(180deg,var(--accs),var(--bg) 60%)}
+.stage .pin{position:absolute;top:-9px;left:11px;font:600 9px/1 var(--mono);padding:3px 6px;border-radius:9px;border:1px solid var(--bd)}
+.stage.impl .pin{background:var(--oks);color:#0f5132;border-color:#a3cfbb}
+.stage.prop .pin{background:#cfe2ff;color:var(--acct);border-color:#9ec5fe}
+
+/* LLM RCA */
+.rca{border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.rca .h{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bd2);background:linear-gradient(180deg,var(--accs),var(--bg))}
+.rca .h .ai{font-size:15px;color:var(--acc)}
+.rca .h b{font-size:14px}
+.rca .h .lbl{margin-left:auto;font:600 10px/1 var(--mono);color:var(--acct);border:1px solid #9ec5fe;border-radius:10px;padding:3px 7px}
+.rca .bd{padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+.rca .blk .t{font:600 10px/1 var(--mono);color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.rca .blk p{font-size:13px;color:var(--text)}
+.rca .ev{font-size:11.5px;color:var(--mut);border-left:2px solid var(--bd);padding-left:9px;margin-top:4px}
+
+/* 서버 상태 — statuspage 스타일 가동 바 */
+.svc{padding:15px 18px;border-bottom:1px solid var(--bd2)}
+.svc:last-child{border-bottom:0}
+.svc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:3px}
+.svc-name{font-size:14.5px;font-weight:600}
+.svc-st{font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.svc-st.ok{color:var(--ok)}.svc-st.warn{color:var(--rsv)}.svc-st.bad{color:var(--dng)}
+.svc-now{display:flex;gap:9px;margin-bottom:9px;font-size:11.5px;color:var(--mut);align-items:baseline}
+.svc-now b{color:var(--text2);font-weight:700;font-variant-numeric:tabular-nums}
+.bars{display:flex;gap:2px;align-items:stretch;height:32px}
+.bars i{flex:1 1 0;min-width:0;border-radius:2px;background:var(--ok)}
+.bars i.w{background:#e0a800}.bars i.o{background:#fd7e14}.bars i.b{background:var(--dng)}.bars i.n{background:#ced4da}
+.svc-foot{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:11.5px;color:var(--mut)}
+.svc-foot .ln{flex:1;height:1px;background:var(--bd)}
+.svc-foot .up{color:var(--text2);font-weight:700;font-variant-numeric:tabular-nums}
+
+.screen{display:none}.screen.on{display:block}
+@media(max-width:860px){.grid2,.grid2b{grid-template-columns:1fr}.side{display:none}.sumstrip{flex-wrap:wrap}}
+</style>
+</head>
+<body data-role="stu">
+
+<header class="top">
+  <a href="../docs-web/index.html" style="font-size:12px;color:var(--mut);border:1px solid var(--bd);border-radius:6px;padding:5px 9px;text-decoration:none">← 설계 문서</a>
+  <div class="brand"><span class="mk">S</span>ServerHub <span style="font-size:11px;font-weight:500;color:var(--mut)">프론트엔드 시안</span></div>
+  <div class="sp"></div>
+  <div class="seg" id="roleseg">
+    <button data-role="stu" class="on">학생·연구원 · STU</button>
+    <button data-role="mgr">팀 관리자 · MGR</button>
+    <button data-role="adm">서버 관리자 · ADM</button>
+  </div>
+  <div class="who"><div class="av" id="avatar">최</div><div><div class="nm" id="uname">최민호</div><div class="rl" id="urole">STU</div></div></div>
+</header>
+
+<div class="shell">
+  <aside class="side">
+    <div class="navgrp" data-grp="common">
+      <div class="gl">공통</div>
+      <div class="nav on" data-screen="servers"><span class="ic">▦</span>서버 현황<span class="ct">10</span></div>
+      <div class="nav" data-screen="notif"><span class="ic">🔔</span>알림<span class="ct">3</span></div>
+    </div>
+    <div class="navgrp" data-grp="stu" data-roles="stu mgr">
+      <div class="gl">예약·사용</div>
+      <div class="nav" data-screen="reserve"><span class="ic">＋</span>예약 신청</div>
+      <div class="nav" data-screen="myres"><span class="ic">◷</span>내 예약<span class="ct">2</span></div>
+    </div>
+    <div class="navgrp" data-grp="mgr" data-roles="mgr">
+      <div class="gl">팀 관리</div>
+      <div class="nav" data-screen="approvals"><span class="ic">✓</span>승인함<span class="ct">4</span></div>
+      <div class="nav" data-screen="quota"><span class="ic">▤</span>Quota 관리</div>
+    </div>
+    <div class="navgrp" data-grp="adm" data-roles="adm">
+      <div class="gl">AIOps·운영</div>
+      <div class="nav" data-screen="ops"><span class="ic">◐</span>운영 대시보드</div>
+      <div class="nav" data-screen="incidents"><span class="ic">◇</span>인시던트·AIOps<span class="ct">1</span></div>
+      <div class="nav" data-screen="avail"><span class="ic">↑</span>가용성</div>
+      <div class="nav" data-screen="adminsrv"><span class="ic">⛁</span>서버 관리</div>
+      <div class="nav" data-screen="security"><span class="ic">⚿</span>계정 보안<span class="ct">1</span></div>
+    </div>
+    <div class="foot">자동화 주체 <b>SYS</b><br>메트릭 수집 <b>8/8 OK</b> · 15:42</div>
+  </aside>
+
+  <main class="main">
+    <div class="tracebar"><span class="k">설계 추적</span><span id="trace"></span></div>
+
+    <!-- ===== 서버 현황 ===== -->
+    <section class="screen on" data-screen="servers">
+      <div class="phead">
+        <div><h1>서버 현황</h1><p>지금 어떤 서버가 비어 있고 누가 쓰는지 한눈에. 1분마다 자동 갱신됩니다.</p></div>
+        <div class="actions"><button class="btn sm">↻ 새로고침</button><button class="btn pri sm" data-go="reserve">＋ 예약 신청</button></div>
+      </div>
+      <div class="sumstrip">
+        <div class="s"><div class="l"><span class="tip" title="지금 예약 없이 바로 쓸 수 있는 서버">가용</span></div><div class="n" style="color:var(--ok)">4<small> 대</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="현재 누군가 사용 중 (상태 IN_USE)">사용중</span></div><div class="n">4<small> 대</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="시작 시각이 예약돼 대기 중 (상태 RESERVED)">예약</span></div><div class="n">2<small> 대</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="점검으로 사용 불가 (상태 MAINTENANCE)">점검</span></div><div class="n">1<small> 대</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="μ±2σ 통계 범위를 벗어난 이상 사용률이 감지된 서버 (UC18)">이상</span></div><div class="n" style="color:var(--dng)">1<small> 건</small></div></div>
+      </div>
+      <div class="toolbar">
+        <span class="fpill on">전체<span class="n">10</span></span>
+        <span class="fpill">가용<span class="n">4</span></span>
+        <span class="fpill">사용중<span class="n">4</span></span>
+        <div class="search"><input placeholder="서버 이름·그룹 검색"></div>
+        <div class="right"><span class="sortsel">정렬: 상태 ▾</span></div>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr>
+            <th>서버</th><th>상태</th><th>스펙</th>
+            <th><span class="tip" title="최근 1분 사용률(CPU·GPU 중 높은 값). 막대에 마우스를 올리면 상세">사용률</span></th>
+            <th><span class="tip" title="건강 점수 (UC19): CPU·메모리·이상 빈도를 가중평균한 0~100 지표. 80↑ 정상 · 60~79 주의 · 60↓ 위험">health</span></th>
+            <th>점유 · 만료</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="srv">gpu-01</td><td><span class="bdg b-use tip" title="IN_USE — 현재 사용 중"><span class="dot"></span>사용중</span></td><td>RTX 4090 · 64G</td><td><span class="use" title="CPU 91% · GPU 88%"><span class="track"><span class="fill" style="width:91%;background:var(--rsv)"></span></span><span class="v">91%</span></span></td><td><span class="hp good">82</span></td><td>최민호 <span class="sub">~06-03 09:00</span></td><td class="r"><button class="btn sm">상세</button></td></tr>
+            <tr><td class="srv">gpu-02</td><td><span class="bdg b-ok tip" title="AVAILABLE — 바로 예약 가능"><span class="dot"></span>가용</span></td><td>RTX 4090 · 64G</td><td><span class="use" title="CPU 6% · GPU 2%"><span class="track"><span class="fill" style="width:6%;background:var(--ok)"></span></span><span class="v">6%</span></span></td><td><span class="hp good">95</span></td><td class="sub">—</td><td class="r"><button class="btn pri sm" data-go="reserve">예약</button></td></tr>
+            <tr><td class="srv">gpu-04</td><td><span class="bdg b-warn tip" title="사용 중이며 이상 사용률 감지 (UC18 · μ±2σ 초과)"><span class="dot"></span>이상</span></td><td>A100 · 128G</td><td><span class="use" title="CPU 97% · GPU 99%"><span class="track"><span class="fill" style="width:99%;background:var(--dng)"></span></span><span class="v">99%</span></span></td><td><span class="hp bad">61</span></td><td>김강문 <span class="sub">~06-02 18:00</span></td><td class="r"><button class="btn sm">상세</button></td></tr>
+            <tr><td class="srv">gpu-03</td><td><span class="bdg b-rsv tip" title="RESERVED — 시작 시각 대기 중"><span class="dot"></span>예약</span></td><td>A6000 · 48G</td><td><span class="use" title="CPU 4% · GPU 0%"><span class="track"><span class="fill" style="width:4%;background:var(--ok)"></span></span><span class="v">4%</span></span></td><td><span class="hp good">88</span></td><td>조동화 <span class="sub">06-03 10:00~</span></td><td class="r"><button class="btn sm">상세</button></td></tr>
+            <tr><td class="srv">gpu-05</td><td><span class="bdg b-warn tip" title="사용 중이나 사용률이 낮아 유휴 회수 경고 (UC15)"><span class="dot"></span>유휴경고</span></td><td>RTX 3090 · 48G</td><td><span class="use" title="CPU 3% · GPU 1%"><span class="track"><span class="fill" style="width:3%;background:var(--rsv)"></span></span><span class="v">3%</span></span></td><td><span class="hp mid">74</span></td><td>정유진 <span class="sub">~06-04 12:00</span></td><td class="r"><button class="btn sm">상세</button></td></tr>
+            <tr><td class="srv">cpu-01</td><td><span class="bdg b-ok tip" title="AVAILABLE — 바로 예약 가능"><span class="dot"></span>가용</span></td><td>32core · 64G</td><td><span class="use" title="CPU 11%"><span class="track"><span class="fill" style="width:11%;background:var(--ok)"></span></span><span class="v">11%</span></span></td><td><span class="hp good">99</span></td><td class="sub">—</td><td class="r"><button class="btn pri sm" data-go="reserve">예약</button></td></tr>
+            <tr><td class="srv">cpu-02</td><td><span class="bdg b-mnt tip" title="MAINTENANCE — 점검으로 사용 불가"><span class="dot"></span>점검중</span></td><td>32core · 64G</td><td class="sub">—</td><td class="sub">—</td><td>SYS <span class="sub">~16:00 디스크 교체</span></td><td class="r"><button class="btn sm" disabled style="opacity:.4">예약</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== 알림 ===== -->
+    <section class="screen" data-screen="notif">
+      <div class="phead"><div><h1>알림</h1><p>중요한 변화만 실시간으로. 예약 충돌·승인 결과·유휴 경고 등.</p></div>
+        <div class="actions"><button class="btn sm">모두 읽음</button></div></div>
+      <div class="card feed">
+        <div class="fi" style="background:var(--accs)"><span class="t">방금</span><span class="bdg b-warn"><span class="dot"></span>충돌</span><div><b>예약 충돌 — gpu-01</b><div class="sub">같은 시간대에 다른 예약이 먼저 확정됐습니다. <a style="color:var(--acc);font-weight:600" data-go="reserve">대안 보기 →</a></div></div></div>
+        <div class="fi"><span class="t">12분</span><span class="bdg b-ok"><span class="dot"></span>승인</span><div><b>승인 완료 — gpu-03 예약</b><div class="sub">팀 관리자가 한도 초과 요청을 승인했습니다.</div></div></div>
+        <div class="fi"><span class="t">1시간</span><span class="bdg b-rsv"><span class="dot"></span>만료 임박</span><div><b>예약 만료 임박 — gpu-01</b><div class="sub">06-03 09:00에 만료됩니다.</div></div></div>
+        <div class="fi"><span class="t">어제</span><span class="bdg b-mnt"><span class="dot"></span>점검</span><div><b>점검 예정 — cpu-02</b><div class="sub">오늘 14:00~16:00 사용 불가.</div></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 예약 신청 ===== -->
+    <section class="screen" data-screen="reserve">
+      <div class="phead"><div><h1>예약 신청</h1><p>기간을 정해 예약하거나, 조건에 맞는 서버를 즉시 받습니다.</p></div></div>
+      <div class="grid2">
+        <div class="card cardpad">
+          <div class="toolbar" style="margin-bottom:16px"><span class="fpill on">기간 지정 예약</span><span class="fpill tip" title="사양 조건만 주면 가용 서버 1대를 즉시 할당 (UC05)">즉시 요청</span></div>
+          <div class="form">
+            <label>대상 서버</label><div class="inp">gpu-01 · RTX 4090</div>
+            <label>시작</label><input class="inp" value="2026-06-04 13:00">
+            <label>종료</label><input class="inp" value="2026-06-06 13:00">
+          </div>
+          <div class="alert warn" style="margin-top:16px"><span class="ai">⚠</span><div>이 예약은 2일을 사용합니다. 잔여 <span class="tip" title="사용자에게 배정된 사용 가능 일수 한도 (UC10)">한도</span> 1일 초과 → 신청 시 <b>팀 관리자 승인 요청</b>으로 전환됩니다.</div></div>
+          <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end"><button class="btn">취소</button><button class="btn pri">승인 요청 후 예약</button></div>
+        </div>
+        <div class="card">
+          <div class="cap"><h3>충돌 시 대안 서버</h3><span class="mt">유사 사양 · 최대 5대</span></div>
+          <div class="cardpad" style="padding-top:8px">
+            <div class="alert err" style="margin:6px 0 14px"><span class="ai">✕</span><div>방금 다른 예약이 먼저 확정돼 <span class="tip" title="동시에 같은 서버를 예약하려 할 때, 먼저 처리된 쪽만 성공시키는 동시성 제어 (Server.version 기반 409)">충돌</span>이 났습니다. 비슷한 서버를 추천합니다.</div></div>
+            <table class="tbl"><thead><tr><th>서버</th><th>스펙</th><th>health</th><th></th></tr></thead><tbody>
+              <tr><td class="srv">gpu-02</td><td>RTX 4090 · 64G</td><td><span class="hp good">95</span></td><td class="r"><button class="btn pri sm">선택</button></td></tr>
+              <tr><td class="srv">gpu-06</td><td>L40S · 96G</td><td><span class="hp good">90</span></td><td class="r"><button class="btn sm">선택</button></td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 내 예약 ===== -->
+    <section class="screen" data-screen="myres">
+      <div class="phead"><div><h1>내 예약</h1><p>내 예약만 모아 봅니다. 예약은 취소, 사용 중은 조기 반납할 수 있습니다.</p></div></div>
+      <div class="toolbar"><span class="fpill on">진행중</span><span class="fpill">지난 예약</span></div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>서버</th><th>기간</th><th>상태</th><th>남은 시간</th><th></th></tr></thead><tbody>
+          <tr><td class="srv">gpu-01 <span class="sub">RTX 4090</span></td><td>06-01 09:00 → 06-03 09:00</td><td><span class="bdg b-use"><span class="dot"></span>사용중</span></td><td>17시간</td><td class="r"><button class="btn sm">반납</button></td></tr>
+          <tr><td class="srv">gpu-03 <span class="sub">A6000</span></td><td>06-03 10:00 → 06-04 10:00</td><td><span class="bdg b-rsv"><span class="dot"></span>예약</span></td><td class="sub">—</td><td class="r"><button class="btn sm dng">취소</button></td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- ===== 승인함 ===== -->
+    <section class="screen" data-screen="approvals">
+      <div class="phead"><div><h1>승인함</h1><p>팀원의 한도 초과 예약 요청을 결재합니다. <span class="tip" title="기간을 줄여서 승인하는 것 (UC09)">부분 승인</span>·대리 허가 가능, 72시간 무응답 시 자동 거절.</p></div>
+        <div class="actions"><span class="tag">대기 4건</span></div></div>
+      <div class="grid2">
+        <div class="card"><div class="cap"><h3>결재 대기</h3><span class="mt">요청 시각순</span></div>
+          <table class="tbl"><thead><tr><th>요청자</th><th>서버</th><th>기간</th><th><span class="tip" title="팀 전체 한도 대비 현재 사용량">팀 사용량</span></th><th></th></tr></thead><tbody>
+            <tr style="background:var(--accs)"><td class="srv">홍길동</td><td>gpu-01</td><td>2일</td><td><span class="hp mid">7/10</span></td><td class="r"><button class="btn sm">검토</button></td></tr>
+            <tr><td class="srv">이수민</td><td>gpu-06</td><td>3일</td><td><span class="hp mid">7/10</span></td><td class="r"><button class="btn sm">검토</button></td></tr>
+            <tr><td class="srv">박서준</td><td>A100</td><td>1일</td><td><span class="hp good">5/10</span></td><td class="r"><button class="btn sm">검토</button></td></tr>
+            <tr><td class="srv">정유진</td><td>gpu-03</td><td>2일</td><td><span class="hp mid">7/10</span></td><td class="r"><button class="btn sm">검토</button></td></tr>
+          </tbody></table>
+        </div>
+        <div class="card"><div class="cap"><h3>요청 검토 — 홍길동</h3></div>
+          <div class="cardpad">
+            <div class="form" style="grid-template-columns:80px 1fr;gap:10px 14px">
+              <label>서버</label><div>gpu-01 · RTX 4090</div>
+              <label>기간</label><div>06-04 → 06-06 <span class="tag">2일</span></div>
+              <label>사유</label><div>졸업논문 최종 실험</div>
+            </div>
+            <div style="margin-top:12px"><div class="hint">승인 시 팀 합계 <b>9/10일</b></div><div class="quota-bar"><i style="width:90%"></i></div></div>
+            <div class="alert warn" style="margin:14px 0"><span class="ai">⚠</span><div>한도가 거의 찼습니다. 기간 단축으로 조정할 수 있습니다.</div></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn dng">거절</button><button class="btn pri">승인</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Quota 관리 ===== -->
+    <section class="screen" data-screen="quota">
+      <div class="phead"><div><h1>Quota 관리</h1><p>팀원별 <span class="tip" title="각 사용자가 쓸 수 있는 최대 사용 일수 (UC10)">한도</span>를 배분합니다. 합계는 팀 전체 한도(10일)를 넘을 수 없습니다.</p></div>
+        <div class="actions"><button class="btn pri sm">저장</button></div></div>
+      <div class="card cardpad" style="margin-bottom:16px;display:flex;align-items:center;gap:24px">
+        <div><div class="hint">팀 전체 한도</div><div style="font-size:26px;font-weight:700;line-height:1">10<small style="font-size:14px;color:var(--mut)">일</small></div></div>
+        <div style="flex:1"><div class="hint" style="margin-bottom:5px">배분 합계 <b>9 / 10일</b> · 잔여 1일</div><div class="quota-bar" style="height:11px"><i style="width:90%"></i></div></div>
+      </div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>팀원</th><th>사용량</th><th>개인 한도(일)</th><th>잔여</th></tr></thead><tbody>
+          <tr><td class="srv">홍길동</td><td>1</td><td><input class="inp" style="width:84px;padding:6px 9px" value="3"></td><td><span class="hp good">2</span></td></tr>
+          <tr><td class="srv">이수민</td><td>2</td><td><input class="inp" style="width:84px;padding:6px 9px" value="3"></td><td><span class="hp good">1</span></td></tr>
+          <tr><td class="srv">박서준</td><td>0</td><td><input class="inp" style="width:84px;padding:6px 9px" value="2"></td><td><span class="hp good">2</span></td></tr>
+          <tr><td class="srv">정유진</td><td>1</td><td><input class="inp" style="width:84px;padding:6px 9px" value="1"></td><td><span class="hp mid">0</span></td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- ===== 운영 대시보드 (AIOps) ===== -->
+    <section class="screen" data-screen="ops">
+      <div class="phead"><div><h1>운영 대시보드</h1><p>지금 시스템이 잘 돌고 있는지, 자동화가 무엇을 했는지 한눈에. 모든 AI 작업은 스케줄러가 돌리고 결과만 저장합니다.</p></div>
+        <div class="actions"><span class="tag">15:42 갱신</span></div></div>
+
+      <div class="sumstrip">
+        <div class="s"><div class="l"><span class="tip" title="서비스가 정상 동작한 시간 비율 (UC21). MTBF/MTTR로 산출">시스템 가용률</span></div><div class="n" style="color:var(--ok)">99.1<small>%</small></div></div>
+        <div class="s"><div class="l">사용중 / 유휴</div><div class="n">4 <small>/ 3</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="μ±2σ 통계 범위를 벗어난 이상 (UC18). 최근 24시간">이상 탐지</span></div><div class="n" style="color:var(--dng)">1<small> 건</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="유휴 회수·만료 반납·승인 타임아웃 등 스케줄러가 사람 없이 처리한 건수">자동 조치</span></div><div class="n">8<small> 건</small></div></div>
+      </div>
+
+      <div class="cap" style="border:0;padding:0 0 4px"><h3>AIOps 파이프라인</h3><span class="mt">탐지 → 상관 → 예측 → 설명 → 자동복구 · 단계 위에 마우스를 올리면 설명</span></div>
+      <div class="pipe">
+        <div class="stage impl tip" title="서버풀의 /metrics를 1분마다 가져와 시계열로 저장 (UC14)"><span class="pin">구현</span><span class="sl">UC14 · 1분</span><h4>수집</h4><div class="n">8/8</div><div class="ent">→ ServerMetric</div></div>
+        <div class="stage impl tip" title="평균±2표준편차(μ±2σ)를 벗어난 사용률을 이상으로 기록 (UC18)"><span class="pin">구현</span><span class="sl">UC18 · 5분</span><h4>탐지</h4><div class="n" style="color:var(--dng)">1</div><div class="ent">→ AnomalyRecord</div></div>
+        <div class="stage prop tip" title="쏟아지는 이상들을 시간·서버로 묶어 하나의 사건으로. 알림 폭주를 줄임 (UC24 · 제안 C)"><span class="pin">AIOps 제안</span><span class="sl">UC24 · 5분</span><h4>상관</h4><div class="n" style="color:var(--acc)">86%↓</div><div class="ent">→ Incident</div></div>
+        <div class="stage prop tip" title="사용률 추세로 언제 포화될지(용량), 어떤 서버가 위험해질지(건강) 미리 예측 (UC22·23 · 제안 A·B)"><span class="pin">AIOps 제안</span><span class="sl">UC22·23</span><h4>예측</h4><div class="n">2</div><div class="ent">→ Forecast</div></div>
+        <div class="stage prop tip" title="인시던트의 원인·권장 조치를 LLM이 근거와 함께 자연어로 요약 (UC25 · 제안 D)"><span class="pin">AIOps 제안</span><span class="sl">UC25</span><h4>설명</h4><div class="n">LLM</div><div class="ent">→ Summary</div></div>
+        <div class="stage impl tip" title="유휴 서버 회수·만료 예약 반납을 사람 없이 자동 처리 (UC15·16)"><span class="pin">구현</span><span class="sl">UC15·16</span><h4>자동복구</h4><div class="n">7</div><div class="ent">→ 상태 전이</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card"><div class="cap"><h3>최근 자동화 활동</h3><span class="mt">스케줄러 로그</span></div>
+          <div class="feed">
+            <div class="fi"><span class="t">15:42</span><span class="bdg b-ok"><span class="dot"></span>UC14 · 메트릭 수집</span><div class="sub">8/8 정상 수집</div></div>
+            <div class="fi"><span class="t">15:40</span><span class="bdg b-warn"><span class="dot"></span>UC18 · 이상 탐지</span><div class="sub">gpu-04 GPU 99% (평소 41%)</div></div>
+            <div class="fi"><span class="t">15:40</span><span class="bdg b-use"><span class="dot"></span>UC24 · 이상 상관</span><div class="sub">이상 3건을 인시던트 1건으로 묶음</div></div>
+            <div class="fi"><span class="t">15:30</span><span class="bdg b-rsv"><span class="dot"></span>UC15 · 유휴 회수</span><div class="sub">gpu-05 경고 (15분 후 회수)</div></div>
+            <div class="fi"><span class="t">15:00</span><span class="bdg b-mnt"><span class="dot"></span>UC16 · 만료 반납</span><div class="sub">2건 자동 반납</div></div>
+            <div class="fi"><span class="t">14:00</span><span class="bdg b-mnt"><span class="dot"></span>UC17 · 승인 타임아웃</span><div class="sub">1건 자동 거절 (72시간 초과)</div></div>
+          </div>
+        </div>
+        <div class="card"><div class="cap"><h3><span class="tip" title="서버별 건강 점수(UC19)를 정상/주의/위험으로 분류">서버 건강 분포</span></h3></div>
+          <div class="donut-wrap"><div class="donut"></div><div class="lg">
+            <div><span class="sw" style="background:var(--ok)"></span>정상 <span class="sub">(80↑)</span><b style="margin-left:auto">6</b></div>
+            <div><span class="sw" style="background:var(--rsv)"></span>주의 <span class="sub">(60–79)</span><b style="margin-left:auto">1</b></div>
+            <div><span class="sw" style="background:var(--dng)"></span>위험 <span class="sub">(60↓)</span><b style="margin-left:auto">1</b></div>
+          </div></div>
+          <div class="cardpad" style="border-top:1px solid var(--bd2);font-size:12px;color:var(--mut);line-height:1.6">자동 조치는 규칙 기반, <b style="color:var(--text2)">LLM은 읽기 전용</b>(권장만) — 사람이 최종 판단.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 인시던트·AIOps ===== -->
+    <section class="screen" data-screen="incidents">
+      <div class="phead"><div><h1>인시던트 · AIOps</h1><p>이상을 그냥 쌓지 않고 묶고(상관) · 미리 보고(예측) · 설명합니다(LLM). 데이터가 쌓일수록 정확해집니다.</p></div></div>
+
+      <div class="sumstrip">
+        <div class="s"><div class="l"><span class="tip" title="개별 이상을 인시던트로 묶어 줄인 비율. 1 − 인시던트수/이상수 (UC24)">노이즈 감소율</span></div><div class="n" style="color:var(--acc)">86<small>%</small></div></div>
+        <div class="s"><div class="l">진행중 인시던트</div><div class="n" style="color:var(--dng)">1<small> 건</small></div></div>
+        <div class="s"><div class="l"><span class="tip" title="사용률이 임계치(90%)를 처음 넘을 것으로 예측되는 시각 (UC22)">포화 예상</span></div><div class="n">2일 14h</div></div>
+        <div class="s"><div class="l"><span class="tip" title="건강 점수 추세로 위험 상태 진입까지 남은 예상 시간 (UC23)">위험 전이</span></div><div class="n" style="color:var(--rsv)">~3일</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card"><div class="cap"><h3><span class="tip" title="시간·서버로 묶인 이상 묶음. 알림은 인시던트 단위로 1건만">인시던트</span> (이상 상관)</h3><span class="mt">UC24</span></div>
+          <table class="tbl"><thead><tr><th>ID</th><th>심각도</th><th>묶인 이상</th><th>연관 서버</th><th>상태</th></tr></thead><tbody>
+            <tr style="background:var(--accs)"><td class="grp">#51</td><td><span class="bdg b-warn"><span class="dot"></span>위험</span></td><td>12건</td><td>gpu-01·02·05</td><td><span class="bdg b-rsv"><span class="dot"></span>진행중</span></td></tr>
+            <tr><td class="grp">#49</td><td><span class="bdg b-rsv"><span class="dot"></span>경고</span></td><td>4건</td><td>gpu-04</td><td><span class="bdg b-ok"><span class="dot"></span>해소됨</span></td></tr>
+          </tbody></table>
+          <div class="cardpad" style="border-top:1px solid var(--bd2);font-size:12px;color:var(--mut)">이상 12건 → 인시던트 1건으로 압축. 알림 폭주 대신 의미 있는 사건만.</div>
+        </div>
+
+        <div class="rca"><div class="h"><span class="ai">✦</span><b>AI 분석 요약 — 인시던트 #51</b><span class="lbl tip" title="LLM이 근거 데이터를 인용해 작성 (UC25 · 제안 D)">UC25 · LLM</span></div>
+          <div class="bd">
+            <div class="blk"><div class="t">상황</div><p>09:40부터 GPU 서버 3대에서 사용률이 동시 급증했습니다.</p></div>
+            <div class="blk"><div class="t">원인 후보</div><p>같은 팀의 대규모 학습 작업 동시 시작으로 추정</p><div class="ev">근거: gpu-01 09:41 CPU 97% (평소 42%) · gpu-02 동일 패턴</div></div>
+            <div class="blk"><div class="t">권장 조치</div><p>① 해당 팀 작업 분산 권고 ② gpu-05 우선 모니터링</p></div>
+            <div class="hint" style="border-top:1px solid var(--bd2);padding-top:9px">⚠ AI 작성 · 사람이 최종 판단</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2b" style="margin-top:16px">
+        <div class="card"><div class="cap"><h3>용량 예측</h3><span class="mt"><span class="tip" title="요일·시간대 계절성을 반영하는 시계열 예측 기법">Holt-Winters</span> · UC22</span></div>
+          <div class="cardpad">
+            <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:10px"><b>gpu-01 · CPU</b><span class="bdg b-warn"><span class="dot"></span>포화 예상 2일 14시간 후</span></div>
+            <div style="height:46px;display:flex;align-items:flex-end;gap:3px">
+              <i style="flex:1;height:40%;background:var(--acc);border-radius:1px"></i><i style="flex:1;height:50%;background:var(--acc);border-radius:1px"></i><i style="flex:1;height:60%;background:var(--acc);border-radius:1px"></i><i style="flex:1;height:67%;background:var(--acc);border-radius:1px"></i><i style="flex:1;height:75%;background:var(--rsv);opacity:.45;border-radius:1px"></i><i style="flex:1;height:84%;background:var(--rsv);opacity:.45;border-radius:1px"></i><i style="flex:1;height:96%;background:var(--dng);opacity:.45;border-radius:1px"></i>
+            </div>
+            <div class="hint" style="margin-top:9px">진한 막대 = 실측 · 연한 막대 = 예측 · 90% 첫 초과 시점이 포화</div>
+          </div>
+        </div>
+        <div class="card"><div class="cap"><h3>장애 예측</h3><span class="mt"><span class="tip" title="0~100, 높을수록 위험. 건강점수 추세+이상 빈도로 산출 (UC23)">riskScore</span> · UC23</span></div>
+          <table class="tbl"><thead><tr><th>서버</th><th>health</th><th>risk</th><th>추세</th><th>위험 ETA</th></tr></thead><tbody>
+            <tr><td class="srv">gpu-04</td><td><span class="hp bad">61</span></td><td><span class="hp mid">64</span></td><td><span class="bdg b-warn"><span class="dot"></span>악화</span></td><td>~3일</td></tr>
+            <tr><td class="srv">gpu-05</td><td><span class="hp mid">74</span></td><td><span class="hp good">28</span></td><td class="sub">안정</td><td class="sub">—</td></tr>
+            <tr><td class="srv">gpu-01</td><td><span class="hp good">82</span></td><td><span class="hp good">19</span></td><td class="sub">호전</td><td class="sub">—</td></tr>
+          </tbody></table>
+          <div class="cardpad" style="border-top:1px solid var(--bd2);font-size:12px;color:var(--mut)">고장 전 점검 유도 (예지보전).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 서버 상태·가용성 ===== -->
+    <section class="screen" data-screen="avail">
+      <div class="phead"><div><h1>서버 상태 · 가용성</h1><p>서버별 최근 90일 가동 이력을 한눈에. 막대 하나가 하루, 색이 그날 상태입니다. 막대에 마우스를 올리면 날짜·상태가 보입니다.</p></div>
+        <div class="actions"><span class="tag">시스템 99.1%</span></div></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="cap"><h3>가동 이력 (최근 90일)</h3>
+          <span class="mt" style="display:flex;gap:8px"><span class="bdg b-ok"><span class="dot"></span>정상</span><span class="bdg b-rsv"><span class="dot"></span>성능 저하</span><span class="bdg b-warn"><span class="dot"></span>장애</span></span></div>
+        <div id="statusList"></div>
+      </div>
+      <div class="card"><div class="cap"><h3>안정성 지표</h3><span class="mt">UC21 · UC23</span></div>
+      <table class="tbl">
+        <thead><tr><th>서버</th><th><span class="tip" title="Mean Time Between Failures — 평균 고장 간격(시간). 길수록 안정적">MTBF</span></th><th><span class="tip" title="Mean Time To Repair — 평균 복구 시간(시간). 짧을수록 빠른 회복">MTTR</span></th><th><span class="tip" title="가용성 = MTBF / (MTBF+MTTR)">가용성</span></th><th><span class="tip" title="장애·건강 열화 예측 점수 (UC23). 높을수록 위험">riskScore</span></th></tr></thead><tbody>
+          <tr><td class="srv">gpu-01</td><td class="tnum">120.5</td><td class="tnum">0.8</td><td><span class="hp good">99.3</span></td><td><span class="hp good">19</span></td></tr>
+          <tr><td class="srv">gpu-04</td><td class="tnum">38.0</td><td class="tnum">2.1</td><td><span class="hp mid">94.8</span></td><td><span class="hp mid">64</span></td></tr>
+          <tr><td class="srv">gpu-06</td><td class="tnum">240.0</td><td class="tnum">0.3</td><td><span class="hp good">99.9</span></td><td><span class="hp good">12</span></td></tr>
+          <tr><td class="srv">cpu-02</td><td class="sub">N/A</td><td class="sub">N/A</td><td class="sub">N/A</td><td class="sub">데이터 부족</td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- ===== 서버 관리 ===== -->
+    <section class="screen" data-screen="adminsrv">
+      <div class="phead"><div><h1>서버 관리</h1><p>서버 등록·삭제·점검 일정. 사용 중 예약이 있는 서버는 삭제할 수 없습니다.</p></div>
+        <div class="actions"><button class="btn sm">점검 등록</button><button class="btn pri sm">＋ 서버 등록</button></div></div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>서버</th><th>스펙</th><th>그룹</th><th>상태</th><th><span class="tip" title="진행 중인 예약 수. 1건 이상이면 삭제 불가 (UC12)">활성 예약</span></th><th></th></tr></thead><tbody>
+          <tr><td class="srv">gpu-01</td><td>RTX 4090 · 64G</td><td class="sub">Lab-A GPU</td><td><span class="bdg b-use"><span class="dot"></span>사용중</span></td><td>1</td><td class="r"><button class="btn sm">점검</button> <button class="btn sm dng" disabled style="opacity:.4">삭제</button></td></tr>
+          <tr><td class="srv">gpu-02</td><td>RTX 4090 · 64G</td><td class="sub">Lab-A GPU</td><td><span class="bdg b-ok"><span class="dot"></span>가용</span></td><td>0</td><td class="r"><button class="btn sm">점검</button> <button class="btn sm dng">삭제</button></td></tr>
+          <tr><td class="srv">cpu-02</td><td>32core · 64G</td><td class="sub">Compute</td><td><span class="bdg b-mnt"><span class="dot"></span>점검중</span></td><td>0</td><td class="r"><button class="btn sm">점검</button> <button class="btn sm dng">삭제</button></td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- ===== 계정 보안 ===== -->
+    <section class="screen" data-screen="security">
+      <div class="phead"><div><h1>계정 보안</h1><p>비정상 접근으로 잠긴 계정을 검토하고, 오탐이면 수동 해제합니다.</p></div></div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>사용자</th><th>사유</th><th>잠금 시각</th><th>해제 예정</th><th></th></tr></thead><tbody>
+          <tr><td class="srv">unknown@ext</td><td><span class="bdg b-warn tip" title="짧은 시간에 과도한 요청 → 15분 일시 잠금 (UC20)"><span class="dot"></span>요청 과다</span></td><td class="grp">15:38</td><td class="grp">15:53</td><td class="r"><button class="btn sm">해제</button></td></tr>
+        </tbody></table></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  var body=document.body, seg=document.getElementById('roleseg');
+  var profiles={stu:{av:'최',nm:'최민호',rl:'STU'},mgr:{av:'김',nm:'김강문',rl:'MGR · 팀 관리자'},adm:{av:'A',nm:'관리자',rl:'ADM · 서버 관리자'}};
+  var defScreen={stu:'servers',mgr:'approvals',adm:'ops'};
+  var traces={
+    servers:'<b>GET /servers</b> · F01·F02 / UC01 · Server·ServerMetric · 서버풀 /metrics PULL(1분)',
+    notif:'<b>GET /notifications</b> · <b>WS /ws/notifications</b> · F17·F18·F19 / UC03-a · Notification',
+    reserve:'<b>POST /reservations</b> · <b>GET /servers/alternatives</b> · F04·F05·F08 / UC04·UC05·UC03-d · 낙관적 잠금',
+    myres:'<b>GET /reservations</b> · <b>POST …/cancel·/return</b> · F03·F06·F07 / UC02·UC06·UC07 · Reservation',
+    approvals:'<b>GET /approval-requests</b> · <b>POST …/decision</b> · F10·F11 / UC09 · ApprovalRequest',
+    quota:'<b>GET /teams/{id}/quotas</b> · <b>PATCH /quotas/{id}</b> · F12·F13 / UC10 · Quota',
+    ops:'<b>GET /ops/dashboard</b> · F21 / UC21 · SchedulerLog·ServerMetric · AIOps 폐루프(UC14~19)',
+    incidents:'<b>GET /ops/incidents·/forecast·/{id}/summary</b> · F33·F31·F34 / UC24·UC22·UC25 · Incident·Forecast',
+    avail:'<b>GET /ops/availability</b> · <b>GET /servers/{id}/health-trend</b> · F22·F32 / UC21·UC23 · MTBF·MTTR',
+    adminsrv:'<b>POST·DELETE /servers</b> · <b>POST …/maintenances</b> · F14·F15·F16 / UC11·UC12·UC13 · Server',
+    security:'<b>POST /admin/users/{id}/unlock</b> · 미들웨어 / F29·F20 / UC20 · AuditLog·User.lockedUntil'
+  };
+  var traceEl=document.getElementById('trace');
+  function show(s){
+    document.querySelectorAll('.screen').forEach(function(x){x.classList.toggle('on',x.dataset.screen===s)});
+    document.querySelectorAll('.nav').forEach(function(n){n.classList.toggle('on',n.dataset.screen===s)});
+    if(traces[s])traceEl.innerHTML=traces[s];
+    window.scrollTo(0,0);
+  }
+  function setRole(role){
+    body.dataset.role=role;
+    seg.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.dataset.role===role)});
+    document.querySelectorAll('.navgrp').forEach(function(g){var r=g.dataset.roles;g.style.display=(!r||r.split(' ').indexOf(role)>-1)?'':'none'});
+    var p=profiles[role];document.getElementById('avatar').textContent=p.av;document.getElementById('uname').textContent=p.nm;document.getElementById('urole').textContent=p.rl;
+    show(defScreen[role]);
+  }
+  // 서버 상태 가동 바 (90일) — 결정적 시드로 생성
+  (function buildStatus(){
+    var list=document.getElementById('statusList'); if(!list)return;
+    var data=[
+      {nm:'gpu-01',spec:'RTX 4090',up:'99.3',bad:0.06,seed:7,h:82,cpu:91,gpu:'88%'},
+      {nm:'gpu-02',spec:'RTX 4090',up:'99.9',bad:0.02,seed:13,h:95,cpu:6,gpu:'2%'},
+      {nm:'gpu-04',spec:'A100',up:'94.8',bad:0.22,seed:29,h:61,cpu:97,gpu:'99%'},
+      {nm:'gpu-03',spec:'A6000',up:'99.5',bad:0.04,seed:41,h:88,cpu:4,gpu:'0%'},
+      {nm:'gpu-05',spec:'RTX 3090',up:'98.2',bad:0.10,seed:53,h:74,cpu:3,gpu:'1%'},
+      {nm:'gpu-06',spec:'L40S',up:'99.9',bad:0.02,seed:67,h:90,cpu:9,gpu:'0%'},
+      {nm:'cpu-01',spec:'32core',up:'99.95',bad:0.01,seed:71,h:99,cpu:11,gpu:'—',na:13}
+    ];
+    function rng(s){return function(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff}}
+    var html='';
+    data.forEach(function(s){
+      var r=rng(s.seed),bars='';
+      for(var d=0;d<90;d++){
+        var ago=90-d,cls='',lab='정상 100%';
+        if(s.na&&d<s.na){cls='n';lab='데이터 없음';}
+        else{var v=r();if(v<s.bad){var sv=r();if(sv<0.22){cls='b';lab='장애';}else if(sv<0.55){cls='o';lab='부분 장애';}else{cls='w';lab='성능 저하';}}}
+        bars+='<i class="'+cls+'" title="'+ago+'일 전 · '+lab+'"></i>';
+      }
+      var up=parseFloat(s.up),stc=up>=99?'ok':up>=96?'warn':'bad',stt=up>=99?'정상':up>=96?'주의':'위험';
+      html+='<div class="svc"><div class="svc-head">'
+        +'<span class="svc-name">'+s.nm+' <span style="color:var(--mut);font-weight:400;font-size:12px">'+s.spec+'</span></span>'
+        +'<span class="svc-st '+stc+'"><span class="dot" style="background:currentColor"></span>'+stt+'</span></div>'
+        +'<div class="svc-now"><span class="tip" title="건강 점수 UC19">health <b>'+s.h+'</b></span><span>·</span>CPU <b>'+s.cpu+'%</b><span>·</span>GPU <b>'+s.gpu+'</b></div>'
+        +'<div class="bars">'+bars+'</div>'
+        +'<div class="svc-foot"><span>90일 전</span><span class="ln"></span><span><span class="up">'+s.up+'%</span> 가동률</span><span class="ln"></span><span>오늘</span></div></div>';
+    });
+    list.innerHTML=html;
+  })();
+  seg.addEventListener('click',function(e){var b=e.target.closest('button');if(b)setRole(b.dataset.role)});
+  document.querySelector('.side').addEventListener('click',function(e){var n=e.target.closest('.nav');if(n)show(n.dataset.screen)});
+  document.addEventListener('click',function(e){var g=e.target.closest('[data-go]');if(g)show(g.dataset.go)});
+  setRole('stu');
+})();
+</script>
+</body>
+</html>
