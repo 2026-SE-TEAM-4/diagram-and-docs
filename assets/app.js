@@ -170,6 +170,26 @@
     return html + "</nav>";
   }
 
+  function renderNotFound(path) {
+    // path는 신뢰할 수 없는 입력(URL 해시) — textContent로만 다룬다.
+    var box = document.createElement("div");
+    box.className = "err";
+    var b = document.createElement("b");
+    b.textContent = "등록되지 않은 문서다.";
+    var code = document.createElement("code");
+    code.textContent = path;
+    box.appendChild(b);
+    box.appendChild(document.createElement("br"));
+    box.appendChild(code);
+    var p = document.createElement("p");
+    p.textContent = "assets/manifest.js에 등록된 문서만 열 수 있다. 색인으로 돌아가 문서를 선택하라.";
+    box.appendChild(p);
+    contentEl.innerHTML = "";
+    contentEl.appendChild(box);
+    crumbEl.innerHTML = '<a href="#/">INDEX</a> / <b>404</b>';
+    markActive(null);
+  }
+
   function renderDoc(path) {
     var found = findDoc(path);
     fetch(path)
@@ -194,18 +214,31 @@
         renderMermaidBlocks(article);
         crumbEl.innerHTML =
           '<a href="#/">INDEX</a> / ' +
-          (found ? found.doc.cat.no + " " + found.doc.cat.title + " / " : "") +
-          "<b>" + (found ? found.doc.title : path) + "</b>";
+          found.doc.cat.no + " " + found.doc.cat.title +
+          " / <b></b>";
+        crumbEl.querySelector("b").textContent = found.doc.title;
         markActive(path);
         restartRise();
         window.scrollTo(0, 0);
       })
       .catch(function (err) {
-        contentEl.innerHTML =
-          '<div class="err"><b>문서를 불러오지 못했다.</b><br/><code>' +
-          path + " — " + err.message +
-          "</code><br/><br/>이 뷰어는 fetch로 md를 읽으므로 로컬에서는 정적 서버가 필요하다: " +
-          "<code>python3 -m http.server</code> 후 <code>http://localhost:8000</code> 접속.</div>";
+        // path·err.message를 innerHTML에 섞지 않는다 — 노드 + textContent로 조립.
+        var box = document.createElement("div");
+        box.className = "err";
+        var b = document.createElement("b");
+        b.textContent = "문서를 불러오지 못했다.";
+        var code = document.createElement("code");
+        code.textContent = path + " — " + err.message;
+        var p = document.createElement("p");
+        p.textContent =
+          "이 뷰어는 fetch로 md를 읽으므로 로컬에서는 정적 서버가 필요하다: " +
+          "python3 -m http.server 실행 후 http://localhost:8000 접속.";
+        box.appendChild(b);
+        box.appendChild(document.createElement("br"));
+        box.appendChild(code);
+        box.appendChild(p);
+        contentEl.innerHTML = "";
+        contentEl.appendChild(box);
         crumbEl.innerHTML = '<a href="#/">INDEX</a> / <b>오류</b>';
       });
   }
@@ -215,13 +248,15 @@
     var hash = location.hash.replace(/^#\/?/, "");
     if (!hash) {
       renderHome();
+    } else if (findDoc(hash)) {
+      renderDoc(hash); // manifest에 등록된 문서만 fetch 허용
     } else {
-      renderDoc(hash);
+      renderNotFound(hash);
     }
   }
 
   if (window.mermaid) {
-    window.mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "loose" });
+    window.mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "strict" });
   }
   buildNav();
   window.addEventListener("hashchange", route);
