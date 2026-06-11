@@ -1,170 +1,229 @@
 /* =========================================================
-   문서 사이트 공통 스크립트
-   - 테마 토글 (localStorage 영속화 / prefers-color-scheme)
-   - 마크다운 렌더링 (marked 기본 렌더러 + DOM 후처리)
-   - 섹션 점프 시트 (TOC)
+   설계 문서 뷰어
+   - assets/manifest.js 의 DOCS_MANIFEST 가 문서 목록의 단일 원본
+   - 해시 라우팅: #/docs/02-requirements/use-cases.md
+   - md 원문을 fetch → marked 렌더 → mermaid 블록 렌더
+   - 상대 링크/이미지는 md 파일 위치 기준으로 재작성
    ========================================================= */
 
 (function () {
-  var STORAGE_KEY = "docsite.theme";
+  "use strict";
 
-  /* ---------- Theme ---------- */
-  var root = document.documentElement;
-  var saved = localStorage.getItem(STORAGE_KEY);
-  var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  root.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
+  var manifest = window.DOCS_MANIFEST;
+  var contentEl = document.getElementById("content");
+  var navEl = document.getElementById("nav");
+  var crumbEl = document.getElementById("crumb");
 
-  function setupThemeToggle() {
-    var btn = document.querySelector(".theme-toggle");
-    if (!btn) return;
-    btn.addEventListener("click", function () {
-      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      localStorage.setItem(STORAGE_KEY, next);
+  /** 카테고리 평탄화 — pager(이전/다음)용 순서 목록 */
+  var flatDocs = manifest.categories.reduce(function (acc, cat) {
+    return acc.concat(
+      cat.items.map(function (item) {
+        return { cat: cat, title: item.title, path: item.path };
+      })
+    );
+  }, []);
+
+  function findDoc(path) {
+    for (var i = 0; i < flatDocs.length; i++) {
+      if (flatDocs[i].path === path) return { doc: flatDocs[i], index: i };
+    }
+    return null;
+  }
+
+  /* ---------- 사이드바 ---------- */
+  function buildNav() {
+    var html = manifest.categories
+      .map(function (cat) {
+        var links = cat.items
+          .map(function (item) {
+            return (
+              '<a data-path="' + item.path + '" href="#/' + item.path + '">' +
+              item.title +
+              "</a>"
+            );
+          })
+          .join("");
+        return (
+          '<div class="nav-cat">' +
+          '<div class="nav-cat-label"><span class="no">' + cat.no + "</span>" +
+          cat.title +
+          "</div>" +
+          links +
+          "</div>"
+        );
+      })
+      .join("");
+    navEl.innerHTML = html;
+  }
+
+  function markActive(path) {
+    navEl.querySelectorAll("a").forEach(function (a) {
+      a.classList.toggle("active", a.getAttribute("data-path") === path);
     });
   }
 
-  /* ---------- Slug ---------- */
-  var slugCounts = {};
-  function slugify(text) {
-    var base = String(text || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[!@#$%^&*()=+{}\[\]:;"'<>,.?/\\|~`]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/--+/g, "-");
-    if (!base) base = "section";
-    var n = slugCounts[base] || 0;
-    slugCounts[base] = n + 1;
-    return n === 0 ? base : base + "-" + n;
+  /* ---------- 홈 (문서 색인) ---------- */
+  function renderHome() {
+    var cats = manifest.categories
+      .map(function (cat) {
+        var cards = cat.items
+          .map(function (item) {
+            return (
+              '<a class="home-card" href="#/' + item.path + '">' +
+              item.title +
+              '<span class="path">' + item.path + "</span></a>"
+            );
+          })
+          .join("");
+        return (
+          '<section class="home-cat">' +
+          '<div class="home-cat-head"><span class="no">' + cat.no + "</span><h2>" +
+          cat.title +
+          "</h2></div>" +
+          '<div class="home-grid">' + cards + "</div></section>"
+        );
+      })
+      .join("");
+
+    contentEl.innerHTML =
+      '<div class="home-hero">' +
+      '<div class="kicker">diagram-and-docs / design archive</div>' +
+      "<h1>" + manifest.site.title + "</h1>" +
+      "<p>설계 산출물의 단일 원본은 <code>docs/</code> 아래 마크다운 파일이며, 이 페이지는 그 원문을 그대로 불러와 보여준다. 다이어그램 원본(drawio)은 <code>diagrams/</code>에 있다.</p>" +
+      "</div>" +
+      cats;
+    crumbEl.innerHTML = "<b>INDEX</b>";
+    markActive(null);
+    restartRise();
   }
 
-  /* ---------- Link remap (.md → .html) ---------- */
-  var linkMap = {
-    "./docs/project_plan.md": "project-plan.html",
-    "docs/project_plan.md": "project-plan.html",
-    "./project_plan.md": "project-plan.html",
-    "project_plan.md": "project-plan.html",
-    "./docs/tech_stacks.md": "tech-stacks.html",
-    "docs/tech_stacks.md": "tech-stacks.html",
-    "./tech_stacks.md": "tech-stacks.html",
-    "tech_stacks.md": "tech-stacks.html",
-    "./docs/소프트웨어공학_01_4조_유스케이스_명세서.md": "use-case-spec.html",
-    "docs/소프트웨어공학_01_4조_유스케이스_명세서.md": "use-case-spec.html",
-    "./소프트웨어공학_01_4조_유스케이스_명세서.md": "use-case-spec.html",
-    "소프트웨어공학_01_4조_유스케이스_명세서.md": "use-case-spec.html",
-    "./README.md": "index.html",
-    "README.md": "index.html"
-  };
-
-  function remapHref(href) {
-    if (!href) return href;
-    var hashIdx = href.indexOf("#");
-    var path = hashIdx >= 0 ? href.substring(0, hashIdx) : href;
-    var hash = hashIdx >= 0 ? href.substring(hashIdx) : "";
-    return linkMap[path] ? linkMap[path] + hash : href;
-  }
-
-  /* ---------- Markdown ---------- */
-  function renderMarkdown() {
-    var holder = document.getElementById("md-source");
-    var target = document.getElementById("md-output");
-    if (!holder || !target || !window.marked) return;
-
-    var raw = holder.textContent;
-
-    if (typeof marked.setOptions === "function") {
-      marked.setOptions({ gfm: true, breaks: false });
-    }
-
-    target.innerHTML = marked.parse(raw);
-
-    // 1) 헤딩에 id 부여
-    var headings = target.querySelectorAll("h1, h2, h3, h4");
-    for (var i = 0; i < headings.length; i++) {
-      var h = headings[i];
-      if (!h.id) h.id = slugify(h.textContent);
-    }
-
-    // 2) 테이블 래핑 (수평 스크롤)
-    var tables = target.querySelectorAll("table");
-    for (var j = 0; j < tables.length; j++) {
-      var t = tables[j];
-      if (t.parentNode && t.parentNode.classList && t.parentNode.classList.contains("table-wrap")) continue;
-      var wrap = document.createElement("div");
-      wrap.className = "table-wrap";
-      t.parentNode.insertBefore(wrap, t);
-      wrap.appendChild(t);
-    }
-
-    // 3) 링크 리매핑 (.md → .html)
-    var anchors = target.querySelectorAll("a[href]");
-    for (var k = 0; k < anchors.length; k++) {
-      var a = anchors[k];
-      var href = a.getAttribute("href");
-      var mapped = remapHref(href);
-      if (mapped !== href) a.setAttribute("href", mapped);
-    }
-
-    // 4) hash로 진입 시 스크롤
-    if (location.hash) {
-      var el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-      if (el) requestAnimationFrame(function () { el.scrollIntoView({ block: "start" }); });
-    }
-  }
-
-  /* ---------- TOC sheet ---------- */
-  function buildToc() {
-    var sheet = document.getElementById("toc-sheet");
-    var btn = document.getElementById("toc-btn");
-    var output = document.getElementById("md-output");
-    if (!sheet || !btn || !output) return;
-
-    var list = sheet.querySelector(".toc-list");
-    var headings = output.querySelectorAll("h2, h3");
-
-    if (headings.length < 4) {
-      btn.style.display = "none";
-      return;
-    }
-
-    var items = [];
-    var h2Counter = 0;
-    for (var i = 0; i < headings.length; i++) {
-      var h = headings[i];
-      var level = h.tagName.toLowerCase();
-      var text = (h.textContent || "").replace(/#$/, "").trim();
-      if (level === "h2") {
-        h2Counter += 1;
-        var marker = ("0" + h2Counter).slice(-2);
-        items.push('<li class="toc-h2"><a href="#' + h.id + '"><span>' + text + '</span><span class="toc-marker">' + marker + '</span></a></li>');
-      } else {
-        items.push('<li class="toc-h3"><a href="#' + h.id + '"><span>' + text + '</span></a></li>');
+  /* ---------- 마크다운 렌더 ---------- */
+  function rewriteRelativeUrls(root, mdDir) {
+    root.querySelectorAll("img[src]").forEach(function (img) {
+      var src = img.getAttribute("src");
+      if (!/^(https?:|data:|\/)/.test(src)) {
+        img.setAttribute("src", mdDir + src);
       }
-    }
-    list.innerHTML = items.join("");
-
-    function open() { sheet.setAttribute("data-open", "true"); }
-    function close() { sheet.setAttribute("data-open", "false"); }
-
-    btn.addEventListener("click", function () {
-      sheet.getAttribute("data-open") === "true" ? close() : open();
     });
-    sheet.addEventListener("click", function (e) {
-      if (e.target === sheet) close();
-      var a = e.target.closest && e.target.closest("a[href^='#']");
-      if (a) close();
-    });
-    var closeBtn = sheet.querySelector(".toc-close");
-    if (closeBtn) closeBtn.addEventListener("click", close);
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && sheet.getAttribute("data-open") === "true") close();
+    root.querySelectorAll("a[href]").forEach(function (a) {
+      var href = a.getAttribute("href");
+      if (/^(https?:|mailto:|#|\/)/.test(href)) {
+        if (/^https?:/.test(href)) a.setAttribute("target", "_blank");
+        return;
+      }
+      // 상대 경로를 레포 루트 기준으로 정규화
+      var parts = (mdDir + href).split("/");
+      var stack = [];
+      parts.forEach(function (p) {
+        if (p === "" || p === ".") return;
+        if (p === "..") stack.pop();
+        else stack.push(p);
+      });
+      var resolved = stack.join("/");
+      var anchorIdx = resolved.indexOf("#");
+      var pathOnly = anchorIdx >= 0 ? resolved.slice(0, anchorIdx) : resolved;
+      if (/\.md$/.test(pathOnly)) {
+        a.setAttribute("href", "#/" + pathOnly); // md 끼리는 뷰어 내부 라우팅
+      } else {
+        a.setAttribute("href", resolved); // 그 외 파일은 직접 링크
+      }
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    setupThemeToggle();
-    renderMarkdown();
-    buildToc();
-  });
+  function renderMermaidBlocks(root) {
+    var blocks = root.querySelectorAll("pre code.language-mermaid");
+    if (!blocks.length || !window.mermaid) return;
+    blocks.forEach(function (code, i) {
+      var div = document.createElement("div");
+      div.className = "mermaid";
+      div.id = "mmd-" + Date.now() + "-" + i;
+      div.textContent = code.textContent;
+      code.closest("pre").replaceWith(div);
+    });
+    try {
+      window.mermaid.run({ querySelector: ".mermaid" });
+    } catch (e) {
+      /* mermaid 문법 오류는 해당 블록만 실패 — 본문 렌더는 유지 */
+    }
+  }
+
+  function restartRise() {
+    contentEl.style.animation = "none";
+    void contentEl.offsetWidth; // reflow로 애니메이션 재시작
+    contentEl.style.animation = "";
+  }
+
+  function renderPager(index) {
+    var prev = flatDocs[index - 1];
+    var next = flatDocs[index + 1];
+    var html = '<nav class="pager">';
+    if (prev) {
+      html +=
+        '<a href="#/' + prev.path + '"><span class="dir">← Prev</span><span class="t">' +
+        prev.title + "</span></a>";
+    }
+    if (next) {
+      html +=
+        '<a class="next" href="#/' + next.path + '"><span class="dir">Next →</span><span class="t">' +
+        next.title + "</span></a>";
+    }
+    return html + "</nav>";
+  }
+
+  function renderDoc(path) {
+    var found = findDoc(path);
+    fetch(path)
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.status + " " + res.statusText);
+        return res.text();
+      })
+      .then(function (md) {
+        var mdDir = path.slice(0, path.lastIndexOf("/") + 1);
+        var article = document.createElement("article");
+        article.className = "md";
+        var html = window.marked.parse(md);
+        // 문서 원문은 레포 내부 md지만, 방어적으로 살균 후 삽입한다.
+        if (window.DOMPurify) html = window.DOMPurify.sanitize(html);
+        article.innerHTML = html;
+        rewriteRelativeUrls(article, mdDir);
+
+        contentEl.innerHTML = "";
+        contentEl.appendChild(article);
+        if (found) contentEl.insertAdjacentHTML("beforeend", renderPager(found.index));
+
+        renderMermaidBlocks(article);
+        crumbEl.innerHTML =
+          '<a href="#/">INDEX</a> / ' +
+          (found ? found.doc.cat.no + " " + found.doc.cat.title + " / " : "") +
+          "<b>" + (found ? found.doc.title : path) + "</b>";
+        markActive(path);
+        restartRise();
+        window.scrollTo(0, 0);
+      })
+      .catch(function (err) {
+        contentEl.innerHTML =
+          '<div class="err"><b>문서를 불러오지 못했다.</b><br/><code>' +
+          path + " — " + err.message +
+          "</code><br/><br/>이 뷰어는 fetch로 md를 읽으므로 로컬에서는 정적 서버가 필요하다: " +
+          "<code>python3 -m http.server</code> 후 <code>http://localhost:8000</code> 접속.</div>";
+        crumbEl.innerHTML = '<a href="#/">INDEX</a> / <b>오류</b>';
+      });
+  }
+
+  /* ---------- 라우터 ---------- */
+  function route() {
+    var hash = location.hash.replace(/^#\/?/, "");
+    if (!hash) {
+      renderHome();
+    } else {
+      renderDoc(hash);
+    }
+  }
+
+  if (window.mermaid) {
+    window.mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "loose" });
+  }
+  buildNav();
+  window.addEventListener("hashchange", route);
+  route();
 })();

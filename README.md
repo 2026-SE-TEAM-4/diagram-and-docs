@@ -45,7 +45,7 @@
 | Test | ![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white) ![Testcontainers](https://img.shields.io/badge/Testcontainers-1A7DBC?style=for-the-badge) ![ruff](https://img.shields.io/badge/ruff-D7FF64?style=for-the-badge&logo=ruff&logoColor=black) ![mypy](https://img.shields.io/badge/mypy-1F5082?style=for-the-badge) |
 | ETC | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) ![drawio](https://img.shields.io/badge/drawio-F08705?style=for-the-badge&logo=diagramsdotnet&logoColor=white) |
 
-각 스택의 선정 이유와 제외된 후보(RabbitMQ, Kafka, GraphQL 등)는 [`tech-stacks.html`](./tech-stacks.html) 참조.
+각 스택의 선정 이유와 제외된 후보(RabbitMQ, Kafka, GraphQL 등)는 [`docs/01-overview/tech-stack.md`](./docs/01-overview/tech-stack.md) 참조.
 
 ---
 
@@ -82,33 +82,37 @@
 
 본 레포는 설계 산출물·명세서·다이어그램과 테스트 도구(`testing/` testkit CLI)를 담습니다. 시스템 구현은 별도 레포(`backend`, `frontend`, `server-pool`)에서 진행됩니다.
 
+**문서의 단일 원본은 `docs/` 아래 마크다운 파일**이며, `index.html` 뷰어가 같은 md 파일을 fetch해 렌더링하므로 두 형태가 항상 동기화됩니다. 다이어그램 원본(drawio)은 `diagrams/`에 모입니다.
+
 ```
 diagram-and-docs/
 ├── README.md                      # 본 파일
-├── index.html                     # 설계 문서 색인 (메인 진입점)
-├── use-case-spec.html             # UC 23개 풀 명세 (인증 UC22·UC23 포함)
-├── project-plan.html              # 프로젝트 계획서 (모듈 구성, 일정, 결정)
-├── tech-stacks.html               # 기술 스택 채택·제외 근거
-├── serverpool-spec.html           # 서버 풀(server-pool) 기능·API 명세
-├── test-plan.html                 # 테스트 계획서 (성능 5종·보안·복원·정적/동적)
-├── team-4-agile.xlsx              # Agile 스토리보드 (스프린트·백로그)
-├── frontend-prototype-kkm/        # 프론트엔드 시안(KKM)
-│   ├── index.html                 # 역할별 화면 시안 (스타일 A · 라이트)
-│   ├── frontend-ia.drawio         # 프론트엔드 정보구조(IA) 다이어그램
-│   └── README.md                  # 시안 설명
-├── test-tool/                     # 테스트 툴 설계 문서 (testkit CLI·Locust·k6·장애주입·CI)
-├── testing/                       # testkit CLI 구현 (uv run testkit ...) + 결과 리포트
+├── index.html                     # 문서 뷰어 (md를 불러와 렌더링 — 메인 진입점)
 ├── docs/
-│   ├── erd-feature-api-draft.md       # ERD·기능(30)·API(22) 통합 초안
-│   ├── dynamic-models-nfr-draft.md    # 상태도·시퀀스·NFR·ADR 초안
-│   └── ai-ops.md                      # AIOps 기능 설계 초안 (예측·상관·설명)
-└── assets/
-    ├── architecture-diagram.png   # 시스템 아키텍처 다이어그램
-    ├── runtime-diagram.png        # 노트북 로컬 런타임 다이어그램
-    ├── use-case-diagram.drawio    # 유스케이스 다이어그램 (액터 5 · UC 23)
-    ├── app.js
-    └── style.css
+│   ├── 01-overview/               # 프로젝트 개요 · 계획서 · 기술 스택
+│   ├── 02-requirements/           # 유스케이스(23) · 기능(30)·API(22) · NFR
+│   ├── 03-architecture/           # 시스템 아키텍처 · 서버 풀 명세
+│   ├── 04-design/                 # 데이터 모델(ERD) · 동적 모델 · 백엔드 설계(SOLID·패턴) · AIOps
+│   └── 05-testing/                # 테스트 계획서 · test-tool/ 툴 설계 6종
+├── diagrams/                      # drawio 원본 — 아키텍처·ERD·클래스·상태·시퀀스·유스케이스
+│   └── README.md                  # 다이어그램 안내 (파일별 내용·관련 문서)
+├── assets/                        # 뷰어(style.css·app.js·manifest.js) + 내보낸 PNG
+├── frontend-prototype-kkm/        # 프론트엔드 시안(KKM) + IA 다이어그램
+├── testing/                       # testkit CLI 구현 (uv run testkit ...) + 결과 리포트
+└── team-4-agile.xlsx              # Agile 스토리보드 (스프린트·백로그)
 ```
+
+### 문서 보는 법
+
+뷰어는 fetch로 md를 읽으므로 정적 서버가 필요합니다:
+
+```bash
+cd diagram-and-docs
+python3 -m http.server 8080
+# http://localhost:8080 접속
+```
+
+md 파일을 직접 읽어도 무방합니다(GitHub에서도 그대로 렌더링됨). 새 문서를 추가할 때는 `docs/<카테고리>/`에 md를 만들고 `assets/manifest.js`에 한 줄 등록하면 뷰어에 나타납니다.
 
 관련 레포:
 - `backend` — FastAPI 서버 + APScheduler (Python)
@@ -121,21 +125,25 @@ diagram-and-docs/
 
 | 문서 | 내용 |
 |------|------|
-| [`index.html`](./index.html) | 설계 문서 색인 (메인 진입점) |
-| [`use-case-spec.html`](./use-case-spec.html) | UC 23개 풀 명세 + 부록(가용성 설계, AIOps 연계) — 인증·계정(UC22 회원가입·UC23 로그인) 포함 |
-| [`project-plan.html`](./project-plan.html) | 모듈 분리·UC ↔ 컴포넌트 매핑·핵심 설계 결정·일정 |
-| [`tech-stacks.html`](./tech-stacks.html) | 채택 스택 선정 이유 + 제외 후보 검토 |
-| [`serverpool-spec.html`](./serverpool-spec.html) | 서버 풀(server-pool) 기능·API 명세 (/health·/metrics 계약) |
-| [`test-plan.html`](./test-plan.html) | 테스트 계획서 — 성능 5종(부하·과부하·스파이크·내구력·중단점), 보안·복원·회귀, 정적/동적 분석, V 모델·커버리지 |
-| [`test-tool/`](./test-tool/README.md) | 테스트 툴 설계 — testkit CLI(Typer+Rich), Locust·k6 엔진, docker 장애 주입, pytest 블랙박스, CI 정적 분석 |
-| [`testing/`](./testing/README.md) | testkit CLI 구현 + 실행 결과 리포트 (`uv run testkit load/stress/spike/endurance/breakpoint/fault`) |
+| [`index.html`](./index.html) | 문서 뷰어 — 사이드바 색인 + md 렌더링 (메인 진입점) |
+| [`docs/01-overview/project-overview.md`](./docs/01-overview/project-overview.md) | 프로젝트 개요 — 문제 정의, 역할 3종+SYS, 관련 레포 |
+| [`docs/01-overview/project-plan.md`](./docs/01-overview/project-plan.md) | 프로젝트 계획서 — 모듈 분리·UC↔컴포넌트 매핑·설계 결정·일정 |
+| [`docs/01-overview/tech-stack.md`](./docs/01-overview/tech-stack.md) | 기술 스택 — 채택 이유 + 제외 후보(RabbitMQ·Kafka·GraphQL 등) 검토 |
+| [`docs/02-requirements/use-cases.md`](./docs/02-requirements/use-cases.md) | UC 23개 풀 명세 + 부록 — 인증·계정(UC22·UC23) 포함 |
+| [`docs/02-requirements/features-and-apis.md`](./docs/02-requirements/features-and-apis.md) | 기능(30)·API(22) 명세 + 추적 매핑 |
+| [`docs/02-requirements/nfr.md`](./docs/02-requirements/nfr.md) | 비기능 요구사항 — 측정 가능 수치 + 검증 방법 |
+| [`docs/03-architecture/architecture.md`](./docs/03-architecture/architecture.md) | 시스템 아키텍처 — 구성·데이터 흐름·아키텍처 스타일 선정 사유 |
+| [`docs/03-architecture/serverpool-spec.md`](./docs/03-architecture/serverpool-spec.md) | 서버 풀 기능·API 명세 (/health·/metrics 계약) |
+| [`docs/04-design/data-model.md`](./docs/04-design/data-model.md) | 데이터 모델 — ERD 13개 엔티티 |
+| [`docs/04-design/dynamic-models.md`](./docs/04-design/dynamic-models.md) | 동적 모델 — 상태도·시퀀스·ADR |
+| [`docs/04-design/backend-design.md`](./docs/04-design/backend-design.md) | 백엔드 상세설계 — 레이어·클래스 관계·SOLID·디자인 패턴·핵심 알고리즘 |
+| [`docs/04-design/ai-ops.md`](./docs/04-design/ai-ops.md) | AIOps 기능 설계 — 용량 예측·장애 예측·이상 상관·LLM 설명 (F31~F34) |
+| [`docs/05-testing/test-plan.md`](./docs/05-testing/test-plan.md) | 테스트 계획서 — 성능 5종, 보안·복원·회귀, 정적/동적, V 모델·커버리지 |
+| [`docs/05-testing/test-tool/`](./docs/05-testing/test-tool/README.md) | 테스트 툴 설계 — testkit CLI, Locust·k6 엔진, 장애 주입, pytest, CI |
+| [`diagrams/`](./diagrams/README.md) | drawio 원본 — 아키텍처·ERD·클래스·상태·시퀀스·유스케이스 |
+| [`testing/`](./testing/README.md) | testkit CLI 구현 + 실행 결과 리포트 (`uv run testkit ...`) |
 | [`team-4-agile.xlsx`](./team-4-agile.xlsx) | Agile 스토리보드 (스프린트·백로그) |
-| [`frontend-prototype-kkm/`](./frontend-prototype-kkm/index.html) | 프론트엔드 시안(KKM) — 역할별(STU·MGR·ADM) 화면, AIOps 운영·서버 상태(90일 가동 이력) 시각화 |
-| [`frontend-prototype-kkm/frontend-ia.drawio`](./frontend-prototype-kkm/frontend-ia.drawio) | 프론트엔드 정보구조(IA) — 화면→컴포넌트→API(F·UC)→서버풀 데이터 흐름 |
-| [`assets/use-case-diagram.drawio`](./assets/use-case-diagram.drawio) | 유스케이스 다이어그램 (액터 5 · UC 23) |
-| [`docs/erd-feature-api-draft.md`](./docs/erd-feature-api-draft.md) | ERD·기능(30)·API(22) 통합 초안 + 추적 매핑 |
-| [`docs/dynamic-models-nfr-draft.md`](./docs/dynamic-models-nfr-draft.md) | 상태도·시퀀스·NFR·ADR 초안 |
-| [`docs/ai-ops.md`](./docs/ai-ops.md) | AIOps 기능 설계 초안 — 용량 예측·장애 예측·이상 상관·LLM 설명 (F31~F34) |
+| [`frontend-prototype-kkm/`](./frontend-prototype-kkm/index.html) | 프론트엔드 시안(KKM) — 역할별 화면 + IA 다이어그램 |
 
 ---
 

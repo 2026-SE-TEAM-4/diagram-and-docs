@@ -1,66 +1,12 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>서버 풀 명세서 — SE 4조</title>
-  <meta name="description" content="서버 예약/할당 관리 시스템 서버 풀(server-pool) 기능·API 명세서 — SE 4조" />
-  <link rel="stylesheet" href="assets/style.css" />
-  <script>
-    (function () {
-      var s = localStorage.getItem("docsite.theme");
-      var d = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.setAttribute("data-theme", s || (d ? "dark" : "light"));
-    })();
-  </script>
-</head>
-<body>
-
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="index.html">
-        <span class="brand-back" aria-hidden="true">←</span>
-        <span>색인으로</span>
-      </a>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="toc-btn" aria-label="목차">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="14" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
-          <span>목차</span>
-        </button>
-        <button class="icon-btn theme-toggle" aria-label="테마 전환" title="테마 전환">
-          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="page page-wide">
-    <div class="doc-eyebrow">04 · Server Pool Specification</div>
-    <article class="markdown" id="md-output"></article>
-  </main>
-
-  <div class="toc-sheet" id="toc-sheet" data-open="false" role="dialog" aria-label="섹션 목록">
-    <div class="toc-panel">
-      <div class="toc-head">
-        <h2>섹션 목록</h2>
-        <button class="icon-btn toc-close" aria-label="닫기">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <ul class="toc-list"></ul>
-    </div>
-  </div>
-
-  <script id="md-source" type="text/markdown"># 서버 예약/할당 관리 시스템
+# 서버 예약/할당 관리 시스템
 
 ## 서버 풀 명세서 (server-pool)
 
 엔드포인트 2종 / 수집기 4종 / 메트릭 계약 1종
 
-> 대상 레포: `server-pool` — 백엔드(`backend`)가 1분 주기로 PULL해 가는 모니터링 대상 서버 풀.
-> 단일 출처(SSOT): 데이터 모델은 Notion `데이터 모델 (ERD)`, 아키텍처는 Notion `시스템 설계`.
-> 백엔드 명세(기능/API)와는 **별도 문서**이며, 추적성은 UC 번호와 `ServerMetric` 엔티티로 연결한다.
+대상 레포: `server-pool` — 백엔드(`backend`)가 1분 주기로 PULL해 가는 모니터링 대상 서버 풀.
+단일 출처(SSOT): 데이터 모델은 Notion `데이터 모델 (ERD)`, 아키텍처는 Notion `시스템 설계`.
+백엔드 명세(기능/API)와는 **별도 문서**이며, 추적성은 UC 번호와 `ServerMetric` 엔티티로 연결한다.
 
 ---
 
@@ -70,7 +16,7 @@
 
 각 에이전트는 `/health`와 `/metrics`만 노출하는 **상태 없는 경량 프로세스**다. 인증·권한·DB가 없으며, 사람 사용자가 직접 호출하지 않는다. 호출 주체는 백엔드의 자동화 액터 **SYS**(APScheduler)뿐이며, 1분 주기로 `/metrics`를 PULL해 `ServerMetric` 시계열로 저장한다(UC14).
 
-> 설계 원칙: 에이전트는 백엔드와 의존성을 공유하지 않고 경량을 우선한다. 메트릭 JSON 계약은 이 문서를 단일 출처로 삼으며, 에이전트 레포는 계약을 임의로 바꾸지 않는다.
+설계 원칙: 에이전트는 백엔드와 의존성을 공유하지 않고 경량을 우선한다. 메트릭 JSON 계약은 이 문서를 단일 출처로 삼으며, 에이전트 레포는 계약을 임의로 바꾸지 않는다.
 
 ---
 
@@ -110,7 +56,7 @@
 | 네트워크 사용률 수집 | NIC 대역폭(`NET_CAP_MBPS`) 대비 사용률 측정 (`collectors/net.py`) | 수집 | UC14 | (`GET /metrics`) | 구현완료 |
 | 장애·부하 시연 (참고) | `stress-ng`·`hey`·`docker pause/stop`로 **외부에서** 유발. 에이전트 코드가 아닌 운영 명령 | 운영시연 | UC15 · UC18 | — | 정의완료 |
 
-> `collectors/`(cpu·memory·net·gpu)와 실제 `/metrics` 산출이 구현되었다. cpu·memory·net은 **psutil 실측**(stress-ng·hey 부하가 그대로 반영됨), gpu는 시뮬레이션 환경에 물리 GPU가 없어 **`GPU_SIMULATE` 합성값**(끄면 null)을 낸다. 범위·타입 단위 테스트는 `tests/test_collectors.py`.
+`collectors/`(cpu·memory·net·gpu)와 실제 `/metrics` 산출이 구현되었다. cpu·memory·net은 **psutil 실측**(stress-ng·hey 부하가 그대로 반영됨), gpu는 시뮬레이션 환경에 물리 GPU가 없어 **`GPU_SIMULATE` 합성값**(끄면 null)을 낸다. 범위·타입 단위 테스트는 `tests/test_collectors.py`.
 
 ---
 
@@ -118,7 +64,7 @@
 
 두 엔드포인트 모두 통신유형 `REST`, 권한 `SYS`(자동화 수집기만 호출). 인증 헤더 없음(내부망 신뢰).
 
-### 4.1  GET /health
+### 4.1 GET /health
 
 컨테이너가 살아 있는지 확인하는 헬스 체크. 상태: **구현완료**.
 
@@ -131,7 +77,7 @@
 
 - 에러: 없음 (프로세스가 살아 있으면 항상 200)
 
-### 4.2  GET /metrics
+### 4.2 GET /metrics
 
 현재 시점의 자원 사용률 스냅샷. 백엔드 SYS 수집기가 1분 주기로 PULL한다. 상태: **구현완료**(cpu·mem·net psutil 실측 · gpu 합성).
 
@@ -162,7 +108,7 @@
 
 - 에러 **500**: 수집기 내부 오류 시 (정상 시뮬레이션에서는 발생하지 않음)
 
-> **`status` 계약.** 에이전트는 자신의 예약 상태(AVAILABLE 등)를 모른다 — 그것은 백엔드의 도메인이다. 따라서 `/metrics`의 `status`는 **수집 품질**만 나타내며 에이전트는 항상 `"OK"`를 반환한다. `MISSING`(무응답)·`NA`(항목 미지원)는 **백엔드 수집기가 판정**해 `ServerMetric.status`에 기록한다(백엔드 `MetricStatus` enum).
+**`status` 계약**: 에이전트는 자신의 예약 상태(AVAILABLE 등)를 모른다 — 그것은 백엔드의 도메인이다. 따라서 `/metrics`의 `status`는 **수집 품질**만 나타내며 에이전트는 항상 `"OK"`를 반환한다. `MISSING`(무응답)·`NA`(항목 미지원)는 **백엔드 수집기가 판정**해 `ServerMetric.status`에 기록한다(백엔드 `MetricStatus` enum).
 
 ---
 
@@ -182,7 +128,7 @@
 
 이 메트릭은 백엔드 자동화 잡의 입력이 된다 — 유휴 회수(UC15), 이상 탐지(UC18, 7일 이동평균 ±2σ), 건강 점수(UC19).
 
-> **ERD 확장 반영 완료.** GPU 공유가 이 시스템의 핵심이므로 `/metrics`는 `gpuUsage`를 노출한다. `ServerMetric.gpu_usage (float, nullable)` 컬럼을 추가(마이그레이션 `0002_add_gpu_usage`)하고, 수집 상태는 `MetricStatus(OK/MISSING/NA)` enum으로 정렬했다. Notion `데이터 모델 (ERD)`에도 반영했다.
+**ERD 확장 반영 완료**: GPU 공유가 이 시스템의 핵심이므로 `/metrics`는 `gpuUsage`를 노출한다. `ServerMetric.gpu_usage (float, nullable)` 컬럼을 추가(마이그레이션 `0002_add_gpu_usage`)하고, 수집 상태는 `MetricStatus(OK/MISSING/NA)` enum으로 정렬했다. Notion `데이터 모델 (ERD)`에도 반영했다.
 
 ---
 
@@ -194,10 +140,4 @@
 
 ---
 
-> 서버 풀 명세서 끝. 컴퓨터공학부 소프트웨어공학 (01) 팀 프로젝트 · 4조
-</script>
-
-  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-  <script src="assets/app.js" defer></script>
-</body>
-</html>
+서버 풀 명세서 끝. 컴퓨터공학부 소프트웨어공학 (01) 팀 프로젝트 · 4조

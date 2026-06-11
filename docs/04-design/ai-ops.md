@@ -4,7 +4,7 @@
 > 필요 기술·로직·논리를 정리한 초안입니다.
 > 기존 설계와의 추적성을 위해 기존 ID(F23~F30, UC14~UC21)를 참조하고,
 > 신규 기능은 **F31~F34 / UC22~UC25** 로 부여합니다.
-> 상세 필드는 [`erd-feature-api-draft.md`](./erd-feature-api-draft.md) 의 ERD를 따릅니다.
+> 상세 필드는 [`../02-requirements/features-and-apis.md`](../02-requirements/features-and-apis.md) 의 ERD를 따릅니다.
 
 ---
 

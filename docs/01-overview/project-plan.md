@@ -1,58 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>프로젝트 계획서 — SE 4조</title>
-  <meta name="description" content="FastAPI 기반 서버 예약/할당 관리 시스템 프로젝트 계획서" />
-  <link rel="stylesheet" href="assets/style.css" />
-  <script>
-    (function () {
-      var s = localStorage.getItem("docsite.theme");
-      var d = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.setAttribute("data-theme", s || (d ? "dark" : "light"));
-    })();
-  </script>
-</head>
-<body>
-
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="index.html">
-        <span class="brand-back" aria-hidden="true">←</span>
-        <span>색인으로</span>
-      </a>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="toc-btn" aria-label="목차">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="14" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
-          <span>목차</span>
-        </button>
-        <button class="icon-btn theme-toggle" aria-label="테마 전환" title="테마 전환">
-          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="page">
-    <div class="doc-eyebrow">02 · Project Plan</div>
-    <article class="markdown" id="md-output"></article>
-  </main>
-
-  <div class="toc-sheet" id="toc-sheet" data-open="false" role="dialog" aria-label="섹션 목록">
-    <div class="toc-panel">
-      <div class="toc-head">
-        <h2>섹션 목록</h2>
-        <button class="icon-btn toc-close" aria-label="닫기">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <ul class="toc-list"></ul>
-    </div>
-  </div>
-
-  <script id="md-source" type="text/markdown"># 프로젝트 계획서 (FastAPI 기반)
+# 프로젝트 계획서
 
 | 항목 | 값 |
 |------|-----|
@@ -74,7 +20,7 @@
 
 ## 2. 기술 스택
 
-> 각 스택의 **선정 이유**와 **제외된 후보**(RabbitMQ, Kafka, GraphQL 등)의 상세 근거는 [`tech-stacks.html`](./tech-stacks.html) 참조.
+각 스택의 **선정 이유**와 **제외된 후보**(RabbitMQ, Kafka, GraphQL 등)의 상세 근거는 [`tech-stack.md`](./tech-stack.md) 참조.
 
 | 계층 | 선정 기술 | 버전 (계획) |
 |------|----------|-------------|
@@ -93,7 +39,7 @@
 | CI/CD 파이프라인 (빌드·배포) | GitHub Actions | — |
 | 테스트 | pytest + pytest-asyncio + Testcontainers-python | — |
 
-> 메시지 큐(RabbitMQ/aio-pika)는 **도입하지 않는다**. 본 시스템의 "알림"은 외부 채널 전송이 아니라 앱 내부 `notifications` 테이블에 적재되는 인-앱 알림이고, 동일 트랜잭션 안에서 `INSERT`로 처리하면 일관성·재시도·DLQ가 모두 자연스럽게 해결된다. 실시간 푸시는 WebSocket/SSE, 인스턴스 간 팬아웃은 Redis Pub/Sub로 대체한다 ([5.3절](#53-알림-uc03-a--uc03-d--db-기반-인-앱-알림) 참고).
+메시지 큐(RabbitMQ/aio-pika)는 **도입하지 않는다**. 본 시스템의 "알림"은 외부 채널 전송이 아니라 앱 내부 `notifications` 테이블에 적재되는 인-앱 알림이고, 동일 트랜잭션 안에서 `INSERT`로 처리하면 일관성·재시도·DLQ가 모두 자연스럽게 해결된다. 실시간 푸시는 WebSocket/SSE, 인스턴스 간 팬아웃은 Redis Pub/Sub로 대체한다 (5.3절 참고).
 
 ### 2.1 스택 선정 근거
 
@@ -201,7 +147,7 @@ async def reserve(session: AsyncSession, user_id: int, server_id: int, period: P
         return ReservationResult.confirmed(reservation)
 ```
 
-> 트랜잭션 경계가 코드에 그대로 드러나 트랜잭션 흐름을 학습용으로 보여주기 좋다.
+트랜잭션 경계가 코드에 그대로 드러나 트랜잭션 흐름을 학습용으로 보여주기 좋다.
 
 ### 5.3 알림 (UC03-a / UC03-d) — DB 기반 인-앱 알림
 
@@ -336,11 +282,5 @@ uv add --dev pytest pytest-asyncio testcontainers httpx ruff mypy
 
 ## 10. 참고 자료
 
-- 명세서: [`use-case-spec.html`](./use-case-spec.html)
-- 기술 스택 상세(채택/제외 근거): [`tech-stacks.html`](./tech-stacks.html)
-</script>
-
-  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-  <script src="assets/app.js" defer></script>
-</body>
-</html>
+- 명세서: [`use-cases.md`](../02-requirements/use-cases.md)
+- 기술 스택 상세(채택/제외 근거): [`tech-stack.md`](./tech-stack.md)
