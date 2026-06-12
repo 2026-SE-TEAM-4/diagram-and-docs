@@ -1,6 +1,6 @@
 # 기능·API 명세
 
-> 작성 2026-05-29 · 최신화 2026-06-01(구현 반영) · 승인 후 노션(데이터 모델 페이지 + 기능/API 명세 DB)에 일괄 반영한다.
+> 작성 2026-05-29 · 최신화 2026-06-12(AIOps 제안 A·B·C·D 구현 반영)
 > 도출 근거: `use-case-spec.html`(UC01~UC21, 부록 A·B), `시스템 설계` 페이지(배치·아키텍처).
 > 데이터 모델은 [`../04-design/data-model.md`](../04-design/data-model.md) 참조.
 
@@ -16,7 +16,7 @@
 
 ---
 
-## 1. 기능 카탈로그 (연산 단위, 30개)
+## 1. 기능 카탈로그 (연산 단위, 34개)
 
 > 담당자는 팀 배정 전이라 (미정). 우선순위는 UC 명세 그대로.
 
@@ -52,12 +52,44 @@
 | F28 | 서버 건강 점수 산출 | 모니터링·자동화 | UC19 | 중간 | — (스케줄러 10분) | 가중 평균 healthScore |
 | F29 | 비정상 접근 감지·일시 잠금 | 보안·운영 | UC20 | 높음 | — (미들웨어) | Rate limit, 15분 잠금 |
 | F30 | 점검 스케줄 자동 상태 전환 | 모니터링·자동화 | UC13 | 중간 | — (스케줄러) | 시작/종료 시 MAINTENANCE↔AVAILABLE |
+| F31 | 용량·수요 예측 | 모니터링·자동화 | UC22 | 중간 | GET /ops/forecast | Holt-Winters(statsmodels), Forecast 적재, 포화 임박 시 CAPACITY 알림 |
+| F32 | 장애·건강 열화 예측 | 모니터링·자동화 | UC23 | 중간 | GET /servers/{id}/health-trend | EWMA 추세+위험도(riskScore/etaToRisk), 임계 초과 시 PREDICTIVE_FAILURE 알림 |
+| F33 | 이상 상관·노이즈 감소 | 모니터링·자동화 | UC24 | 높음 | GET /ops/incidents, GET /ops/incidents/{id} | 시간·서버그룹 클러스터링→Incident, 노이즈 감소율, INCIDENT 알림 |
+| F34 | LLM 원인 설명·요약 | 모니터링·자동화 | UC25 | 중간 | GET /ops/incidents/{id}/summary | Claude API, 인시던트당 1회 IncidentSummary 캐시 |
 
-스케줄러/미들웨어 기능(F23~F29, F30): 클라이언트 호출 API 없음. 단, 동작 결과는 `SchedulerLog`에 기록되어 F21 대시보드(GET /ops/dashboard)에서 노출됨.
+스케줄러/미들웨어 기능(F23~F30): 클라이언트 호출 API 없음. 단, 동작 결과는 `SchedulerLog`에 기록되어 F21 대시보드(GET /ops/dashboard)에서 노출됨. AIOps 기능(F31~F34)은 스케줄러 잡이며 조회 API가 별도로 있다(GET /ops/forecast, GET /servers/{id}/health-trend, GET /ops/incidents, GET /ops/incidents/{id}, GET /ops/incidents/{id}/summary).
 
 ---
 
-## 2. API 카탈로그 (22개 엔드포인트)
+## 1.1 구현 현황 (2026-06-12 기준)
+
+**구현완료(머지+테스트)**:
+- 인증(회원가입·로그인·내 정보)
+- F03·F04·F05·F06·F07(예약 조회·생성·즉시·취소·반납)
+- F10·F11(허가함·결재)
+- F12(팀 Quota 조회)
+- F17·F19(알림 조회·실시간)
+- 스케줄러 F23(메트릭 수집)·F25(예약 자동 전이)·F26(승인 타임아웃)·F27(이상탐지)·F28(건강점수)
+- AIOps 제안 F31·F32·F33·F34
+
+**미구현(설계만)**:
+- F01·F02(서버 현황/상세)
+- F08(대안 서버)
+- F09(승인 요청 생성)
+- F13(Quota 설정)
+- F14·F15·F16(서버 등록/삭제/점검)
+- F18(알림 읽음)
+- F20(잠금 해제)
+- F21·F22(운영 대시보드/가용성)
+- F24(유휴 회수)
+- F29(비정상 접근 미들웨어)
+- F30(점검 자동 전환)
+
+모든 AIOps 잡은 스케줄러 컨테이너(app/scheduler.py)가 단독 등록·실행하며(app/jobs/scheduling.py), API 프로세스는 잡을 돌리지 않는다(이중 실행 방지).
+
+---
+
+## 2. API 카탈로그 (27개 엔드포인트)
 
 > 모든 엔드포인트는 인증 필요(미인증 401). 권한 불일치 403. 잠금 상태 사용자 429(UC20).
 > Request/Response는 핵심 필드만. path/query 파라미터는 Request에 표기.
@@ -197,6 +229,73 @@
 ```
 에러: 401, 403, 500 (데이터 부족 시 N/A UC21-E3)
 
+### AIOps(모니터링·예측)
+
+**GET /ops/incidents** · REST · MGR/ADM · F33
+```jsonc
+// Request (query): { "status": "OPEN", "severity": "HIGH" }
+// Response 200:
+{ "noiseReductionRate": 0.63,
+  "incidents": [
+    { "id": 7, "severity": "HIGH", "status": "OPEN",
+      "anomalyCount": 5, "serverIds": [1, 3],
+      "startedAt": "2026-06-12T10:00:00Z", "resolvedAt": null }
+  ] }
+```
+에러: 401, 403, 500
+
+**GET /ops/incidents/{id}** · REST · MGR/ADM · F33
+```jsonc
+// Response 200:
+{ "id": 7, "severity": "HIGH", "status": "OPEN",
+  "serverIds": [1, 3], "startedAt": "2026-06-12T10:00:00Z", "resolvedAt": null,
+  "anomalies": [
+    { "id": 42, "serverId": 1, "metric": "cpu", "detectedAt": "2026-06-12T10:00:00Z",
+      "zScore": 3.1, "value": 97.2 }
+  ] }
+```
+에러: 401, 403, 404, 500
+
+**GET /ops/incidents/{id}/summary** · REST · MGR/ADM · F34
+```jsonc
+// Response 200:
+{ "incidentId": 7, "generatedAt": "2026-06-12T10:05:00Z", "model": "claude-3-5-sonnet",
+  "situation": "gpu-01·gpu-03 CPU 동시 급등, 10분간 지속",
+  "rootCauses": [
+    { "cause": "분산 학습 작업 자원 경쟁", "evidence": "두 서버 동일 시각 cpu>95%" }
+  ],
+  "recommendations": [
+    { "action": "작업 스케줄 분산", "rationale": "동일 시간대 GPU 작업 집중 완화" }
+  ] }
+```
+에러: 401, 403, 404(요약 미생성), 500
+
+**GET /ops/forecast** · REST · MGR/ADM · F31
+```jsonc
+// Request (query): { "serverId": 1, "metric": "cpu", "days": 7 }   // metric 필수
+// Response 200:
+{ "serverId": 1, "metric": "cpu", "generatedAt": "2026-06-12T06:00:00Z",
+  "saturationAt": "2026-06-19T14:00:00Z", "confidence": 0.82,
+  "horizon": [
+    { "ts": "2026-06-13T00:00:00Z", "yhat": 72.5, "lower": 65.0, "upper": 80.0 }
+  ] }
+```
+에러: 401, 403, 404(데이터 부족), 500
+
+**GET /servers/{id}/health-trend** · REST · MGR/ADM · F32
+```jsonc
+// Response 200:
+{ "serverId": 1, "healthScore": 68, "riskScore": 0.74,
+  "trend": "DEGRADING",
+  "etaToRisk": "2026-06-15T08:00:00Z",
+  "history": [
+    { "ts": "2026-06-12T00:00:00Z", "healthScore": 75 },
+    { "ts": "2026-06-12T10:00:00Z", "healthScore": 68 }
+  ],
+  "drivers": ["cpu 지속 상승", "메모리 사용률 증가"] }
+```
+에러: 401, 403, 404, 500
+
 ---
 
 ## 3. 추적 매핑 (UC → 기능 → API)
@@ -225,6 +324,10 @@
 | UC19 | F28 | — |
 | UC20 | F29, F20 | POST /admin/users/{id}/unlock |
 | UC21 | F21, F22 | GET /ops/dashboard, GET /ops/availability |
+| UC22 | F31 | GET /ops/forecast |
+| UC23 | F32 | GET /servers/{id}/health-trend |
+| UC24 | F33 | GET /ops/incidents, GET /ops/incidents/{id} |
+| UC25 | F34 | GET /ops/incidents/{id}/summary |
 
 ---
 

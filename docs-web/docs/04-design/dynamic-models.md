@@ -152,3 +152,5 @@ sequenceDiagram
 | ADR-03 | 상태 이력 테이블 미도입, SchedulerLog+status 근사 | ServerStatusHistory 도입 | 학기 범위 YAGNI. MTBF/MTTR 정확도 이슈 발생 시 도입 |
 | ADR-04 | API/Scheduler 동일 코드베이스·별 프로세스 | 별도 서비스 분리 | core/infra 공유로 중복 제거, 단일 노드 단순성 |
 | ADR-05 | RESERVED→IN_USE 전이는 **스케줄러 자동 전환**(확정) | 사용자 명시 액션 / 첫 접속 감지 | UC 미명시 공백을 상태도에서 발견·결정. startTime 잡에서 전환, UI 불필요 |
+| ADR-06 | 모든 주기 잡을 스케줄러 컨테이너(scheduler.py)가 단독 등록 | API lifespan에서 잡 등록 | API·스케줄러 동시 기동 시 잡 이중 실행 방지. 잡 등록은 app/jobs/scheduling.py 한 곳에 모음 |
+| ADR-07 | AIOps 잡의 Server 갱신(healthScore·riskScore·etaToRisk)은 version 미변경 직접 UPDATE | ORM 객체 수정(version_id 증가) | 예약 흐름의 낙관적 잠금과 불필요한 충돌 방지 |
