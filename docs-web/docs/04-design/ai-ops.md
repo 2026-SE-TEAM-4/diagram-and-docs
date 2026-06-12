@@ -6,6 +6,8 @@
 > 신규 기능은 **F31~F34 / UC22~UC25** 로 부여합니다.
 > 상세 필드는 [`../02-requirements/features-and-apis.md`](../02-requirements/features-and-apis.md) 의 ERD를 따릅니다.
 
+> 구현 완료 (2026-06-12): 본 문서의 제안 A·B·C·D와 전제 파이프라인(메트릭 수집·이상탐지 F27·건강점수 F28)이 모두 백엔드에 구현·테스트되었다. 구현 설계·현황은 [`ai-ops-implementation.md`](./ai-ops-implementation.md) 참조.
+
 ---
 
 ## 0. 배경 — 지금 있는 것 vs 더 필요한 것
@@ -15,13 +17,13 @@
 
 | 단계 | 현업 패턴 | 우리 현황 |
 |------|-----------|-----------|
-| 탐지 | 동적 이상탐지 | 있음 — 단, 정적 통계(μ±2σ) 수준 (F27/UC18) |
-| 건강 | 건강 점수 | 있음 — 순간값 가중평균 (F28/UC19) |
+| 탐지 | 동적 이상탐지 | 있음 — 단, 정적 통계(μ±2σ) 수준 (F27/UC18)(구현됨) |
+| 건강 | 건강 점수 | 있음 — 순간값 가중평균 (F28/UC19)(구현됨) |
 | 자동복구 | 폐루프 자가치유 | 일부 — 유휴 자동 회수 (F24/UC15) |
-| **예측(용량)** | 수요·포화 예측 | **없음 → 제안 A** |
-| **예측(장애)** | 장애·열화 예측(예지보전) | **없음 → 제안 B** |
-| **상관** | 이상 묶기·노이즈 감소 | **없음 → 제안 C** |
-| **설명** | LLM 자연어 원인 요약 | **없음 → 제안 D** |
+| **예측(용량)** | 수요·포화 예측 | **구현됨(제안 A)** |
+| **예측(장애)** | 장애·열화 예측(예지보전) | **구현됨(제안 B)** |
+| **상관** | 이상 묶기·노이즈 감소 | **구현됨(제안 C)** |
+| **설명** | LLM 자연어 원인 요약 | **구현됨(제안 D)** |
 
 핵심 아이디어: 데이터(`ServerMetric`, `AnomalyRecord`)가 **쌓일수록** 예측·상관·설명 품질이
 좋아지는 구조를 만든다. 즉 "단순 모니터링"이 아니라 "데이터 기반으로 점점 똑똑해지는 운영".
@@ -31,7 +33,7 @@
   `AnomalyRecord`(이상 이력), `Server.healthScore`, `Reservation`(예약 수요).
 - **연산 위치:** 모든 AI 로직은 **APScheduler 잡(별도 컨테이너)** 에서 주기적으로 돌고,
   결과를 PostgreSQL에 저장한다. API는 "저장된 결과 조회"만 한다(읽기 빠름, 화면 부담 없음).
-- **공통 라이브러리:** pandas, numpy (A·B·C), Claude API (D).
+- **공통 라이브러리:** pandas, numpy (A·B·C), Gemini API (D).
 - **신규 엔티티:** `Forecast`, `Incident`(+ `AnomalyRecord.incidentId` FK), `IncidentSummary`.
 
 ---
@@ -243,7 +245,7 @@ Incident {
 근거가 된 메트릭·이상 이력을 **인용**해 신뢰도를 높인다(환각 억제). 2025년 'AI SRE'의 핵심 차별점.
 
 ### D-2. 필요 기술
-- **LLM:** Claude API (이미 개발 환경에 존재).
+- **LLM:** Gemini API (google-genai SDK).
 - **컨텍스트 구성(RAG식):** 인시던트에 묶인 `AnomalyRecord` + 해당 시점 `ServerMetric` 발췌 +
   서버 메타를 구조화해 프롬프트에 주입. LLM은 **주어진 데이터 안에서만** 추론하도록 지시.
 - **캐싱/비용:** 인시던트당 1회 생성 후 `IncidentSummary` 에 저장(재조회는 DB에서). Redis 단기 캐시.
@@ -281,7 +283,7 @@ IncidentSummary {
 {
   "incidentId": 51,
   "generatedAt": "2026-06-04T09:42:00",
-  "model": "claude-...",
+  "model": "gemini-3.1-flash-lite",
   "situation": "09:40부터 GPU 서버 3대(gpu-01,02,05)에서 CPU·GPU 사용률이 동시 급증했습니다.",
   "rootCauses": [
     { "cause": "동일 팀의 대규모 학습 작업 동시 시작으로 추정",
@@ -304,12 +306,14 @@ IncidentSummary {
 
 ## 부록 — 신규 항목 요약 (추적용)
 
+> 구현 완료 (2026-06-12): 아래 4종(F31~F34) 모두 전제 파이프라인과 함께 백엔드에 구현·테스트되었다. 구현 순서는 C→A→D→B이며, 전제 파이프라인(P0·F27·F28)이 먼저 세워졌다.
+
 | 신규 ID | 기능 | UC | 주기/트리거 | 핵심 기술 | 신규 엔티티 | API |
 |---------|------|----|-------------|-----------|-------------|-----|
 | F31 | 용량·수요 예측 | UC22 | 스케줄러 1h | Holt-Winters/SARIMA, pandas | `Forecast` | GET /ops/forecast |
 | F32 | 장애·건강 열화 예측 | UC23 | 스케줄러 10m | EWMA 추세, (로지스틱) | Server 확장 | GET /servers/{id}/health-trend |
 | F33 | 이상 상관·노이즈 감소 | UC24 | 스케줄러 5m | 시간/토폴로지 클러스터링, Redis | `Incident` | GET /ops/incidents |
-| F34 | LLM 원인 설명·요약 | UC25 | 인시던트 생성/조회 | Claude API, RAG식 컨텍스트 | `IncidentSummary` | GET /ops/incidents/{id}/summary |
+| F34 | LLM 원인 설명·요약 | UC25 | 인시던트 생성/조회 | Gemini API, RAG식 컨텍스트 | `IncidentSummary` | GET /ops/incidents/{id}/summary |
 
 ### 의존 관계
 - C(F33) 는 기존 이상탐지 F27 위에서 동작 → **C 먼저**.
@@ -321,3 +325,5 @@ IncidentSummary {
 2. **A (용량 예측)** — "데이터로 똑똑해짐" 스토리의 핵심.
 3. **D (LLM 설명)** — 데모 임팩트 최상, C 위에 얹음.
 4. **B (장애 예측)** — 라벨 데이터가 쌓이면 학습형으로 고도화.
+
+> 구현 완료 (2026-06-12): 전제 파이프라인(메트릭 수집·F27·F28) 먼저, 이후 C→A→D→B 순서로 모두 구현되었다.
