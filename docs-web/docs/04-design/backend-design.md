@@ -630,10 +630,10 @@ Quota.used를 올리지도 않은 상태이기 때문이며(승인 시점에만 
 | `health_score_job` | 10분 (F28 / UC19) | 서버별 건강 점수 계산 후 `Server.health_score` 갱신 및 ServerHealthHistory 적재. `Server.version`을 건드리지 않는 직접 UPDATE로 낙관적 락 충돌 없음 | `Server.health_score` 갱신, ServerHealthHistory 행 |
 | `incident_correlation_job` | 5분 (F33 / UC24) | 미할당 이상 징후를 묶어 Incident 생성. INCIDENT 유형 알림 발송. 노이즈 감소율 산출 | Incident 행, Notification |
 | `forecast_job` | 60분 (F31 / UC22) | Holt-Winters 지수평활법으로 자원 사용량 추세 예측 및 Forecast 저장. 포화 임박 서버에 CAPACITY 유형 알림 발송 | Forecast 행, Notification |
-| `incident_summary_job` | 5분 (F34 / UC25) | OPEN 상태 인시던트를 Claude API로 분석해 IncidentSummary 생성. API 키가 없으면 graceful skip | IncidentSummary 행 |
+| `incident_summary_job` | 5분 (F34 / UC25) | OPEN 상태 인시던트를 Gemini API로 분석해 IncidentSummary 생성. API 키가 없으면 graceful skip | IncidentSummary 행 |
 | `failure_prediction_job` | 10분 (F32 / UC23) | EWMA 추세 기반 위험도 계산 후 `Server.risk_score`·`Server.eta_to_risk` 갱신. 고위험 서버에 PREDICTIVE_FAILURE 알림 발송. `Server.version`을 건드리지 않는 직접 UPDATE | `Server.risk_score`·`eta_to_risk` 갱신, Notification |
 
 **설계 참고 사항**
 
 - 낙관적 락 안전: `health_score`·`risk_score`·`eta_to_risk`는 `Server.version`을 증가시키지 않는 직접 UPDATE로 갱신한다. 예약·즉시 할당 경로의 낙관적 락과 충돌하지 않으면서도 AIOps 값이 지속적으로 최신 상태를 유지한다.
-- LLM 안전: Claude는 읽기 전용 분석(인시던트 요약)에만 사용한다. API 키는 환경 변수 전용이며, 키가 없거나 호출이 실패하면 해당 주기를 조용히 건너뛰고(graceful skip) 다음 주기에 재시도한다.
+- LLM 안전: Gemini는 읽기 전용 분석(인시던트 요약)에만 사용한다. API 키는 환경 변수 전용이며, 키가 없거나 호출이 실패하면 해당 주기를 조용히 건너뛰고(graceful skip) 다음 주기에 재시도한다.

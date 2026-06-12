@@ -122,7 +122,7 @@ flowchart LR
     end
     API["API (FastAPI)<br/>/ops/* 읽기 전용"]
     FE["프론트 (Recharts 등)"]
-    CLA["Claude API"]
+    CLA["Gemini API"]
 
     A1 & A2 & A3 -->|GET /metrics| J0 --> M
     M --> J27 --> AN
@@ -130,7 +130,7 @@ flowchart LR
     AN --> JC --> IN
     M --> JA --> FC
     SV & AN --> JB --> SV
-    IN --> JD -->|컨텍스트 주입| CLA --> IS
+    IN --> JD -->|Gemini API 호출| CLA --> IS
     M & AN & SV & IN & FC & IS --> API --> FE
 ```
 
@@ -394,18 +394,18 @@ class IncidentSummary(Base):
 
 ### 8-2. 잡/서비스 — `app/jobs/incident_summary_job.py` + `app/services/incident_summary.py`
 
-> 실제 구현 모듈: `app/services/incident_summary.py`(컨텍스트 구성·Claude API 호출)와 `app/jobs/incident_summary_job.py`(배치 잡 `summarize_pending_incidents`, 5분 주기). 초안에서 언급한 `llm_service.py` 이름은 실제 코드와 다르다.
+> 실제 구현 모듈: `app/services/incident_summary.py`(컨텍스트 구성·Gemini API 호출)와 `app/jobs/incident_summary_job.py`(배치 잡 `summarize_pending_incidents`, 5분 주기). 초안에서 언급한 `llm_service.py` 이름은 실제 코드와 다르다.
 ```python
 async def summarize_incident(incident_id) -> None:
     async with SessionLocal() as db:
         ctx = await _build_context(db, incident_id)   # 묶인 이상 + 해당 시점 메트릭 + 서버 메타
-        msg = await claude.messages.create(
-            model=settings.anthropic_model,
-            system="너는 운영 분석가다. 주어진 데이터 안에서만 추론하라.",
-            messages=[{"role": "user", "content": _prompt(ctx)}])
-        parsed = _parse(msg)        # 상황/원인후보/권장조치 + 근거 인용
+        response = await client.aio.models.generate_content(
+            model=settings.gemini_model,
+            contents=_prompt(ctx),
+            config={"max_output_tokens": 1024})
+        parsed = _parse(response.text)  # 상황/원인후보/권장조치 + 근거 인용
         db.add(IncidentSummary(incident_id=incident_id, **parsed,
-               model=settings.anthropic_model))
+               model=settings.gemini_model))
         await db.commit()
 ```
 - **트리거:** 인시던트가 `OPEN` 생성될 때(제안 C 잡 내부) 또는 운영자가 상세를 열 때.
@@ -415,8 +415,8 @@ async def summarize_incident(incident_id) -> None:
 - **비용:** 인시던트당 1회 생성 후 `IncidentSummary` 저장(재조회는 DB). Redis 단기 캐시 선택.
 
 ### 8-3. 의존성·설정 (보안)
-- `anthropic` SDK 추가.
-- `config.py` 에 `anthropic_api_key: str`(환경변수), `anthropic_model: str` 추가.
+- `google-genai` SDK 추가.
+- `config.py` 에 `gemini_api_key`(환경변수), `gemini_model` 추가.
   **키는 절대 하드코딩 금지** — `.env`/환경변수로만. 시작 시 존재 검증.
 
 ### 8-4. API · 프론트
@@ -496,9 +496,9 @@ alembic upgrade head
 | `numpy` | 이상탐지·예측·위험도 | 1·3·5 | |
 | `pandas` | 예측(리샘플·보간) | 3 | |
 | `statsmodels` | Holt-Winters | 3 | MVP. 강화 시 prophet/SARIMA |
-| `anthropic` | LLM 요약 | 4 | API 키 환경변수 필수 |
+| `google-genai` | LLM 요약 | 4 | API 키 환경변수 필수 |
 
-> **컨테이너 분리 효과:** 무거운 라이브러리(pandas·statsmodels·anthropic)는 **스케줄러
+> **컨테이너 분리 효과:** 무거운 라이브러리(pandas·statsmodels·google-genai)는 **스케줄러
 > 컨테이너만** 필요하다. API 컨테이너는 `/ops/*` 읽기 전용이라 추가 의존성이 거의 없다.
 > `pyproject.toml` 의 optional-dependencies 그룹(`[aiops]`)으로 분리해 API 이미지를
 > 가볍게 유지하는 것을 권장.
@@ -548,7 +548,7 @@ alembic upgrade head
 완료 — **Phase 1** ☑ 0003 마이그레이션(metric/incident_id) ☑ `MetricType` enum ☑ `anomaly_detection_job.py`(5m) ☑ `health_score_job.py`(10m, version-safe UPDATE)
 완료 — **Phase 2 (C)** ☑ `Incident` 모델 + 0004 ☑ `incident_correlation_job.py`(5m) ☑ `ops.py` 라우터 + include ☑ noiseReductionRate ☑ 프론트 타임라인/KPI
 완료 — **Phase 3 (A)** ☑ pandas/numpy/statsmodels ☑ `Forecast` 모델 + 0005 ☑ `forecast_job.py`(1h) ☑ `GET /ops/forecast` ☑ 프론트 예측 차트
-완료 — **Phase 4 (D)** ☑ `anthropic` + API키 설정 ☑ `IncidentSummary` 모델 + 0006 ☑ `incident_summary.py`/요약 잡 ☑ `GET /ops/incidents/{id}/summary` ☑ 프론트 AI 카드
+완료 — **Phase 4 (D)** ☑ `google-genai` + API키 설정 ☑ `IncidentSummary` 모델 + 0006 ☑ `incident_summary.py`/요약 잡 ☑ `GET /ops/incidents/{id}/summary` ☑ 프론트 AI 카드
 완료 — **Phase 5 (B)** ☑ `Server` risk 필드 + 0007 ☑ health history(선택) 0008 ☑ `failure_prediction_job.py`(10m) ☑ `GET /servers/{id}/health-trend` ☑ 프론트 위험 배지
 
 ---

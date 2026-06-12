@@ -55,7 +55,7 @@
 | F31 | 용량·수요 예측 | 모니터링·자동화 | UC22 | 중간 | GET /ops/forecast | Holt-Winters(statsmodels), Forecast 적재, 포화 임박 시 CAPACITY 알림 |
 | F32 | 장애·건강 열화 예측 | 모니터링·자동화 | UC23 | 중간 | GET /servers/{id}/health-trend | EWMA 추세+위험도(riskScore/etaToRisk), 임계 초과 시 PREDICTIVE_FAILURE 알림 |
 | F33 | 이상 상관·노이즈 감소 | 모니터링·자동화 | UC24 | 높음 | GET /ops/incidents, GET /ops/incidents/{id} | 시간·서버그룹 클러스터링→Incident, 노이즈 감소율, INCIDENT 알림 |
-| F34 | LLM 원인 설명·요약 | 모니터링·자동화 | UC25 | 중간 | GET /ops/incidents/{id}/summary | Claude API, 인시던트당 1회 IncidentSummary 캐시 |
+| F34 | LLM 원인 설명·요약 | 모니터링·자동화 | UC25 | 중간 | GET /ops/incidents/{id}/summary | Gemini API, 인시던트당 1회 IncidentSummary 캐시 |
 
 스케줄러/미들웨어 기능(F23~F30): 클라이언트 호출 API 없음. 단, 동작 결과는 `SchedulerLog`에 기록되어 F21 대시보드(GET /ops/dashboard)에서 노출됨. AIOps 기능(F31~F34)은 스케줄러 잡이며 조회 API가 별도로 있다(GET /ops/forecast, GET /servers/{id}/health-trend, GET /ops/incidents, GET /ops/incidents/{id}, GET /ops/incidents/{id}/summary).
 
@@ -259,7 +259,7 @@
 **GET /ops/incidents/{id}/summary** · REST · MGR/ADM · F34
 ```jsonc
 // Response 200:
-{ "incidentId": 7, "generatedAt": "2026-06-12T10:05:00Z", "model": "claude-3-5-sonnet",
+{ "incidentId": 7, "generatedAt": "2026-06-12T10:05:00Z", "model": "gemini-3.1-flash-lite",
   "situation": "gpu-01·gpu-03 CPU 동시 급등, 10분간 지속",
   "rootCauses": [
     { "cause": "분산 학습 작업 자원 경쟁", "evidence": "두 서버 동일 시각 cpu>95%" }

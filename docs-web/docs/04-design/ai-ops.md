@@ -33,7 +33,7 @@
   `AnomalyRecord`(이상 이력), `Server.healthScore`, `Reservation`(예약 수요).
 - **연산 위치:** 모든 AI 로직은 **APScheduler 잡(별도 컨테이너)** 에서 주기적으로 돌고,
   결과를 PostgreSQL에 저장한다. API는 "저장된 결과 조회"만 한다(읽기 빠름, 화면 부담 없음).
-- **공통 라이브러리:** pandas, numpy (A·B·C), Claude API (D).
+- **공통 라이브러리:** pandas, numpy (A·B·C), Gemini API (D).
 - **신규 엔티티:** `Forecast`, `Incident`(+ `AnomalyRecord.incidentId` FK), `IncidentSummary`.
 
 ---
@@ -245,7 +245,7 @@ Incident {
 근거가 된 메트릭·이상 이력을 **인용**해 신뢰도를 높인다(환각 억제). 2025년 'AI SRE'의 핵심 차별점.
 
 ### D-2. 필요 기술
-- **LLM:** Claude API (이미 개발 환경에 존재).
+- **LLM:** Gemini API (google-genai SDK).
 - **컨텍스트 구성(RAG식):** 인시던트에 묶인 `AnomalyRecord` + 해당 시점 `ServerMetric` 발췌 +
   서버 메타를 구조화해 프롬프트에 주입. LLM은 **주어진 데이터 안에서만** 추론하도록 지시.
 - **캐싱/비용:** 인시던트당 1회 생성 후 `IncidentSummary` 에 저장(재조회는 DB에서). Redis 단기 캐시.
@@ -283,7 +283,7 @@ IncidentSummary {
 {
   "incidentId": 51,
   "generatedAt": "2026-06-04T09:42:00",
-  "model": "claude-...",
+  "model": "gemini-3.1-flash-lite",
   "situation": "09:40부터 GPU 서버 3대(gpu-01,02,05)에서 CPU·GPU 사용률이 동시 급증했습니다.",
   "rootCauses": [
     { "cause": "동일 팀의 대규모 학습 작업 동시 시작으로 추정",
@@ -313,7 +313,7 @@ IncidentSummary {
 | F31 | 용량·수요 예측 | UC22 | 스케줄러 1h | Holt-Winters/SARIMA, pandas | `Forecast` | GET /ops/forecast |
 | F32 | 장애·건강 열화 예측 | UC23 | 스케줄러 10m | EWMA 추세, (로지스틱) | Server 확장 | GET /servers/{id}/health-trend |
 | F33 | 이상 상관·노이즈 감소 | UC24 | 스케줄러 5m | 시간/토폴로지 클러스터링, Redis | `Incident` | GET /ops/incidents |
-| F34 | LLM 원인 설명·요약 | UC25 | 인시던트 생성/조회 | Claude API, RAG식 컨텍스트 | `IncidentSummary` | GET /ops/incidents/{id}/summary |
+| F34 | LLM 원인 설명·요약 | UC25 | 인시던트 생성/조회 | Gemini API, RAG식 컨텍스트 | `IncidentSummary` | GET /ops/incidents/{id}/summary |
 
 ### 의존 관계
 - C(F33) 는 기존 이상탐지 F27 위에서 동작 → **C 먼저**.
