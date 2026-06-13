@@ -1132,6 +1132,186 @@
                 <mxCell id="fcst_d6" value="생성 시각" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#a094b5;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="fcst" vertex="1">
                     <mxGeometry x="270" y="172" width="230" height="24" as="geometry"/>
                 </mxCell>
+                <mxCell id="sevt" value="" style="rounded=0;html=1;container=1;collapsible=0;fillColor=none;strokeColor=#9a9a9a;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="1120" width="500" height="268" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_h" value="SecurityEvent" style="rounded=0;html=1;fillColor=#e2e2e2;strokeColor=#9a9a9a;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="sevt" vertex="1">
+                    <mxGeometry width="500" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n0" value="id" style="rounded=0;html=1;fillColor=#f3f1e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" parent="sevt" vertex="1">
+                    <mxGeometry y="28" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t0" value="bigint  PK" style="rounded=0;html=1;fillColor=#f3f1e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="28" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d0" value="보안 이벤트 번호" style="rounded=0;html=1;fillColor=#f3f1e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="28" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n1" value="event_type" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="52" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t1" value="string(30)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="52" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d1" value="SecurityEventType 값" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="52" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n2" value="severity" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="76" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t2" value="string(10)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="76" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d2" value="IncidentSeverity 재사용 (기본 INFO)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="76" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n3" value="actor_id → id (user)" style="rounded=0;html=1;fillColor=#edf5e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="100" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t3" value="bigint  FK (null)" style="rounded=0;html=1;fillColor=#edf5e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="100" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d3" value="행위자(미가입 시도 허용)" style="rounded=0;html=1;fillColor=#edf5e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="100" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n4" value="source_ip" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="124" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t4" value="string(45) (null)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="124" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d4" value="요청 클라이언트 IP" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="124" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n5" value="identifier" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="148" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t5" value="string(255) (null)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="148" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d5" value="시도된 이메일 등 식별자" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="148" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n6" value="detail" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="172" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t6" value="jsonb (null)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="172" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d6" value="경로·사유 등 부가정보" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="172" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n7" value="occurred_at" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="196" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t7" value="datetime" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="196" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d7" value="발생 시각. idx: (event_type, occurred_at), (source_ip)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="196" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_n8" value="target_type / target_id" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="sevt" vertex="1">
+                    <mxGeometry y="220" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_t8" value="string (null)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="sevt" vertex="1">
+                    <mxGeometry x="150" y="220" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="sevt_d8" value="대상 종류·식별자 (nullable)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="sevt" vertex="1">
+                    <mxGeometry x="270" y="220" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert" value="" style="rounded=0;html=1;container=1;collapsible=0;fillColor=none;strokeColor=#9a9a9a;" parent="1" vertex="1">
+                    <mxGeometry x="700" y="1120" width="500" height="268" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_h" value="SecurityAlert" style="rounded=0;html=1;fillColor=#e2e2e2;strokeColor=#9a9a9a;fontStyle=1;fontSize=13;align=center;verticalAlign=middle;" parent="salert" vertex="1">
+                    <mxGeometry width="500" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n0" value="id" style="rounded=0;html=1;fillColor=#f3f1e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontStyle=1;" parent="salert" vertex="1">
+                    <mxGeometry y="28" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t0" value="bigint  PK" style="rounded=0;html=1;fillColor=#f3f1e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="28" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d0" value="보안 경보 번호" style="rounded=0;html=1;fillColor=#f3f1e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="28" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n1" value="alert_type" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="52" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t1" value="string(20)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="52" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d1" value="SecurityAlertType 값" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="52" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n2" value="severity" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="76" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t2" value="string(10)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="76" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d2" value="IncidentSeverity 재사용" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="76" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n3" value="status" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="100" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t3" value="string(10)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="100" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d3" value="IncidentStatus 재사용 (기본 OPEN)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="100" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n4" value="subject" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="124" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t4" value="string(255)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="124" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d4" value="경보 주체 (IP·이메일·server:{id})" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="124" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n5" value="event_count / message" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="148" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t5" value="int / string(500)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="148" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d5" value="묶인 이벤트 수·사람이 읽는 요약" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="148" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n6" value="started_at / resolved_at" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="172" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t6" value="datetime / datetime(null)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="172" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d6" value="경보 시작·해결 시각" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="172" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n7" value="resolved_by → id (user)" style="rounded=0;html=1;fillColor=#edf5e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="196" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t7" value="bigint  FK (null)" style="rounded=0;html=1;fillColor=#edf5e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="196" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d7" value="해결한 ADM (nullable)" style="rounded=0;html=1;fillColor=#edf5e7;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="196" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_n8" value="— (인덱스 없음)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;" parent="salert" vertex="1">
+                    <mxGeometry y="220" width="150" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_t8" value="" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#555555;" parent="salert" vertex="1">
+                    <mxGeometry x="150" y="220" width="120" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="salert_d8" value="FK: user.resolved_by (nullable)" style="rounded=0;html=1;fillColor=#ffffff;strokeColor=#9a9a9a;align=left;verticalAlign=middle;spacingLeft=8;fontSize=10;fontColor=#3a3a3a;" parent="salert" vertex="1">
+                    <mxGeometry x="270" y="220" width="230" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_user_sevt" value="보안 이벤트 1:N&lt;br&gt;(User : SecurityEvent)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startFill=0;endFill=0;fontSize=11;fontStyle=3;labelBackgroundColor=#ffffff;startArrow=ERone;endArrow=ERmany;exitX=0;exitY=0.9;entryX=1;entryY=0.4;" parent="1" source="user" target="sevt" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_user_salert" value="경보 해결 1:N&lt;br&gt;(User : SecurityAlert)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startFill=0;endFill=0;fontSize=11;fontStyle=3;labelBackgroundColor=#ffffff;startArrow=ERone;endArrow=ERmany;exitX=1;exitY=0.9;entryX=0;entryY=0.4;" parent="1" source="user" target="salert" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
                 <mxCell id="legend" value="" style="rounded=0;html=1;container=1;collapsible=0;fillColor=#fbfbfb;strokeColor=#bbbbbb;" parent="1" vertex="1">
                     <mxGeometry x="700" y="900" width="640" height="76" as="geometry"/>
                 </mxCell>

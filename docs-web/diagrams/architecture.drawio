@@ -51,7 +51,7 @@
         <mxCell id="redis" value="Redis 7&#10;:6379&#10;캐시 · 분산 락&#10;Pub/Sub&#10;Rate limit 카운터" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;size=12;fillColor=#f1ece4;strokeColor=#c2ad8e;" vertex="1" parent="be">
           <mxGeometry x="210" y="160" width="160" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="sched" value="APScheduler (별도 컨테이너)&#10;메트릭 수집 UC14 · 유휴 회수 UC15&#10;만료 반납 UC16 · 이상 탐지 UC18 · 헬스 점수 UC19" style="rounded=1;whiteSpace=wrap;fillColor=#f1ece4;strokeColor=#c2ad8e;" vertex="1" parent="be">
+        <mxCell id="sched" value="APScheduler (별도 컨테이너)&#10;메트릭 수집 UC14 · 유휴 회수 UC15&#10;만료 반납 UC16 · 이상 탐지 UC18 · 헬스 점수 UC19&#10;보안 위협 탐지 UC27 (security_monitoring)" style="rounded=1;whiteSpace=wrap;fillColor=#f1ece4;strokeColor=#c2ad8e;" vertex="1" parent="be">
           <mxGeometry x="30" y="340" width="340" height="100" as="geometry" />
         </mxCell>
 
@@ -81,6 +81,11 @@
         </mxCell>
         <mxCell id="srv3" value="서버 N 에이전트 :9103&#10;/health · /metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#a3b79a;" vertex="1" parent="pool">
           <mxGeometry x="20" y="230" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 보안 관제 컴포넌트 ===== -->
+        <mxCell id="sec" value="보안 관제 (F36·F37·F38)&#10;SecurityEvent 기록 → security_monitoring 잡 탐지&#10;SecurityAlert + Notification → ADM WebSocket&#10;/admin/security 화면 (ADM 전용)" style="rounded=1;whiteSpace=wrap;fillColor=#fce8e8;strokeColor=#c0a0a0;fontSize=10;" vertex="1" parent="be">
+          <mxGeometry x="30" y="450" width="340" height="70" as="geometry" />
         </mxCell>
 
         <!-- ===== 그룹 간 간선 ===== -->

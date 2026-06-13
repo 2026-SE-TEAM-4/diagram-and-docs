@@ -10,8 +10,8 @@
 |---|---|---|
 | Frontend SPA | React 18 + TypeScript + Vite (`:5173`) | 역할별(STU·MGR·ADM) 화면, REST 호출, WebSocket 알림 수신 |
 | API 서버 | FastAPI (`:8000`) | 인증(JWT)·예약·승인·알림·Quota REST API, WebSocket 엔드포인트 |
-| 스케줄러 | APScheduler (별도 컨테이너) | 메트릭 수집(UC14)·유휴 회수(UC15)·만료/사용시작 전이(UC16)·승인 타임아웃(UC17)·이상 탐지(UC18)·헬스 점수(UC19)·점검 전환·이상 상관·LLM 요약·용량 예측·장애 예측 등 11개 주기 잡(잡 등록은 `app/jobs/scheduling.py` 한 곳). 설계 주기는 1~60분이며 로컬 데모용으로 초 단위로 가속 |
-| 메인 저장소 | PostgreSQL 16 (`:5432`) | 사용자·예약·서버·승인·메트릭·AIOps(인시던트·예측·요약·건강이력)·감사 로그 (17개 엔티티) |
+| 스케줄러 | APScheduler (별도 컨테이너) | 메트릭 수집(UC14)·유휴 회수(UC15)·만료/사용시작 전이(UC16)·승인 타임아웃(UC17)·이상 탐지(UC18)·헬스 점수(UC19)·점검 전환·이상 상관·LLM 요약·용량 예측·장애 예측·보안 위협 탐지(UC27) 등 12개 주기 잡(잡 등록은 `app/jobs/scheduling.py` 한 곳). 설계 주기는 1~60분이며 로컬 데모용으로 초 단위로 가속 |
+| 메인 저장소 | PostgreSQL 16 (`:5432`) | 사용자·예약·서버·승인·메트릭·AIOps(인시던트·예측·요약·건강이력)·감사 로그·보안(이벤트·경보) (19개 엔티티) |
 | 캐시·메시징 | Redis 7 (`:6379`) | 캐시, 분산 락, Pub/Sub(실시간 알림), 로그인 실패 카운터 |
 | 서버 풀 | server-pool 에이전트 N대 (`:9101~`) | `/health`·`/metrics` 노출 — 모니터링 대상 (별도 레포) |
 | CI/CD | GitHub → GitHub Actions → Docker | PR 검증·이미지 빌드·배포 |
@@ -52,6 +52,33 @@
 - **요청 처리**: 클라이언트-서버 — 사용자의 REST 요청이 트리거.
 - **실시간 알림**: 이벤트 기반(브로드캐스트) — 상태 변화 시 Redis Pub/Sub 채널에 발행하고, 구독 중인 WebSocket 핸들러가 수신해 푸시한다. 발행자는 수신자를 모른다(Observer).
 - **자동화 작업**: 중앙 집중 주기 제어 — APScheduler가 1분 주기로 잡(메트릭 수집, 만료 처리, 자동 거절)을 호출하는 호출-복귀 방식. 자동화 주체(SYS)의 동작을 한곳에서 관제할 수 있다.
+
+### 3.5 보안 관제
+
+인증·인가·관리 작업 등 시스템 전반의 보안 이벤트를 수집하고 위협 패턴을 탐지하는 흐름은 기존 AIOps(이상탐지 → 인시던트 → 알림) 구조를 그대로 따른다.
+
+```
+이벤트 기록 출처 (F36 / UC26)
+  api/auth.py          → LOGIN_FAILURE · ACCOUNT_LOCKED
+  core/deps.py         → ACCESS_DENIED
+  api/admin.py         → ADMIN_ACTION
+  jobs/metric_collection_job.py → AGENT_UNREACHABLE
+        ↓  SecurityEvent 적재 (occurred_at, source_ip, actor_id, identifier)
+security_monitoring 잡 (F37 / UC27 · 5초 주기)
+  services/security_detection.py 탐지 로직
+        ↓  임계 초과 시
+SecurityAlert 생성 (alert_type, severity, subject, event_count)
+        ↓  기존 알림 채널 재사용
+Notification(type="security_alert") → Redis Pub/Sub → WebSocket → ADM
+        ↓
+A4 보안 관제 화면 (/admin/security, ADM 전용)
+  GET /security/summary · /security/alerts · /security/events
+  PATCH /security/alerts/{id}/resolve
+```
+
+- 보안 이벤트 기록은 각 서비스·잡 흐름에 얇은 헬퍼(`services/security_event_service.py`)를 삽입하는 방식으로 추가되며, 기존 비즈니스 로직은 변경하지 않는다.
+- 알림 전송에는 기존 `publish_notification` / WebSocket 채널을 재사용하므로 별도 채널 인프라가 필요하지 않다.
+- 탐지 잡의 순수 판정 로직은 `services/security_detection.py`에 분리해 DB 없이 단위 테스트가 가능하다.
 
 ### 3.4 분산 처리에 대한 결정
 

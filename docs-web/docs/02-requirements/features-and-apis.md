@@ -57,16 +57,20 @@
 | F33 | 이상 상관·노이즈 감소 | 모니터링·자동화 | UC24 | 높음 | GET /ops/incidents, GET /ops/incidents/{id} | 시간·서버그룹 클러스터링→Incident, 노이즈 감소율, INCIDENT 알림 |
 | F34 | LLM 원인 설명·요약 | 모니터링·자동화 | UC25 | 중간 | GET /ops/incidents/{id}/summary | Gemini API, 인시던트당 1회 IncidentSummary 캐시 |
 | F35 | 운영 데이터 초기화(고급) | 보안·운영 | — | 낮음 | POST /admin/reset/* | ADM 전용, 데모·테스트용 5종 초기화 엔드포인트 |
+| F36 | 보안 이벤트 기록 | 보안 관제 | UC26 | 높음 | — (인라인 기록) | 인증·인가·관리·에이전트 수집 흐름에서 SecurityEvent 적재 |
+| F37 | 보안 위협 탐지·경보 | 보안 관제 | UC27 | 높음 | — (스케줄러 5초) | security_monitoring 잡: 윈도우 집계 → SecurityAlert 생성 → ADM 알림 |
+| F38 | 보안 관제 화면(ADM 전용) | 보안 관제 | UC28 | 중간 | GET /security/events, GET /security/alerts, GET /security/summary, PATCH /security/alerts/{id}/resolve, POST /security/simulate | ADM 전용, 경보 조회·해결·시뮬레이션 |
 
-스케줄러/미들웨어 기능(F23~F30): 클라이언트 호출 API 없음. 단, 동작 결과는 `SchedulerLog`에 기록되어 F21 대시보드(GET /ops/dashboard)에서 노출됨. AIOps 기능(F31~F34)은 스케줄러 잡이며 조회 API가 별도로 있다(GET /ops/forecast, GET /servers/{id}/health-trend, GET /ops/incidents, GET /ops/incidents/{id}, GET /ops/incidents/{id}/summary).
+스케줄러/미들웨어 기능(F23~F30): 클라이언트 호출 API 없음. 단, 동작 결과는 `SchedulerLog`에 기록되어 F21 대시보드(GET /ops/dashboard)에서 노출됨. AIOps 기능(F31~F34)은 스케줄러 잡이며 조회 API가 별도로 있다(GET /ops/forecast, GET /servers/{id}/health-trend, GET /ops/incidents, GET /ops/incidents/{id}, GET /ops/incidents/{id}/summary). 보안 관제 기능(F36~F38): F36은 인라인 기록(API 없음), F37은 스케줄러 잡(SchedulerLog에 ucId="UC27"로 기록), F38은 ADM 전용 REST 엔드포인트 5종.
 
 ---
 
 ## 1.1 구현 현황 (2026-06-12 기준)
 
-**구현완료: F01~F35 — 미구현 없음.**
-- 인증(회원가입·로그인·내 정보)을 포함해 기능 카탈로그 35건 전부 머지+테스트 완료.
+**구현완료: F01~F38 — 미구현 없음.**
+- 인증(회원가입·로그인·내 정보)을 포함해 기능 카탈로그 38건 전부 머지+테스트 완료.
 - F35(운영 데이터 초기화): 2026-06-13 추가. ADM 전용 고급 화면(`/admin/advanced`)과 5종 초기화 REST 엔드포인트(`POST /admin/reset/*`).
+- F36~F38(보안 관제): 2026-06-13 추가. `SecurityEvent`·`SecurityAlert` 두 신규 테이블, `security_monitoring` 스케줄러 잡(UC27·5초), ADM 전용 보안 관제 화면(`/admin/security`)과 REST 엔드포인트 5종.
 - 조회·예약·승인·서버관리·알림·보안운영 REST 기능과 스케줄러/미들웨어 잡(F23~F30), AIOps 기능(F31~F34)이 모두 동작한다.
 
 **구현 시 명세와 달라진 점(정확히 반영)**:
@@ -372,6 +376,63 @@ Reservation·ApprovalRequest·QueueEntry·MaintenanceSchedule 전체 삭제. 에
 ```
 마스터 데이터(User·Team·Quota·Server) 제외 모든 운영 데이터 삭제. 에러 401, 403, 500
 
+### 보안 관제 (ADM 전용, F38)
+
+> 전 엔드포인트 `require_role("ADM")`. 스키마: `app/schemas/security.py`(camelCase alias 노출).
+
+**GET /security/events** · REST · ADM · F38
+```jsonc
+// Request (query): { "eventType": "LOGIN_FAILURE", "severity": "WARNING",
+//   "from": "2026-06-13T00:00:00Z", "to": "2026-06-13T23:59:59Z", "limit": 100 }
+//   eventType 허용값: LOGIN_FAILURE|ACCOUNT_LOCKED|ACCESS_DENIED|ADMIN_ACTION|AGENT_UNREACHABLE
+// Response 200 (배열, occurred_at 내림차순):
+[ { "id": 1, "eventType": "LOGIN_FAILURE", "severity": "WARNING",
+    "actorId": null, "sourceIp": "192.168.0.10", "identifier": "test@example.com",
+    "targetType": null, "targetId": null, "detail": {}, "occurredAt": "2026-06-13T10:00:00Z" } ]
+```
+에러: 401, 403, 500
+
+**GET /security/alerts** · REST · ADM · F38
+```jsonc
+// Request (query): { "status": "OPEN" }   // status: OPEN|RESOLVED
+// Response 200 (배열, started_at 내림차순):
+[ { "id": 1, "alertType": "BRUTE_FORCE", "severity": "CRITICAL", "status": "OPEN",
+    "subject": "192.168.0.10", "eventCount": 8, "message": "브루트포스 의심 IP: 192.168.0.10",
+    "startedAt": "2026-06-13T10:00:00Z", "resolvedAt": null, "resolvedBy": null } ]
+```
+에러: 401, 403, 500
+
+**GET /security/summary** · REST · ADM · F38
+```jsonc
+// Response 200:
+{ "todayEvents": 42, "openAlerts": 3, "criticalAlerts": 1, "bruteForceSuspects": 2 }
+```
+에러: 401, 403, 500
+
+**PATCH /security/alerts/{id}/resolve** · REST · ADM · F38
+```jsonc
+// Request: 바디 없음 (경로 파라미터만)
+// Response 200:
+{ "id": 1, "alertType": "BRUTE_FORCE", "status": "RESOLVED",
+  "resolvedAt": "2026-06-13T11:00:00Z", "resolvedBy": 3 }
+```
+이미 RESOLVED이면 현재 상태 그대로 반환(멱등). 에러: 401, 403, 404, 500
+
+**POST /security/simulate** · REST · ADM · F38 (데모용)
+```jsonc
+// Request: { "scenario": "brute_force" }
+//   scenario 허용값: brute_force|access_abuse|agent_down|admin_abuse
+// Response 200:
+{ "inserted": 6, "message": "brute_force 시나리오 이벤트 6건 삽입됨" }
+```
+에러: 400, 401, 403, 500
+
+**POST /admin/reset/security** · REST · ADM · F35 (기존 reset 확장)
+```jsonc
+// Response 200: { "deleted": 51, "message": "보안 이벤트·경보 51건 삭제됨" }
+```
+`SecurityAlert`·`SecurityEvent` 전체 삭제. 에러 401, 403, 500
+
 ---
 
 ## 3. 추적 매핑 (UC → 기능 → API)
@@ -404,6 +465,9 @@ Reservation·ApprovalRequest·QueueEntry·MaintenanceSchedule 전체 삭제. 에
 | UC23 | F32 | GET /servers/{id}/health-trend |
 | UC24 | F33 | GET /ops/incidents, GET /ops/incidents/{id} |
 | UC25 | F34 | GET /ops/incidents/{id}/summary |
+| UC26 | F36 | — (인라인 기록) |
+| UC27 | F37 | — (스케줄러, SchedulerLog ucId="UC27") |
+| UC28 | F38 | GET /security/events, GET /security/alerts, GET /security/summary, PATCH /security/alerts/{id}/resolve, POST /security/simulate |
 
 ---
 

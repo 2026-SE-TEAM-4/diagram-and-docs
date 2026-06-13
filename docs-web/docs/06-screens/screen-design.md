@@ -252,6 +252,22 @@
 | A2 서버 관리 | 등록·수정·점검 전환·삭제·점검 일정 | UC11 UC12 UC13 |
 | 계정 잠금 관리 | 잠긴 계정 잠금 해제 | UC20 |
 | 고급 관리 | 운영 데이터 초기화(데모용) | — |
+| A4 보안 관제 | KPI 스트립·경보 패널·이벤트 테이블, 경보 해결·시뮬레이션 | UC26 UC27 UC28 |
+
+<div class="scr">
+  <div class="scr-frame">
+    <div class="scr-side"><span></span><span></span><span></span><span></span><span></span><span></span><span class="on"></span></div>
+    <div class="scr-body">
+      <div class="m-top"></div>
+      <div class="m-stats"><span class="r"></span><span class="warn"></span><span class="a"></span><span></span></div>
+      <div class="m-cols">
+        <div class="m-main"><div class="m-table"><i class="bad"></i><i class="warn"></i><i class="ok"></i><i class="ok"></i></div></div>
+        <div class="m-aside"><div class="m-list"><i class="bad"></i><i class="warn"></i><i></i></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="scr-cap"><b>A4. 보안 관제</b>KPI 스트립(오늘 이벤트·미해결 경보·Critical·브루트포스 의심 — GET /security/summary), 보안 경보 패널(severity 배지·[해결] 버튼·[공격 시뮬레이션] 버튼 — GET /security/alerts), 보안 이벤트 테이블(eventType·severity 필터 — GET /security/events). ADM 전용, 라우트 /admin/security. (UC26·UC27·UC28)</div>
+</div>
 
 ## 구현 우선순위 제안
 

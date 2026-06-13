@@ -26,6 +26,8 @@ erDiagram
     Incident ||--o| IncidentSummary : "LLM 요약"
     Server ||--o{ Forecast : "용량 예측"
     Server ||--o{ ServerHealthHistory : "건강점수 이력"
+    User ||--o{ SecurityEvent : "보안 이벤트(actor, nullable)"
+    User ||--o{ SecurityAlert : "경보 해결(resolved_by, nullable)"
 
     Team {
         bigint id PK
@@ -186,10 +188,35 @@ erDiagram
         int score "그 시점 건강점수"
         datetime recordedAt "시계열, 추세 기울기용"
     }
+    SecurityEvent {
+        bigint id PK
+        string event_type "SecurityEventType: LOGIN_FAILURE|ACCOUNT_LOCKED|ACCESS_DENIED|ADMIN_ACTION|AGENT_UNREACHABLE"
+        string severity "IncidentSeverity(재사용): INFO|WARNING|CRITICAL. 기본 INFO"
+        bigint actor_id FK "nullable — 미가입 시도 허용"
+        string source_ip "nullable, String(45)"
+        string identifier "nullable, 시도된 이메일 등"
+        string target_type "nullable, 대상 종류(server·user 등)"
+        string target_id "nullable, 대상 식별자"
+        json detail "nullable, 경로·사유 등 부가정보"
+        datetime occurred_at "server_default now(). 인덱스: (event_type, occurred_at), (source_ip)"
+    }
+    SecurityAlert {
+        bigint id PK
+        string alert_type "SecurityAlertType: BRUTE_FORCE|ACCESS_ABUSE|AGENT_DOWN|ADMIN_ABUSE"
+        string severity "IncidentSeverity(재사용)"
+        string status "IncidentStatus(재사용): OPEN|RESOLVED. 기본 OPEN"
+        string subject "경보 주체(IP·이메일·server:{id}·user:{id})"
+        int event_count "묶인 이벤트 수"
+        string message "사람이 읽는 요약, String(500)"
+        datetime started_at "server_default now()"
+        datetime resolved_at "nullable"
+        bigint resolved_by FK "nullable — 해결한 ADM"
+    }
 ```
 
 ## 설계 메모
 
+- 신규 보안 관제 엔티티(SecurityEvent·SecurityAlert)는 F36 인라인 기록과 F37 탐지 잡이 각각 적재하고, F38 API는 조회·해결만 한다. 기존 `IncidentSeverity`·`IncidentStatus` enum을 재사용하며, 신규 enum `SecurityEventType`·`SecurityAlertType`은 `app/models/enums.py`에 추가됨.
 - 신규 AIOps 엔티티(Incident·Forecast·IncidentSummary·ServerHealthHistory)는 모두 스케줄러 잡이 적재하고 API는 조회만 한다.
 - `Server.healthScore`·`riskScore`·`etaToRisk` 갱신은 낙관적 락(version)을 건드리지 않는 직접 UPDATE로 한다.
 - `AnomalyRecord.incidentId`는 상관 잡(F33)이 채운다.

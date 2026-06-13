@@ -98,6 +98,9 @@
 | **UC21** | 시스템 운영 대시보드 | 보안·운영 | ADM | 중간 |
 | **UC22** | 회원가입 | 인증·계정 | 미인증 사용자 | 높음 |
 | **UC23** | 로그인 | 인증·계정 | STU, MGR, ADM | 높음 |
+| **UC26** | 보안 이벤트 기록 | 보안 관제 | SYS | 높음 |
+| **UC27** | 보안 위협 탐지·경보 | 보안 관제 | SYS | 높음 |
+| **UC28** | 보안 경보 조회·해결 | 보안 관제 | ADM | 중간 |
 
 > ※ UC08(Quota 초과 요청)은 별도 명세 없이 UC04/UC05의 확장 흐름과 ApprovalRequest 생성 단계로 정의된다. 부록 A.2 참조.
 
@@ -706,6 +709,91 @@ UC21은 서버 관리자가 스케줄러 실행 상태, 메트릭 수집 현황,
 - **[E1] 섹션 조회 실패** — 해당 섹션에 "데이터 없음"을 표시하고 나머지 섹션은 정상 표시한다.
 - **[E2] 권한** — ADM 전용 메뉴로, MGR(팀 매니저), STU(학생) 접근 시 403으로 거부한다.
 - **[E3] 가용성 데이터 부족** — scheduler_log 누적 시간이 24시간 미만이면 MTBF·MTTR을 N/A로 표시하고 "데이터 수집 중" 안내를 덧붙인다. (데이터의 부족으로 인해 정확성을 보증할 수 없기 때문이다.)
+
+---
+
+## 보안 관제 그룹
+
+인증·인가·관리자 작업·에이전트 수집 등 시스템 전반에서 발생하는 **보안 이벤트**를 기록하고, 주기 잡이 위협 패턴을 탐지해 **보안 경보**를 생성한다. 기존 AIOps(이상탐지 → 인시던트 → 알림) 구조와 동일한 방식으로 동작하며, 서버 관리자(ADM)에게 알림과 전용 대시보드로 전달된다.
+
+관련 설계 문서: [`../04-design/security-monitoring.md`](../04-design/security-monitoring.md)
+
+### 유스케이스 UC26 — 보안 이벤트 기록
+
+| 항목 | 내용 |
+|------|------|
+| **일차 액터** | 모니터링 시스템(SYS) |
+| **범위** | 서버 예약/할당 관리 시스템 |
+| **수준** | 하위 기능 |
+
+**주요 성공 시나리오**
+
+1. 인증·인가·관리 작업 중 보안 관련 이벤트가 발생한다.
+2. 시스템이 이벤트 종류에 따라 `SecurityEvent` 레코드를 생성한다.
+   - 로그인 실패 / 계정 잠금: `api/auth.py` 로그인 핸들러에서 `LOGIN_FAILURE` 또는 `ACCOUNT_LOCKED` 기록. `source_ip`·`identifier`(시도된 이메일) 함께 저장.
+   - 권한 거부(403): `core/deps.py` `require_role` 체커에서 `ACCESS_DENIED` 기록. `actor_id`·경로 저장.
+   - 관리자 민감 작업: `api/admin.py` reset 종류 및 계정 잠금 해제에서 `ADMIN_ACTION` 기록. `actor_id`·작업명·대상 저장.
+   - 에이전트 이상: `jobs/metric_collection_job.py`에서 메트릭이 `MISSING`이면 `AGENT_UNREACHABLE` 기록.
+3. `SecurityEvent`가 DB에 적재된다(`occurred_at = now`).
+
+**확장·실패 시나리오**
+
+- **[A1] 익명 시도** — 미가입 이메일로 로그인을 시도하는 경우 `actor_id`가 null이어도 `identifier`(이메일)와 `source_ip`를 기록한다.
+- **[E1] 기록 실패** — 이벤트 기록이 실패하더라도 원래 요청 처리(예: 401 반환)는 정상 완료된다. 기록 오류는 운영 로그에 남긴다.
+
+### 유스케이스 UC27 — 보안 위협 탐지·경보
+
+| 항목 | 내용 |
+|------|------|
+| **일차 액터** | 모니터링 시스템(SYS) |
+| **범위** | 서버 예약/할당 관리 시스템 |
+| **수준** | 하위 기능 |
+
+**주요 성공 시나리오**
+
+1. 시스템 스케줄러가 5초(설계 5분) 주기로 본 UC를 시작한다.
+2. 시스템이 최근 시간 윈도우 내 `SecurityEvent`를 집계해 위협 패턴을 탐지한다.
+
+   | 경보 종류 | 묶음 기준 | 윈도우 | 임계 | 심각도 |
+   |----------|----------|--------|------|--------|
+   | `BRUTE_FORCE` | `source_ip` 또는 `identifier` | 60초 | 실패+잠금 ≥ 5 | WARNING(잠금 포함 시 CRITICAL) |
+   | `ACCESS_ABUSE` | `actor_id` | 60초 | `ACCESS_DENIED` ≥ 5 | WARNING |
+   | `AGENT_DOWN` | `server:{id}` | 30초 | `AGENT_UNREACHABLE` ≥ 3 | CRITICAL |
+   | `ADMIN_ABUSE` | `actor_id` | 60초 | `ADMIN_ACTION` ≥ 5 | WARNING |
+
+3. 임계를 초과하는 패턴이 발견되면 `SecurityAlert`를 생성한다(디바운스: 같은 `alert_type`+`subject`의 OPEN 경보가 이미 있으면 `event_count`만 갱신).
+4. 전체 ADM에게 `Notification(type="security_alert")` 생성 후 Redis Pub/Sub 발행 → WebSocket 알림 푸시.
+5. 실행 결과를 `SchedulerLog`(ucId="UC27")에 기록한다.
+
+**확장·실패 시나리오**
+
+- **[A1] 디바운스** — 동일 `alert_type`+`subject`로 OPEN 경보가 존재하면 새 경보를 만들지 않고 `event_count`를 갱신한다(알림 폭주 방지).
+- **[E1] 잡 실패** — 스케줄러 오류 시 다음 주기에 재시도하고 운영 로그를 남긴다.
+
+### 유스케이스 UC28 — 보안 경보 조회·해결
+
+| 항목 | 내용 |
+|------|------|
+| **일차 액터** | 서버 관리자(ADM) |
+| **범위** | 서버 예약/할당 관리 시스템 |
+| **수준** | 사용자 목표 |
+
+**주요 성공 시나리오**
+
+1. ADM이 보안 관제 화면(`/admin/security`)을 열면 KPI 스트립·경보 패널·이벤트 테이블이 표시된다.
+2. **KPI 조회** — `GET /security/summary`로 오늘 이벤트 수·미해결 경보·Critical 경보·브루트포스 의심 건수를 확인한다.
+3. **경보 목록 조회** — `GET /security/alerts`로 OPEN/RESOLVED 경보 목록을 확인한다.
+4. **이벤트 목록 조회** — `GET /security/events`로 이벤트를 필터링(eventType·severity·기간)해 조회한다.
+5. **경보 해결** — ADM이 특정 경보를 선택하고 [해결] 버튼을 누르면 `PATCH /security/alerts/{id}/resolve`가 호출되어 `status = RESOLVED`·`resolved_at`·`resolved_by`가 기록된다.
+6. 시스템이 ADM에게 해결 완료를 표시한다.
+
+**확장·실패 시나리오**
+
+- **[A1] 공격 시뮬레이션(데모)** — `POST /security/simulate` 호출로 선택한 시나리오에 해당하는 가짜 `SecurityEvent`를 일괄 삽입해 다음 탐지 주기에 경보가 발생하도록 재현할 수 있다.
+- **[A2] 멱등 해결** — 이미 RESOLVED 상태인 경보를 다시 해결 요청하면 현재 상태를 그대로 반환한다(중복 처리 없음).
+- **[A3] 데모 초기화** — `POST /admin/reset/security`로 `SecurityEvent`·`SecurityAlert` 전체를 초기화해 시연 환경을 재설정할 수 있다.
+- **[E1] 없는 경보** — 존재하지 않는 경보 id 해결 시도 시 404로 거부한다.
+- **[E2] 권한** — ADM 전용. STU·MGR 접근 시 403으로 거부한다.
 
 ---
 

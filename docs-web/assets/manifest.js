@@ -44,6 +44,7 @@ window.DOCS_MANIFEST = {
             { title: "동적 모델 (상태도·시퀀스)", path: "docs/04-design/dynamic-models.md" },
             { title: "백엔드 설계 — 클래스·SOLID·패턴", path: "docs/04-design/backend-design.md" },
             { title: "AIOps 기능 설계", path: "docs/04-design/ai-ops.md" },
+            { title: "보안 관제·경고 설계", path: "docs/04-design/security-monitoring.md" },
           ],
         },
         {
