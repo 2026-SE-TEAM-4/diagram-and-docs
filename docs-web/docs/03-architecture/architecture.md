@@ -10,8 +10,8 @@
 |---|---|---|
 | Frontend SPA | React 18 + TypeScript + Vite (`:5173`) | 역할별(STU·MGR·ADM) 화면, REST 호출, WebSocket 알림 수신 |
 | API 서버 | FastAPI (`:8000`) | 인증(JWT)·예약·승인·알림·Quota REST API, WebSocket 엔드포인트 |
-| 스케줄러 | APScheduler (별도 컨테이너) | 메트릭 수집(UC14), 유휴 회수(UC15), 만료 반납(UC16), 이상 탐지(UC18), 헬스 점수(UC19) — 1분 주기 |
-| 메인 저장소 | PostgreSQL 16 (`:5432`) | 사용자·예약·서버·승인·메트릭·감사 로그 (13개 엔티티) |
+| 스케줄러 | APScheduler (별도 컨테이너) | 메트릭 수집(UC14)·유휴 회수(UC15)·만료/사용시작 전이(UC16)·승인 타임아웃(UC17)·이상 탐지(UC18)·헬스 점수(UC19)·점검 전환·이상 상관·LLM 요약·용량 예측·장애 예측 등 11개 주기 잡(잡 등록은 `app/jobs/scheduling.py` 한 곳). 설계 주기는 1~60분이며 로컬 데모용으로 초 단위로 가속 |
+| 메인 저장소 | PostgreSQL 16 (`:5432`) | 사용자·예약·서버·승인·메트릭·AIOps(인시던트·예측·요약·건강이력)·감사 로그 (17개 엔티티) |
 | 캐시·메시징 | Redis 7 (`:6379`) | 캐시, 분산 락, Pub/Sub(실시간 알림), 로그인 실패 카운터 |
 | 서버 풀 | server-pool 에이전트 N대 (`:9101~`) | `/health`·`/metrics` 노출 — 모니터링 대상 (별도 레포) |
 | CI/CD | GitHub → GitHub Actions → Docker | PR 검증·이미지 빌드·배포 |
@@ -28,7 +28,7 @@
 
 ![로컬 런타임](../../assets/runtime-diagram.png)
 
-- 컨테이너 간 통신은 Docker 내부 네트워크, 외부 서버 풀(`:9101..9103`)로는 `host.docker.internal` 경유 HTTP
+- 컨테이너 간 통신은 Docker 내부 네트워크, 외부 서버 풀(`:9101..9106`, 6대)로는 `host.docker.internal` 경유 HTTP
 - API와 스케줄러는 같은 코드베이스의 두 entrypoint로, 컨테이너를 분리해 장애 격리
 
 ## 3. 아키텍처 스타일 선정과 사유

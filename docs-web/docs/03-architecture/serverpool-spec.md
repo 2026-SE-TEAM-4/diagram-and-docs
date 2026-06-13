@@ -2,7 +2,7 @@
 
 ## 서버 풀 명세서 (server-pool)
 
-엔드포인트 2종 / 수집기 4종 / 메트릭 계약 1종
+엔드포인트 3종(/health · /metrics · /info) / 수집기 4종 / 메트릭 계약 1종
 
 대상 레포: `server-pool` — 백엔드(`backend`)가 1분 주기로 PULL해 가는 모니터링 대상 서버 풀.
 단일 출처(SSOT): 데이터 모델은 Notion `데이터 모델 (ERD)`, 아키텍처는 Notion `시스템 설계`.
@@ -12,9 +12,9 @@
 
 ## 1. 개요
 
-`server-pool`은 백엔드가 사용률을 수집해 갈 **대상 서버들**을, 한 종류의 경량 에이전트 이미지를 컨테이너 N개로 띄워 시뮬레이션한다. 기본 3대(`agent-1`·`agent-2`·`agent-3`)가 호스트 포트 `9101`·`9102`·`9103`을 점유한다.
+`server-pool`은 백엔드가 사용률을 수집해 갈 **대상 서버들**을, 한 종류의 경량 에이전트 이미지를 컨테이너 N개로 띄워 시뮬레이션한다. 기본 6대(`agent-1`~`agent-6`)가 호스트 포트 `9101`~`9106`을 점유한다(1~4번은 GPU 서버, 5~6번은 GPU 미탑재 CPU 서버).
 
-각 에이전트는 `/health`와 `/metrics`만 노출하는 **상태 없는 경량 프로세스**다. 인증·권한·DB가 없으며, 사람 사용자가 직접 호출하지 않는다. 호출 주체는 백엔드의 자동화 액터 **SYS**(APScheduler)뿐이며, 1분 주기로 `/metrics`를 PULL해 `ServerMetric` 시계열로 저장한다(UC14).
+각 에이전트는 `/health`·`/metrics`·`/info`를 노출하는 **상태 없는 경량 프로세스**다. `/info`는 정적 하드웨어 사양(시드·관리 툴용)을 돌려준다. 인증·권한·DB가 없으며, 사람 사용자가 직접 호출하지 않는다. 호출 주체는 백엔드의 자동화 액터 **SYS**(APScheduler)뿐이며, 1분 주기로 `/metrics`를 PULL해 `ServerMetric` 시계열로 저장한다(UC14).
 
 설계 원칙: 에이전트는 백엔드와 의존성을 공유하지 않고 경량을 우선한다. 메트릭 JSON 계약은 이 문서를 단일 출처로 삼으며, 에이전트 레포는 계약을 임의로 바꾸지 않는다.
 
@@ -26,16 +26,16 @@
 
 ```text
 [backend compose]                         [server-pool compose]
-  api (FastAPI :8000)                       agent-1 (:9101)  ── GET /metrics, /health
-  scheduler (APScheduler, SYS) ──┐          agent-2 (:9102)  ── GET /metrics, /health
-  postgres (:5432)               │          agent-3 (:9103)  ── GET /metrics, /health
-  redis (:6379)                  │
-        1분 주기 PULL ───────────┘ host.docker.internal:9101..9103
+  api (FastAPI :8000)                       agent-1 (:9101)  ── GET /metrics, /health, /info
+  scheduler (APScheduler, SYS) ──┐          agent-2 (:9102)  ── GET /metrics, /health, /info
+  postgres (:5432)               │          ...
+  redis (:6379)                  │          agent-6 (:9106)  ── GET /metrics, /health, /info
+        1분 주기 PULL ───────────┘ host.docker.internal:9101..9106
 ```
 
 | 항목 | 값 |
 |------|-----|
-| 노출 포트 | 9101 – 9103 (에이전트당 1개, compose에서 `SERVER_ID`·`PORT` 주입) |
+| 노출 포트 | 9101 – 9106 (에이전트당 1개, compose에서 `SERVER_ID`·`PORT` 주입) |
 | 통신 | REST (HTTP GET), 내부망 |
 | 호출 주체 | 백엔드 SYS 수집기(APScheduler) |
 | 수집 주기 | 60초 (백엔드 `SCHEDULER_INTERVAL_SEC`) |
@@ -49,6 +49,7 @@
 | 기능 이름 | 기능 역할 | 도메인 | 관련 UC | 관련 API | 상태 |
 |-----------|-----------|--------|---------|----------|------|
 | 헬스 응답 | 컨테이너 생존 확인용 200 응답 | 엔드포인트 | — | `GET /health` | 구현완료 |
+| 하드웨어 사양 노출 | 정적 서버 사양(hostname·cpu·gpu·net 등) 노출 | 엔드포인트 | — | `GET /info` | 구현완료 |
 | 메트릭 스냅샷 노출 | 현재 시점 cpu/mem/gpu/net 사용률을 JSON으로 노출 | 노출 | UC14 | `GET /metrics` | 구현완료 |
 | CPU 사용률 수집 | psutil로 CPU 사용률 측정 (`collectors/cpu.py`) | 수집 | UC14 | (`GET /metrics`) | 구현완료 |
 | 메모리 사용률 수집 | psutil로 메모리 사용률 측정 (`collectors/memory.py`) | 수집 | UC14 | (`GET /metrics`) | 구현완료 |
@@ -56,13 +57,13 @@
 | 네트워크 사용률 수집 | NIC 대역폭(`NET_CAP_MBPS`) 대비 사용률 측정 (`collectors/net.py`) | 수집 | UC14 | (`GET /metrics`) | 구현완료 |
 | 장애·부하 시연 (참고) | `stress-ng`·`hey`·`docker pause/stop`로 **외부에서** 유발. 에이전트 코드가 아닌 운영 명령 | 운영시연 | UC15 · UC18 | — | 정의완료 |
 
-`collectors/`(cpu·memory·net·gpu)와 실제 `/metrics` 산출이 구현되었다. cpu·memory·net은 **psutil 실측**(stress-ng·hey 부하가 그대로 반영됨), gpu는 시뮬레이션 환경에 물리 GPU가 없어 **`GPU_SIMULATE` 합성값**(끄면 null)을 낸다. 범위·타입 단위 테스트는 `tests/test_collectors.py`.
+`collectors/`(cpu·memory·net·gpu)와 실제 `/metrics` 산출이 구현되었다. cpu·memory·net은 기본값 **`METRIC_SIMULATE=true`** 일 때 서버 ID별 랜덤 워크 합성값을, `false`로 끄면 **psutil 실측**(stress-ng·hey 부하가 그대로 반영됨)을 낸다. 컨테이너가 호스트 `/proc`를 공유해 실측값이 모든 에이전트에서 똑같이 나오므로 데모에서는 합성을 기본으로 둔다. gpu는 시뮬레이션 환경에 물리 GPU가 없어 **`GPU_SIMULATE` 합성값**(서버 스펙에 gpu_model이 있으면 자동 활성화, 없으면 null)을 낸다. 두 수집기 모두 테스트 툴의 오버라이드 파일이 있으면 그 값을 우선한다. 범위·타입 단위 테스트는 `tests/test_collectors.py`.
 
 ---
 
 ## 4. API 명세
 
-두 엔드포인트 모두 통신유형 `REST`, 권한 `SYS`(자동화 수집기만 호출). 인증 헤더 없음(내부망 신뢰).
+세 엔드포인트 모두 통신유형 `REST`, 권한 `SYS`(자동화 수집기만 호출). 인증 헤더 없음(내부망 신뢰). `/info`는 정적 사양 조회용이며 메트릭 계약과 무관하다.
 
 ### 4.1 GET /health
 
@@ -135,8 +136,10 @@
 ## 6. 후속 과제 (미구현)
 
 - 실제 GPU 노드 연동 — 현재는 시뮬레이션 환경 특성상 `GPU_SIMULATE` 합성값
-- `agent/scripts/scenarios/` — 장애·부하 재현 스크립트 묶음
-- 백엔드 수집기(APScheduler) 측 실제 PULL·검증·시계열 저장 잡(UC14)
+
+> 백엔드 수집기(APScheduler `metric_collection` 잡)의 PULL·검증·시계열 저장(UC14)은
+> 이미 구현되어 동작한다. 장애·부하 재현은 별도 `server-pool/testtool/`(부하 주입·오버라이드
+> 툴)로 제공한다.
 
 ---
 

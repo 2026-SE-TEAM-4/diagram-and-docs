@@ -47,12 +47,12 @@
 ```mermaid
 flowchart TD
     P0["P0 · 메트릭 수집 잡<br/>server-pool /metrics → ServerMetric<br/>(모든 것의 토대)"]
-    F27["F27 · 이상탐지<br/>μ±2σ → AnomalyRecord"]
+    F27["F27 · 이상탐지<br/>μ±kσ(k=2.5) → AnomalyRecord"]
     F28["F28 · 건강점수<br/>→ Server.health_score"]
     C["제안 C (F33) · 인시던트 상관<br/>이상 묶기 · 노이즈↓"]
     A["제안 A (F31) · 용량·수요 예측<br/>Holt-Winters"]
     D["제안 D (F34) · LLM 원인 설명"]
-    B["제안 B (F32) · 장애·열화 예측<br/>EWMA 추세 + 위험도"]
+    B["제안 B (F32) · 장애·열화 예측<br/>최소제곱 추세 + 위험도"]
 
     P0 --> F27 --> C --> D
     P0 --> F28 --> B
@@ -85,14 +85,14 @@ flowchart TD
 `ai-ops.md` 공통 전제: "모든 AI 로직은 APScheduler 잡(별도 컨테이너)에서 돌고, API는 저장된
 결과 조회만 한다." 현재 코드 상태와 합치면:
 
-- **무거운 잡(pandas·statsmodels·LLM 호출)은 전부 `app/scheduler.py`(별도 컨테이너)에 등록**한다.
-  지금 이 파일은 잡을 하나도 등록하지 않으므로, AIOps 잡의 자연스러운 정착지다.
+- **무거운 잡(pandas·statsmodels·LLM 호출)은 전부 스케줄러 컨테이너(`app/scheduler.py`)에서
+  돈다.** 잡 등록은 `app/jobs/scheduling.py` 의 `register_jobs()` 한 곳에 모았고, `scheduler.py`
+  가 이를 호출한다.
 - **API 라우터(`app/api/ops.py` 등)는 DB에 저장된 결과만 읽는다.** 무거운 라이브러리를 API
   프로세스에 올리지 않아 응답이 가볍다.
-- ⚠️ **주의(기존 코드):** 현재 예약·승인 잡은 `main.py` lifespan 에서 돈다(`main.py:22,24`).
-  스케줄러 컨테이너와 API 컨테이너가 동시에 뜨면 잡이 **이중 실행**될 위험이 있다.
-  AIOps 잡을 추가하기 전에 **모든 스케줄 잡을 `scheduler.py` 한 곳으로 모으는 정리**를 권장한다.
-  (이 문서는 AIOps 잡을 `scheduler.py` 기준으로 설계한다.)
+- **잡 단일 소유(구현 완료):** 예약·승인 전이 잡까지 모두 `register_jobs()` 로 이전해, API
+  프로세스(`main.py`)는 잡을 등록·실행하지 않는다. 스케줄러·API 컨테이너가 동시에 떠도
+  잡이 **이중 실행되지 않는다**(초안의 lifespan 이중 실행 위험은 해소됨).
 
 ### 3-2. 데이터 흐름
 
@@ -180,19 +180,22 @@ async def collect_server_metrics() -> None:
                     server_id=s.id,
                     cpu_usage=d["cpuUsage"], mem_usage=d["memUsage"],
                     net_usage=d["netUsage"],
-                    gpu_usage=d.get("gpuUsage"),          # null → NA 판정
-                    status=("NA" if d.get("gpuUsage") is None else "OK"),
-                    collected_at=parse(d["collectedAt"]),
+                    gpu_usage=d.get("gpuUsage"),          # GPU 미탑재면 null 그대로 저장
+                    status="OK",                          # 응답 성공이면 OK
                 ))
-            except (httpx.HTTPError, httpx.TimeoutException):
-                # 무응답 → MISSING 으로 기록 (수집 품질을 데이터로 남김)
+            except (httpx.HTTPError, KeyError, ValueError):
+                # 무응답·계약 위반 → MISSING 으로 기록 (수집 품질을 데이터로 남김)
                 db.add(ServerMetric(
                     server_id=s.id, cpu_usage=0, mem_usage=0, net_usage=0,
                     gpu_usage=None, status="MISSING"))
         await db.commit()
 ```
-- **주기:** 1분 (`interval`, minutes=1). `scheduler_interval_sec=60` 와 일치.
-- **품질 판정:** 무응답 → `MetricStatus.MISSING`, GPU 미탑재 → `NA` (`enums.py` 와 일치).
+> 실제 구현은 URL 조립·payload 파싱을 순수 모듈(`services/metric_ingest.py`)로 분리하고,
+> 잡(`jobs/metric_collection_job.py`)은 HTTP 호출·기록만 한다. 세션 팩토리·httpx 클라이언트는
+> 테스트를 위해 인자로 주입받는다(`collected_at` 은 DB `server_default` 로 채운다).
+- **주기:** 데모 5초(설계 1분). `scheduling.py` 의 `id="metric_collection"`.
+- **품질 판정:** 응답 성공 → `OK`(GPU 미탑재면 `gpu_usage` 만 null), 무응답·계약 위반 →
+  `MetricStatus.MISSING`. 즉 `NA` 가 아니라 OK + null gpu 로 표현한다.
 - **전제 데이터:** `Server` 행이 에이전트 id 와 맞게 시드되어야 함(시드 스크립트 필요).
 
 ### 4-5. 의존성
@@ -216,25 +219,46 @@ incident_id: Mapped[int | None] = mapped_column(  # 제안 C 에서 채움
 > 참고: `metric` 컬럼은 0003 마이그레이션에서 추가되었고, `incident_id` FK는 0004(제안 C)에서 추가되었다. 0003에서 함께 추가된 것이 아님에 유의.
 
 #### 로직
+> 실제 구현은 판정 로직을 순수 모듈(`services/anomaly.py`의 `evaluate_anomaly`)로 분리하고,
+> 잡(`jobs/anomaly_detection_job.py`)은 시계열 조회·디바운스·기록만 한다. 통계는 numpy 대신
+> 표준 라이브러리 `statistics`(`fmean`·`pstdev`, 모표준편차)를 쓴다.
 ```python
-async def detect_anomalies() -> None:
-    async with SessionLocal() as db:
-        for s in await _active_servers(db):
+# services/anomaly.py (순수 로직)
+MIN_SAMPLES = 30      # 기준선 신뢰 최소 표본
+_MIN_SIGMA = 8.0      # 판정용 σ 절대 하한(안정 구간 좁은 밴드 오탐 방지)
+
+def evaluate_anomaly(history, latest, *, min_samples=MIN_SAMPLES, k=2.5):
+    if len(history) < min_samples:
+        return AnomalyDecision(False, 0.0, 0.0)     # 표본 부족 → 비이상
+    mu, sigma = fmean(history), pstdev(history)
+    if sigma <= 0:
+        return AnomalyDecision(False, mu, sigma)    # 분산 0 → 단정 불가
+    band_sigma = max(sigma, _MIN_SIGMA)             # σ 하한 적용
+    return AnomalyDecision(abs(latest - mu) > k * band_sigma, mu, sigma)
+```
+```python
+# jobs/anomaly_detection_job.py (DB·기록)
+async def detect_anomalies(*, session_factory=SessionLocal) -> None:
+    async with session_factory() as db:
+        for s in await _active_servers(db):           # deleted_at IS NULL
             for metric in ("CPU", "MEM", "NET", "GPU"):
                 vals = await _recent_ok_values(db, s.id, metric, window="7d")
-                if len(vals) < 30:        # 표본 부족 → 건너뜀
+                if len(vals) < MIN_SAMPLES + 1:       # 최신값 1개 + 기준선 30개
                     continue
-                mu, sigma = float(np.mean(vals[:-1])), float(np.std(vals[:-1]))
-                latest = vals[-1]
-                if sigma > 0 and abs(latest - mu) > 2 * sigma:
-                    if not await _recent_anomaly(db, s.id, metric, "10m"):  # 디바운스
-                        db.add(AnomalyRecord(server_id=s.id, metric=metric,
-                               current_value=latest, mean=mu, stddev=sigma))
+                latest, history = vals[0], vals[1:]   # 최신순 정렬 → 맨 앞이 최신
+                decision = evaluate_anomaly(history, latest)
+                if decision.is_anomaly and not await _recently_recorded(db, s.id, metric, "1h"):
+                    db.add(AnomalyRecord(server_id=s.id, metric=metric,
+                           current_value=latest, mean=decision.mean, stddev=decision.stddev))
         await db.commit()
 ```
-- **주기:** 5분(`ai-ops.md` C 가 "F27 직후" 가정과 일치).
-- **라이브러리:** numpy(평균·표준편차). pandas 는 아직 불필요(윈도우 쿼리로 충분).
-- **디바운스:** 같은 서버·메트릭은 10분 내 1회만 기록 → 폭주 방지.
+- **주기:** 데모 5초(설계 1분). `scheduling.py` 의 `id="anomaly_detection"`.
+- **판정:** μ±kσ, **k=2.5**. 판정용 σ 에는 절대 하한 `_MIN_SIGMA=8.0` 을 둔다 — 매우 안정적인
+  구간은 σ 가 0 에 가까워 밴드가 면도날처럼 좁아져, 평소 잔떨림(GPU 합성값 ±5 등)조차 이상으로
+  오탐한다. 하한 덕에 **유휴·안정 서버 풀이 초기에 헛이상을 내지 않는다.** 기록되는 `stddev` 는
+  실제 σ 그대로(분석용).
+- **표본:** 30개 미만이거나 σ 가 0 이면 항상 비이상으로 본다.
+- **디바운스:** 같은 서버·메트릭은 **1시간** 내 1회만 기록 → 폭주 방지.
 
 ### 5-2. F28 건강점수 — `app/jobs/health_score_job.py` (신규)
 ```python
@@ -394,7 +418,7 @@ class IncidentSummary(Base):
 
 ### 8-2. 잡/서비스 — `app/jobs/incident_summary_job.py` + `app/services/incident_summary.py`
 
-> 실제 구현 모듈: `app/services/incident_summary.py`(컨텍스트 구성·Gemini API 호출)와 `app/jobs/incident_summary_job.py`(배치 잡 `summarize_pending_incidents`, 5분 주기). 초안에서 언급한 `llm_service.py` 이름은 실제 코드와 다르다.
+> 실제 구현 모듈: `app/services/incident_summary.py`(컨텍스트 구성·프롬프트·파싱)와 `app/jobs/incident_summary_job.py`(배치 잡 `summarize_pending_incidents`, 데모 10초/설계 5분 주기로 요약 없는 OPEN 인시던트를 폴링). 인시던트당 1회만 생성하고, `settings.gemini_api_key` 가 없으면 잡 시작에서 조용히 건너뛴다. 초안에서 언급한 `llm_service.py` 이름은 실제 코드와 다르다. 아래 의사코드는 인시던트 1건 처리 흐름을 보인 것이다.
 ```python
 async def summarize_incident(incident_id) -> None:
     async with SessionLocal() as db:
@@ -507,20 +531,28 @@ alembic upgrade head
 
 ## 12. 스케줄러 등록 (cadence 한눈에)
 
-`app/scheduler.py` 의 `main()` 에 등록(현재 비어 있음):
+모든 잡은 `app/jobs/scheduling.py` 의 `register_jobs()` 한 곳에 등록되고, 스케줄러
+컨테이너(`app/scheduler.py`)가 이를 호출해 잡을 단독 소유한다(API 프로세스는 잡을 돌리지
+않아 이중 실행을 막는다). 주기는 **로컬 데모용으로 가속한 초 단위**다(괄호 안은 설계 주기).
+이 표는 `scheduling.py` 와 정확히 일치한다.
 
-| 잡 | 함수 | 주기 | Phase / ID |
+| 잡 id | 함수 | 주기(데모/설계) | Phase / ID |
 |----|------|------|------------|
-| 메트릭 수집 | `collect_server_metrics` | 1분 | 0 (P0) |
-| 이상탐지 | `detect_anomalies` | 5분 | 1 (F27) |
-| 건강점수 | `compute_health_scores` | 10분 | 1 (F28) |
-| 인시던트 상관 | `correlate_anomalies` | 5분 | 2 (F33) |
-| 용량 예측 | `generate_forecasts` | 1시간 | 3 (F31) |
-| 장애 예측 | `predict_failures` | 10분 | 5 (F32) |
-| LLM 요약 | `summarize_incident` | 인시던트 OPEN 트리거 | 4 (F34) |
+| `reservation_transitions` | `process_reservation_transitions` | 5초 / 1분 | (UC16) |
+| `approval_timeout` | `auto_reject_timed_out_requests` | 5초 / 1분 | (UC17) |
+| `metric_collection` | `collect_server_metrics` | 5초 / 1분 | 0 (P0) |
+| `anomaly_detection` | `detect_anomalies` | 5초 / 1분 | 1 (F27) |
+| `health_score` | `compute_health_scores` | 10초 / 10분 | 1 (F28) |
+| `incident_correlation` | `correlate_anomalies` | 5초 / 5분 | 2 (F33) |
+| `forecast` | `generate_forecasts` | 30초 / 1시간 | 3 (F31) |
+| `incident_summary` | `summarize_pending_incidents` | 10초 / 5분 | 4 (F34) |
+| `failure_prediction` | `predict_failures` | 15초 / 10분 | 5 (F32) |
+| `idle_reclaim` | `reclaim_idle_servers` | 5초 / 1분 | (F24/UC15) |
+| `maintenance_transition` | `transition_maintenance_schedules` | 5초 / 1분 | (F30/UC13) |
 
-> 기존 `process_reservation_transitions`·`auto_reject_timed_out_requests`(현재 lifespan)도
-> 이 곳으로 이전해 **잡 단일 소유**를 확립할 것(3-1 주의 참고).
+> 3-1 의 "잡을 한 곳으로 모으는 정리" 권고는 구현 완료되었다. 예약·승인 전이 잡도
+> `register_jobs()` 로 이전되어 **잡 단일 소유**가 확립되었다(LLM 요약은 별도 트리거가 아니라
+> OPEN 인시던트를 폴링하는 주기 잡으로 구현됨).
 
 ### Notification.type 확장 (`enums.py`)
 신규 값만 추가(평문 문자열이라 마이그레이션 불필요):

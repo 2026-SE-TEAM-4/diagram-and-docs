@@ -72,11 +72,11 @@ sequenceDiagram
     participant DB as PostgreSQL
     participant WS as 알림 채널(WS)
 
-    A->>API: 예약 {serverId:1, version:42}
-    B->>API: 예약 {serverId:1, version:42}
+    A->>API: 예약 {serverId:1, startTime, endTime}
+    B->>API: 예약 {serverId:1, startTime, endTime}
     API->>DB: SELECT server#1 (status, version)
     DB-->>API: status=AVAILABLE, version=42
-    Note over API,DB: 두 요청 모두 version=42를 읽음
+    Note over API,DB: 두 요청 모두 서버에서 version=42를 읽음(클라이언트는 version을 보내지 않음)
     API->>DB: A) UPDATE server SET status=RESERVED, version=43 WHERE id=1 AND version=42
     DB-->>API: 1 row → 성공
     API->>DB: A) INSERT Reservation; Quota.used += ; COMMIT
@@ -102,7 +102,7 @@ sequenceDiagram
 
     Note over DB: ApprovalRequest#5 status=PENDING (72h 임박)
     par 동시 발생
-        M->>API: 승인 {decision: APPROVE}
+        M->>API: 승인 {action: APPROVED}
     and
         SCH->>SCH: 주기 도래, 72h 초과 탐지
     end

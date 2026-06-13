@@ -26,7 +26,7 @@
 | F02 | 서버 상세 조회 | 조회 | UC01 | 낮음 | GET /servers/{id} | 단건 상세 |
 | F03 | 예약 현황 조회 | 조회 | UC02 | 중간 | GET /reservations | 권한별 범위·상태/기간 필터 |
 | F04 | 서버 예약 요청(예약형) | 예약·할당 | UC04 | 높음 | POST /reservations | 낙관적 잠금, Quota 검사 |
-| F05 | 즉시 서버 요청 | 예약·할당 | UC05 | 중간 | POST /reservations/instant | 조건 매칭 1대 즉시 IN_USE, 없으면 대기열 |
+| F05 | 즉시 서버 요청 | 예약·할당 | UC05 | 중간 | POST /reservations/instant | AVAILABLE 1대 자동 선정 후 즉시 IN_USE, 없으면 409 |
 | F06 | 예약 취소 | 예약·할당 | UC06 | 중간 | POST /reservations/{id}/cancel | RESERVED 한정, Quota 회복 |
 | F07 | 서버 반납 | 예약·할당 | UC07 | 중간 | POST /reservations/{id}/return | IN_USE 한정, 조기 반납 |
 | F08 | 대안 서버 조회 | 예약·할당 | UC03-d | 높음 | GET /servers/alternatives | 충돌 시 유사 사양 최대 5건 |
@@ -41,7 +41,7 @@
 | F17 | 알림 목록 조회 | 알림 | UC03-a | 높음 | GET /notifications | 알림함 |
 | F18 | 알림 읽음 처리 | 알림 | UC03-a | 중간 | PATCH /notifications/{id}/read | readAt 기록 |
 | F19 | 실시간 알림 채널 | 알림 | UC03-a, UC03-d | 높음 | WS /ws/notifications | 배지·충돌 모달 푸시 |
-| F20 | 계정 잠금 해제(수동) | 보안·운영 | UC20 | 중간 | POST /admin/users/{id}/unlock | ADM 오탐 해제 |
+| F20 | 계정 잠금 해제(수동) | 보안·운영 | UC20 | 중간 | PATCH /users/{id}/unlock | ADM 오탐 해제 |
 | F21 | 운영 대시보드 조회 | 보안·운영 | UC21 | 중간 | GET /ops/dashboard | 5개 섹션 집계 |
 | F22 | 가용성 현황 조회 | 보안·운영 | UC21 | 중간 | GET /ops/availability | 업타임·MTBF·MTTR·A% |
 | F23 | 실시간 사용률 수집 | 모니터링·자동화 | UC14 | 중간 | — (스케줄러 1분) | 서버풀 /metrics PULL |
@@ -70,7 +70,7 @@
 - 조회·예약·승인·서버관리·알림·보안운영 REST 기능과 스케줄러/미들웨어 잡(F23~F30), AIOps 기능(F31~F34)이 모두 동작한다.
 
 **구현 시 명세와 달라진 점(정확히 반영)**:
-- F20(계정 잠금 해제)은 명세의 `POST /admin/users/{id}/unlock`가 아니라 **`POST /users/{id}/unlock`**로 구현됨.
+- F20(계정 잠금 해제)은 명세의 `POST /admin/users/{id}/unlock`가 아니라 **`PATCH /users/{id}/unlock`**로 구현됨(경로·메서드 모두 변경).
 - 신규 **`GET /teams`**(비인증, 회원가입 시 팀 선택용) 추가됨 — 기존 카탈로그에 없던 항목. 아울러 Quota 목록 응답에 `userName`·`version` 필드가 추가됨.
 - F21·F22 가용성(MTBF/MTTR/업타임)은 서버 상태 표본을 기반으로 산출되며, 대시보드 스케줄러 섹션은 이제 `SchedulerLog` 실데이터로 채워진다(모든 스케줄러 잡이 실행 시 `SchedulerLog`에 기록).
 
@@ -78,33 +78,39 @@
 
 ---
 
-## 2. API 카탈로그 (32개 엔드포인트)
+## 2. API 카탈로그 (35개 엔드포인트)
 
-> 모든 엔드포인트는 인증 필요(미인증 401). 권한 불일치 403. 잠금 상태 사용자 429(UC20).
+> 인증·회원가입 흐름과 `GET /teams`(회원가입 팀 선택용)만 비인증, 나머지는 모두 인증 필요(미인증 401).
+> 권한 불일치 403. 잠금 상태 사용자 429(UC20).
 > Request/Response는 핵심 필드만. path/query 파라미터는 Request에 표기.
 
 ### 조회
 
 **GET /servers** · 통신 REST · 권한 STU/MGR/ADM · 기능 F01
 ```jsonc
-// Request (query)
-{ "status": "AVAILABLE", "group": "Lab-A GPU", "sort": "name", "order": "asc" }
+// Request (query): { "status":"AVAILABLE", "group":"GPU 워크스테이션",
+//   "sort":"name", "order":"asc", "limit":50, "offset":0 }
+//   sort 허용값: id|name|status|health_score|created_at
 // Response 200
-{ "servers": [ { "id": 1, "name": "gpu-01", "status": "AVAILABLE",
-  "spec": {"cpuCores":16,"ramGb":64,"gpuModel":"RTX4090"},
-  "healthScore": 82, "occupant": "팀코드 또는 실명(권한별)" } ] }
+{ "servers": [ { "id": 1, "name": "gpu-a100-01", "status": "AVAILABLE",
+  "spec": {"cpuCores":64,"ramGb":256,"gpuModel":"NVIDIA A100 80GB"},
+  "healthScore": 82, "ip":"10.0.0.1", "groupName":"HPC GPU 클러스터",
+  "riskScore": 0.12, "etaToRisk": null,
+  "occupant": "팀코드 또는 실명(권한별)",
+  "latestMetric": {"cpuUsage":37.5,"memUsage":61.2,"netUsage":12.4,"gpuUsage":88.0,
+    "status":"OK","collectedAt":"..."} } ] }
 ```
-에러: 401, 403, 404(표시할 서버 없음 UC01-E1), 500
+에러: 401, 500 (공유 풀이라 모든 로그인 사용자가 전체 서버를 본다)
 
 **GET /servers/{id}** · REST · STU/MGR/ADM · F02 — 단건 상세. 에러 401,403,404,500
 
 **GET /reservations** · REST · STU(본인)/MGR(팀)/ADM(전체) · F03
 ```jsonc
-// Request (query): { "scope":"mine", "status":"active", "from":"...", "to":"..." }
-// Response 200: { "reservations":[ {"id":10,"serverId":1,"serverName":"gpu-01",
-//   "startTime":"...","endTime":"...","status":"RESERVED"} ] }
+// Request: 쿼리 파라미터 없음. 권한별 범위는 토큰의 역할로 서버가 판단한다.
+// Response 200(배열): [ {"id":10,"userId":4,"serverId":1,
+//   "startTime":"...","endTime":"...","status":"RESERVED","createdAt":"..."} ]
 ```
-에러: 401, 403(타인 예약 조회 UC02-E1), 500
+에러: 401, 500
 
 **GET /servers/alternatives** · REST · STU · F08
 ```jsonc
@@ -115,20 +121,24 @@
 
 ### 예약·할당
 
-**POST /reservations** · REST · STU · F04
+**POST /reservations** · REST · 인증 사용자 · F04
 ```jsonc
-// Request: { "serverId": 1, "startTime": "2026-06-01T09:00", "endTime": "2026-06-03T09:00", "version": 42 }
-// Response 201: { "reservationId": 10, "status": "RESERVED", "server": {...} }
+// Request: { "serverId": 1, "startTime": "2026-06-01T09:00", "endTime": "2026-06-03T09:00" }
+// Response 201: { "id":10, "userId":4, "serverId":1, "startTime":"...", "endTime":"...",
+//   "status": "RESERVED", "createdAt":"..." }
 ```
 에러: 400, 401, 403, 409(낙관적 잠금 충돌 UC04-E1 → UC03-d), 422(Quota 초과 → 승인 분기 UC04-A1), 500
 
-**POST /reservations/instant** · REST · STU · F05
+> 낙관적 잠금은 `Server.version`이 단일 진실이며 서버 내부에서 갱신·재검증한다.
+> Request에 `version`을 받지 않는다(클라이언트가 version을 들고 다니지 않음).
+
+**POST /reservations/instant** · REST · 인증 사용자 · F05
 ```jsonc
-// Request: { "spec": {"minRamGb":32,"gpuRequired":true} }
-// Response 201: { "reservationId": 11, "status": "IN_USE", "server": {"ip":"10.0.0.5",...} }
-// Response 202(대기열): { "queued": true, "position": 3 }
+// Request: { "endTime": "2026-06-03T09:00" }   // 서버는 AVAILABLE 풀에서 자동 선정
+// Response 201: { "id":11, "userId":4, "serverId":2, "startTime":"...", "endTime":"...",
+//   "status": "IN_USE", "createdAt":"..." }
 ```
-에러: 400, 401, 409, 422(Quota 초과), 500
+에러: 400, 401, 409(가용 서버 없음/충돌), 422(Quota 초과), 500
 
 **POST /reservations/{id}/cancel** · REST · STU(소유자) · F06 — 에러 401,403(타인 UC06-E2),404,409(상태/충돌 UC06-E1·E3),500
 
@@ -145,25 +155,31 @@
 
 **GET /approval-requests** · REST · MGR/ADM · F10
 ```jsonc
-// Request (query): { "status": "PENDING" }
-// Response 200: { "requests":[ {"id":5,"requester":"홍길동","serverName":"gpu-01",
-//   "period":"...","reason":"...","teamUsage":"7/10","requestedAt":"..."} ] }
+// Request: 쿼리 파라미터 없음. MGR은 팀 요청만, ADM은 전체 요청을 받는다.
+// Response 200(배열): [ {"id":5,"requesterId":4,"approverId":null,"serverId":1,
+//   "requestedStart":"...","requestedEnd":"...","reason":"논문 실험","status":"PENDING",
+//   "requestedAt":"...","decidedAt":null,"decidedBy":null} ]
 ```
 에러: 401, 403, 500
 
 **POST /approval-requests/{id}/decision** · REST · MGR/ADM(대리) · F11
 ```jsonc
-// Request: { "decision": "APPROVE", "shortenedEnd": "2026-06-02T09:00" }   // 부분 승인 옵션
-//      또는 { "decision": "REJECT", "reason": "한도 초과" }                  // 거절 사유 필수
-// Response 200: { "id":5, "status":"APPROVED", "reservationId": 12, "decidedAt":"...", "decidedBy": 3 }
+// Request: { "action": "APPROVED" }   또는   { "action": "REJECTED" }
+// Response 200: { "id":5, "requesterId":4, "approverId":3, "serverId":1,
+//   "requestedStart":"...", "requestedEnd":"...", "reason":"...", "status":"APPROVED",
+//   "requestedAt":"...", "decidedAt":"...", "decidedBy":"3" }
 ```
+APPROVED 시 Reservation을 생성하고 서버를 RESERVED로 전환한다.
 에러: 400, 401, 403(타팀 UC09-E3), 404, 409(타임아웃 경합 UC09-E2 / 서버 점유 UC09-E1), 500
 
 **GET /teams/{id}/quotas** · REST · MGR/ADM · F12
 ```jsonc
-// Response 200: { "members":[ {"userId":4,"name":"홍길동","limit":3,"used":1} ], "teamLimit":10 }
+// Response 200(배열): [ {"id":2,"userId":4,"userName":"홍길동","teamId":1,
+//   "limit":3,"used":1,"version":7} ]
 ```
 에러: 401, 403, 404, 500
+
+**GET /teams** · REST · 비인증 · (회원가입 보조) — 팀 목록을 `[{id,name,code}]`로 반환. 회원가입 화면의 팀 선택 드롭다운용이라 인증이 없다. 에러 500
 
 **PATCH /quotas/{id}** · REST · MGR/ADM · F13
 ```jsonc
@@ -224,11 +240,11 @@
 
 **GET /ops/incidents** · REST · MGR/ADM · F33
 ```jsonc
-// Request (query): { "status": "OPEN", "severity": "HIGH" }
+// Request (query): { "status": "OPEN", "severity": "CRITICAL" }   // severity: INFO|WARNING|CRITICAL
 // Response 200:
 { "noiseReductionRate": 0.63,
   "incidents": [
-    { "id": 7, "severity": "HIGH", "status": "OPEN",
+    { "id": 7, "severity": "CRITICAL", "status": "OPEN",
       "anomalyCount": 5, "serverIds": [1, 3],
       "startedAt": "2026-06-12T10:00:00Z", "resolvedAt": null }
   ] }
@@ -238,11 +254,11 @@
 **GET /ops/incidents/{id}** · REST · MGR/ADM · F33
 ```jsonc
 // Response 200:
-{ "id": 7, "severity": "HIGH", "status": "OPEN",
-  "serverIds": [1, 3], "startedAt": "2026-06-12T10:00:00Z", "resolvedAt": null,
+{ "incident": { "id": 7, "severity": "CRITICAL", "status": "OPEN", "anomalyCount": 5,
+    "serverIds": [1, 3], "startedAt": "2026-06-12T10:00:00Z", "resolvedAt": null },
   "anomalies": [
-    { "id": 42, "serverId": 1, "metric": "cpu", "detectedAt": "2026-06-12T10:00:00Z",
-      "zScore": 3.1, "value": 97.2 }
+    { "id": 42, "serverId": 1, "metric": "CPU", "currentValue": 97.2,
+      "mean": 60.0, "stddev": 12.0, "detectedAt": "2026-06-12T10:00:00Z" }
   ] }
 ```
 에러: 401, 403, 404, 500
@@ -286,6 +302,43 @@
   "drivers": ["cpu 지속 상승", "메모리 사용률 증가"] }
 ```
 에러: 401, 403, 404, 500
+
+### 메트릭 히스토리(읽기 전용 시각화)
+
+> 대시보드·서버 상세 화면의 차트용 조회 엔드포인트. 잡이 적재한 `ServerMetric`·
+> `AnomalyRecord`를 윈도우 균등 버킷으로 평균내 가볍게 돌려준다. 기능 카탈로그
+> F23(수집)·F27(이상탐지)의 결과를 보여주는 보조 조회라 별도 F 번호는 두지 않는다.
+
+**GET /ops/metrics/heatmap** · REST · MGR/ADM
+```jsonc
+// Request (query): { "metric": "GPU", "window": "12h" }   // metric·window 기본 GPU·12h
+// Response 200:
+{ "metric": "GPU",
+  "servers": [1, 2, 3],
+  "serverNames": ["gpu-a100-01", "gpu-rtx4090-01", "gpu-rtx3090-01"],
+  "buckets": ["2026-06-12T00:00:00Z", "2026-06-12T01:00:00Z"],
+  "cells": [[72.5, 80.1], [55.0, null], [60.2, 61.0]] }   // cells[i][j]=서버 i의 j버킷 평균, 없으면 null
+```
+에러: 400(허용 밖 metric·window), 401, 403, 500
+
+**GET /servers/{id}/metrics** · REST · 인증 사용자
+```jsonc
+// Request (query): { "window": "6h" }   // 기본 6h
+// Response 200:
+{ "serverId": 1, "window": "6h",
+  "points": [ { "ts": "2026-06-12T00:00:00Z", "cpu": 37.5, "mem": 61.2, "net": 12.4, "gpu": 88.0 } ] }
+//   gpu 는 GPU 미탑재 노드에서 null
+```
+에러: 400(허용 밖 window), 401, 404(없는 서버), 500
+
+**GET /servers/{id}/anomalies** · REST · MGR/ADM
+```jsonc
+// Request (query): { "window": "24h" }   // 기본 24h
+// Response 200(배열):
+[ { "id": 42, "metric": "CPU", "currentValue": 97.2, "mean": 60.0, "stddev": 12.0,
+    "detectedAt": "2026-06-12T10:00:00Z" } ]
+```
+에러: 400(허용 밖 window), 401, 403, 404(없는 서버), 500
 
 ### 고급 관리 (ADM 전용)
 
@@ -345,7 +398,7 @@ Reservation·ApprovalRequest·QueueEntry·MaintenanceSchedule 전체 삭제. 에
 | UC17 | F26 | — |
 | UC18 | F27 | — |
 | UC19 | F28 | — |
-| UC20 | F29, F20 | POST /admin/users/{id}/unlock |
+| UC20 | F29, F20 | PATCH /users/{id}/unlock |
 | UC21 | F21, F22 | GET /ops/dashboard, GET /ops/availability |
 | UC22 | F31 | GET /ops/forecast |
 | UC23 | F32 | GET /servers/{id}/health-trend |

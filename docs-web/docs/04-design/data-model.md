@@ -93,7 +93,7 @@ erDiagram
     Notification {
         bigint id PK
         bigint userId FK
-        enum type "APPROVAL_RESULT|CONFLICT|IDLE_WARNING|EXPIRY|RECLAIM|SECURITY|CAPACITY|INCIDENT|PREDICTIVE_FAILURE"
+        string type "값 미확정이라 평문 문자열로 저장: APPROVAL_RESULT|CONFLICT|IDLE_WARNING|EXPIRY|RECLAIM|SECURITY|CAPACITY|INCIDENT|PREDICTIVE_FAILURE"
         string message
         json payload "링크·부가 데이터"
         datetime readAt "nullable"
@@ -147,7 +147,7 @@ erDiagram
     AuditLog {
         bigint id PK
         bigint actorId FK
-        enum action "VIEW|DELETE_SERVER|ACCOUNT_LOCK|MANUAL_UNLOCK|..."
+        string action "값 미확정이라 평문 문자열로 저장: VIEW|DELETE_SERVER|ACCOUNT_LOCK|MANUAL_UNLOCK|..."
         string targetType
         string targetId
         json detail
