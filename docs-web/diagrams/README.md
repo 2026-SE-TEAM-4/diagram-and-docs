@@ -5,7 +5,7 @@
 | 파일 | 내용 | 관련 문서 |
 |---|---|---|
 | `architecture.drawio` | 시스템 아키텍처 — Frontend·FastAPI·APScheduler·PostgreSQL·Redis·서버 풀·CI/CD 구성과 데이터 흐름 | [시스템 아키텍처](../docs/03-architecture/architecture.md) |
-| `erd.drawio` | ERD — 13개 엔티티와 관계(카디널리티 포함) | [데이터 모델](../docs/04-design/data-model.md) |
+| `erd.drawio` | ERD — 17개 엔티티와 관계(카디널리티 포함, AIOps 4종 포함) | [데이터 모델](../docs/04-design/data-model.md) |
 | `class-diagram.drawio` | 백엔드 클래스/모듈 다이어그램 — api·core·services·models·jobs 레이어와 의존 관계 | [백엔드 설계](../docs/04-design/backend-design.md) |
 | `state-diagrams.drawio` | 상태 다이어그램 2탭 — Server 상태머신 · Reservation 생애주기 | [동적 모델](../docs/04-design/dynamic-models.md) |
 | `sequence-reservation.drawio` | 예약 생성(UC04) 시퀀스 — 낙관적 잠금 성공/충돌 분기 포함 | [동적 모델](../docs/04-design/dynamic-models.md) |

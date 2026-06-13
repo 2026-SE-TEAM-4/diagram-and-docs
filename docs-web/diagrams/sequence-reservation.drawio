@@ -4,22 +4,22 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="p-user" value="사용자(STU)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+        <mxCell id="p-user" value="사용자(STU)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f1ece4;strokeColor=#c2ad8e;" vertex="1" parent="1">
           <mxGeometry x="20" y="40" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="p-front" value="Frontend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="p-front" value="Frontend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e9f0e8;strokeColor=#a3b79a;" vertex="1" parent="1">
           <mxGeometry x="190" y="40" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="p-router" value="FastAPI Router (/reservations)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="p-router" value="FastAPI Router (/reservations)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1">
           <mxGeometry x="350" y="40" width="180" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="p-service" value="ReservationService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="p-service" value="ReservationService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1">
           <mxGeometry x="560" y="40" width="160" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="p-pg" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="p-pg" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e9f0e8;strokeColor=#a3b79a;" vertex="1" parent="1">
           <mxGeometry x="780" y="40" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="p-redis" value="Redis" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+        <mxCell id="p-redis" value="Redis" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f1ece4;strokeColor=#c2ad8e;" vertex="1" parent="1">
           <mxGeometry x="950" y="40" width="100" height="40" as="geometry" />
         </mxCell>
         <mxCell id="ll-user" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">

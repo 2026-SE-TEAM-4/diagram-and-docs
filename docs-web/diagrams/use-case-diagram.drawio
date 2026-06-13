@@ -11,51 +11,51 @@
         <mxCell id="ADM" value="서버 관리자 (ADM)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1150" y="160" width="40" height="80" as="geometry"/></mxCell>
         <mxCell id="SYS" value="모니터링 시스템 (SYS)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=12;" vertex="1" parent="1"><mxGeometry x="1150" y="540" width="40" height="80" as="geometry"/></mxCell>
         <mxCell id="UC22" value="UC22
-회원가입" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="70" width="150" height="52" as="geometry"/></mxCell>
+회원가입" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="70" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC04" value="UC04
-서버 예약 요청" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="148" width="150" height="52" as="geometry"/></mxCell>
+서버 예약 요청" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="148" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC05" value="UC05
-즉시 서버 요청" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="226" width="150" height="52" as="geometry"/></mxCell>
+즉시 서버 요청" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="226" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC06" value="UC06
-예약 취소" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="304" width="150" height="52" as="geometry"/></mxCell>
+예약 취소" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="304" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC07" value="UC07
-서버 반납" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="382" width="150" height="52" as="geometry"/></mxCell>
+서버 반납" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="382" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC03-a" value="UC03-a
-예약 승인/거절 알림 수신" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="460" width="150" height="52" as="geometry"/></mxCell>
+예약 승인/거절 알림 수신" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="460" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC03-d" value="UC03-d
-예약 충돌 알림 수신" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="538" width="150" height="52" as="geometry"/></mxCell>
+예약 충돌 알림 수신" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="538" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC01" value="UC01
-서버 현황 조회" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="616" width="150" height="52" as="geometry"/></mxCell>
+서버 현황 조회" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="616" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC02" value="UC02
-예약 현황 조회" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="380" y="694" width="150" height="52" as="geometry"/></mxCell>
+예약 현황 조회" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="380" y="694" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC23" value="UC23
-로그인" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="70" width="150" height="52" as="geometry"/></mxCell>
+로그인" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="70" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC09" value="UC09
-초과 요청 승인/거절" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="148" width="150" height="52" as="geometry"/></mxCell>
+초과 요청 승인/거절" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="148" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC10" value="UC10
-팀원별 Quota 설정" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="226" width="150" height="52" as="geometry"/></mxCell>
+팀원별 Quota 설정" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="226" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC11" value="UC11
-서버 등록" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="304" width="150" height="52" as="geometry"/></mxCell>
+서버 등록" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="304" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC12" value="UC12
-서버 삭제" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="382" width="150" height="52" as="geometry"/></mxCell>
+서버 삭제" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="382" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC13" value="UC13
-서버 점검 스케줄 등록" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="460" width="150" height="52" as="geometry"/></mxCell>
+서버 점검 스케줄 등록" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="460" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC21" value="UC21
-시스템 운영 대시보드" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="610" y="538" width="150" height="52" as="geometry"/></mxCell>
+시스템 운영 대시보드" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="610" y="538" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC14" value="UC14
-실시간 사용률 수집" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="70" width="150" height="52" as="geometry"/></mxCell>
+실시간 사용률 수집" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="70" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC15" value="UC15
-유휴 서버 감지·자동 회수" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="148" width="150" height="52" as="geometry"/></mxCell>
+유휴 서버 감지·자동 회수" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="148" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC16" value="UC16
-예약 만료 자동 반납" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="226" width="150" height="52" as="geometry"/></mxCell>
+예약 만료 자동 반납" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="226" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC17" value="UC17
-승인 타임아웃 자동 거절" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="304" width="150" height="52" as="geometry"/></mxCell>
+승인 타임아웃 자동 거절" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="304" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC18" value="UC18
-서버 이상 징후 탐지" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="382" width="150" height="52" as="geometry"/></mxCell>
+서버 이상 징후 탐지" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="382" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC19" value="UC19
-서버 건강 점수 산출" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="460" width="150" height="52" as="geometry"/></mxCell>
+서버 건강 점수 산출" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="460" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="UC20" value="UC20
-비정상 접근 감지·잠금" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="840" y="538" width="150" height="52" as="geometry"/></mxCell>
+비정상 접근 감지·잠금" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e9eef4;strokeColor=#9aabbf;" vertex="1" parent="1"><mxGeometry x="840" y="538" width="150" height="52" as="geometry"/></mxCell>
         <mxCell id="e1" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="guest" target="UC22"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e2" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC01"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e3" style="endArrow=none;html=1;strokeColor=#666666;" edge="1" parent="1" source="STU" target="UC02"><mxGeometry relative="1" as="geometry"/></mxCell>

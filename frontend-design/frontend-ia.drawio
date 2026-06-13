@@ -8,11 +8,11 @@
         <mxCell id="title" value="ServerHub 프론트엔드 — 정보구조(IA)" style="text;html=1;align=left;fontSize=18;fontStyle=1;fontColor=#212529;" vertex="1" parent="1">
           <mxGeometry x="40" y="18" width="1240" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="sub" value="React 18 · TypeScript · Vite · shadcn/ui · TanStack Query · Recharts&#10;화면(라우트) → 주요 컴포넌트 → 바인딩 API(기능 F · UC) → 서버풀/스케줄러 데이터 흐름" style="text;html=1;align=left;fontSize=11;fontColor=#6c757d;spacingTop=2;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="sub" value="React 18 · TypeScript · Vite · Tailwind CSS · Recharts · 커스텀 viz/useApi 훅&#10;화면(라우트) → 주요 컴포넌트 → 바인딩 API(기능 F · UC) → 서버풀/스케줄러 데이터 흐름" style="text;html=1;align=left;fontSize=11;fontColor=#6c757d;spacingTop=2;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="40" y="48" width="1240" height="36" as="geometry" />
         </mxCell>
 
-        <mxCell id="shell" value="App Shell — 역할 스위처(TopBar) · 역할별 사이드바 · TanStack Query 서버상태 캐시 · WebSocket 실시간 알림 · 역할 가드(STU / MGR / ADM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+        <mxCell id="shell" value="App Shell — 역할 스위처(TopBar) · 역할별 사이드바 · useApi 훅 서버상태 폴링 · WebSocket 실시간 알림 · 역할 가드(STU / MGR / ADM)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#9ec5fe;fontColor=#084298;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="40" y="96" width="1240" height="48" as="geometry" />
         </mxCell>
 
@@ -62,7 +62,7 @@
         <mxCell id="a_srvmgr" value="&lt;b&gt;서버 관리&lt;/b&gt;&lt;br&gt;POST·DELETE /servers · POST …/maintenances&lt;br&gt;F14·F15·F16 / UC11·12·13 · MaintenanceSchedule" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="970" y="442" width="295" height="64" as="geometry" />
         </mxCell>
-        <mxCell id="a_sec" value="&lt;b&gt;계정 보안&lt;/b&gt;&lt;br&gt;POST /admin/users/{id}/unlock · 미들웨어 Rate limit&lt;br&gt;F29·F20 / UC20 · AuditLog · User.lockedUntil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="a_sec" value="&lt;b&gt;계정 잠금 관리&lt;/b&gt;&lt;br&gt;PATCH /users/{id}/unlock · 미들웨어 Rate limit&lt;br&gt;F29·F20 / UC20 · AuditLog · User.lockedUntil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#ced4da;fontColor=#212529;align=left;spacingLeft=9;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="970" y="518" width="295" height="64" as="geometry" />
         </mxCell>
 
@@ -88,7 +88,7 @@
         <mxCell id="e3" value="SQLAlchemy ORM" style="endArrow=block;html=1;fontSize=9;strokeColor=#6c757d;fontColor=#495057;rounded=1;" edge="1" parent="1" source="be" target="db">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e4" value="REST · WebSocket (TanStack Query 캐시)" style="endArrow=block;html=1;fontSize=9;strokeColor=#0d6efd;fontColor=#084298;rounded=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="be" target="shell">
+        <mxCell id="e4" value="REST · WebSocket (useApi 훅 폴링)" style="endArrow=block;html=1;fontSize=9;strokeColor=#0d6efd;fontColor=#084298;rounded=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="be" target="shell">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e5" value="AIOps 결과 조회 GET /ops/*" style="endArrow=block;html=1;fontSize=9;dashed=1;strokeColor=#0d6efd;fontColor=#084298;rounded=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="sch" target="lane_a">
