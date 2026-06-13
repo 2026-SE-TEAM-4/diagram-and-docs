@@ -56,6 +56,7 @@
 | F32 | 장애·건강 열화 예측 | 모니터링·자동화 | UC23 | 중간 | GET /servers/{id}/health-trend | EWMA 추세+위험도(riskScore/etaToRisk), 임계 초과 시 PREDICTIVE_FAILURE 알림 |
 | F33 | 이상 상관·노이즈 감소 | 모니터링·자동화 | UC24 | 높음 | GET /ops/incidents, GET /ops/incidents/{id} | 시간·서버그룹 클러스터링→Incident, 노이즈 감소율, INCIDENT 알림 |
 | F34 | LLM 원인 설명·요약 | 모니터링·자동화 | UC25 | 중간 | GET /ops/incidents/{id}/summary | Gemini API, 인시던트당 1회 IncidentSummary 캐시 |
+| F35 | 운영 데이터 초기화(고급) | 보안·운영 | — | 낮음 | POST /admin/reset/* | ADM 전용, 데모·테스트용 5종 초기화 엔드포인트 |
 
 스케줄러/미들웨어 기능(F23~F30): 클라이언트 호출 API 없음. 단, 동작 결과는 `SchedulerLog`에 기록되어 F21 대시보드(GET /ops/dashboard)에서 노출됨. AIOps 기능(F31~F34)은 스케줄러 잡이며 조회 API가 별도로 있다(GET /ops/forecast, GET /servers/{id}/health-trend, GET /ops/incidents, GET /ops/incidents/{id}, GET /ops/incidents/{id}/summary).
 
@@ -63,8 +64,9 @@
 
 ## 1.1 구현 현황 (2026-06-12 기준)
 
-**구현완료(전부): F01~F34 — 미구현 없음.**
-- 인증(회원가입·로그인·내 정보)을 포함해 기능 카탈로그 34건 전부 머지+테스트 완료.
+**구현완료: F01~F35 — 미구현 없음.**
+- 인증(회원가입·로그인·내 정보)을 포함해 기능 카탈로그 35건 전부 머지+테스트 완료.
+- F35(운영 데이터 초기화): 2026-06-13 추가. ADM 전용 고급 화면(`/admin/advanced`)과 5종 초기화 REST 엔드포인트(`POST /admin/reset/*`).
 - 조회·예약·승인·서버관리·알림·보안운영 REST 기능과 스케줄러/미들웨어 잡(F23~F30), AIOps 기능(F31~F34)이 모두 동작한다.
 
 **구현 시 명세와 달라진 점(정확히 반영)**:
@@ -76,7 +78,7 @@
 
 ---
 
-## 2. API 카탈로그 (27개 엔드포인트)
+## 2. API 카탈로그 (32개 엔드포인트)
 
 > 모든 엔드포인트는 인증 필요(미인증 401). 권한 불일치 403. 잠금 상태 사용자 429(UC20).
 > Request/Response는 핵심 필드만. path/query 파라미터는 Request에 표기.
@@ -198,7 +200,9 @@
 
 ### 보안·운영
 
-**POST /admin/users/{id}/unlock** · REST · ADM · F20 — 잠금 해제(오탐). 에러 401,403,404,500
+**PATCH /users/{id}/unlock** · REST · ADM · F20 — 잠금 해제(오탐). 에러 401,403,404,500
+
+> 구현은 `/users/{id}/unlock` (명세의 `/admin/users/{id}/unlock`와 경로 다름 — 1.1 구현 현황 참조)
 
 **GET /ops/dashboard** · REST · ADM · F21
 ```jsonc
@@ -282,6 +286,38 @@
   "drivers": ["cpu 지속 상승", "메모리 사용률 증가"] }
 ```
 에러: 401, 403, 404, 500
+
+### 고급 관리 (ADM 전용)
+
+**POST /admin/reset/availability** · REST · ADM · F35
+```jsonc
+// Response 200: { "deleted": 1240, "message": "가용성 히스토리 1240건 삭제됨" }
+```
+ServerMetric·ServerHealthHistory 전체 삭제. 에러 401, 403, 500
+
+**POST /admin/reset/aiops** · REST · ADM · F35
+```jsonc
+// Response 200: { "deleted": 87, "message": "AIOps 데이터 87건 삭제됨" }
+```
+IncidentSummary·AnomalyRecord·Incident·Forecast·SchedulerLog 전체 삭제. 에러 401, 403, 500
+
+**POST /admin/reset/notifications** · REST · ADM · F35
+```jsonc
+// Response 200: { "deleted": 45, "message": "알림·감사 로그 45건 삭제됨" }
+```
+Notification·AuditLog 전체 삭제. 에러 401, 403, 500
+
+**POST /admin/reset/reservations** · REST · ADM · F35
+```jsonc
+// Response 200: { "deleted": 33, "message": "예약·승인·대기열 33건 삭제됨" }
+```
+Reservation·ApprovalRequest·QueueEntry·MaintenanceSchedule 전체 삭제. 에러 401, 403, 500
+
+**POST /admin/reset/all** · REST · ADM · F35
+```jsonc
+// Response 200: { "deleted": 1405, "message": "전체 운영 데이터 1405건 삭제됨" }
+```
+마스터 데이터(User·Team·Quota·Server) 제외 모든 운영 데이터 삭제. 에러 401, 403, 500
 
 ---
 
