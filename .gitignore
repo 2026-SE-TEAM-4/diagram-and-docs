@@ -3,6 +3,7 @@
 CLAUDE.md
 CLAUDE.local.md
 docs-web/docs/superpowers/
+.superpowers/
 
 # 환경 변수
 .env
